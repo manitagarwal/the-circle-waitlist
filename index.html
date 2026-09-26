@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Circle</title>
+<title>The Semi Circle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -18,6 +18,9 @@
     --ink-dimmer:#6c655c;
     --accent:#b6935e;
     --accent-soft:rgba(182,147,94,0.14);
+    --accent2:#a8624a;
+    --accent2-soft:rgba(168,98,74,0.14);
+    --good:#8fae7a;
     --error:#c97b6a;
     --serif:'Fraunces', serif;
     --sans:'Inter', -apple-system, sans-serif;
@@ -39,7 +42,6 @@
 
   .wrap{max-width:640px; margin:0 auto; padding:0 24px;}
 
-  /* subtle grain / vignette backdrop */
   body::before{
     content:"";
     position:fixed; inset:0; pointer-events:none; z-index:0;
@@ -50,107 +52,315 @@
 
   section{position:relative; z-index:1;}
 
-  /* ---------- HERO ---------- */
-  .hero{
-    min-height:88vh;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    padding:80px 24px 40px;
-    opacity:0;
-    animation:rise 1.1s ease-out forwards;
-  }
-  @keyframes rise{
-    from{opacity:0; transform:translateY(14px);}
-    to{opacity:1; transform:translateY(0);}
-  }
-  .mark{
-    font-family:var(--serif);
-    font-weight:300;
-    font-style:italic;
-    font-size:clamp(2.6rem, 8vw, 4.4rem);
-    letter-spacing:0.01em;
-    margin:0;
-  }
-  .mark span{font-style:normal; font-weight:400;}
-  .tagline{
-    margin:22px 0 0;
-    color:var(--ink-dim);
-    font-size:1.05rem;
-    max-width:30ch;
-    font-weight:400;
-  }
-  .hero-cue{
-    margin-top:64px;
-    width:1px; height:44px;
-    background:linear-gradient(to bottom, var(--ink-dimmer), transparent);
-  }
-
-  /* ---------- MANIFESTO ---------- */
-  .manifesto{padding:60px 24px 100px;}
-  .manifesto p{
-    font-size:1.15rem;
-    color:var(--ink);
-    max-width:34ch;
-    margin:0 auto 22px;
-    text-align:center;
-  }
-  .manifesto p.dim{color:var(--ink-dim); font-size:1.02rem;}
-
-  /* ---------- HOW IT WORKS ---------- */
-  .steps{padding:20px 24px 110px; border-top:1px solid var(--panel-border);}
-  .steps-inner{max-width:560px; margin:0 auto;}
-  .steps-head{
-    text-align:center; color:var(--ink-dim); margin:60px 0 48px; font-size:0.95rem;
-  }
-  .step{
-    display:grid;
-    grid-template-columns:52px 1fr;
-    gap:20px;
-    padding:26px 0;
+  /* ---------- NAVBAR ---------- */
+  nav{
+    position:sticky; top:0; z-index:40;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 24px;
+    background:rgba(13,14,15,0.86);
+    backdrop-filter:blur(10px);
     border-bottom:1px solid var(--panel-border);
   }
-  .step:last-child{border-bottom:none;}
-  .step-num{
-    font-family:var(--serif);
-    font-size:1.7rem;
-    font-weight:300;
-    color:var(--accent);
+  .nav-brand{
+    display:flex; align-items:center; gap:9px;
+    font-family:var(--serif); font-size:1.02rem; color:var(--ink);
   }
-  .step-body h3{margin:0 0 6px; font-size:1.05rem; font-weight:500;}
-  .step-body p{margin:0; color:var(--ink-dim); font-size:0.95rem;}
+  .nav-brand svg{width:18px; height:14px; flex-shrink:0;}
+  .nav-brand i{font-style:italic; font-weight:400;}
+  .status-btn{
+    background:none; border:1px solid var(--panel-border); color:var(--ink-dim);
+    padding:9px 16px; font-size:0.8rem; border-radius:2px; cursor:pointer;
+    font-family:var(--sans); transition:border-color .2s, color .2s;
+    text-decoration:none; display:inline-block;
+  }
+  .status-btn:hover{border-color:var(--accent); color:var(--accent);}
+
+  .status-panel{
+    position:absolute; top:60px; right:16px;
+    background:var(--panel); border:1px solid var(--panel-border);
+    padding:22px; width:280px; max-width:calc(100vw - 32px);
+    border-radius:2px; display:none; z-index:50;
+  }
+  .status-panel.open{display:block;}
+  .status-panel label{display:block; font-size:0.8rem; color:var(--ink-dim); margin-bottom:8px;}
+  .status-panel .inline-btn-field input{
+    text-transform:uppercase; font-size:1rem;
+    background:var(--bg-2); border:1px solid var(--panel-border);
+    color:var(--ink); padding:11px 12px; border-radius:2px; font-family:var(--sans);
+    min-width:0;
+  }
+  .status-panel .inline-btn-field input:focus{border-color:var(--accent); outline:none;}
+  .status-result{
+    margin-top:14px; font-size:0.85rem; color:var(--ink-dim);
+    padding-top:14px; border-top:1px solid var(--panel-border); display:none;
+  }
+  .status-result.show{display:block;}
+  .status-result .name{color:var(--ink); font-weight:500;}
+  .status-badge{
+    display:inline-block; margin-top:6px; padding:3px 10px; font-size:0.75rem;
+    border-radius:2px; background:var(--accent-soft); color:var(--accent);
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:90vh;
+    display:flex; align-items:center;
+    padding:60px 24px;
+    position:relative; overflow:hidden;
+  }
+  .hero::before{
+    content:""; position:absolute; top:6%; left:50%;
+    width:640px; height:640px; transform:translateX(-50%);
+    background:radial-gradient(circle, rgba(182,147,94,0.09), transparent 62%);
+    pointer-events:none; z-index:0;
+  }
+
+  .hero-stage{
+    max-width:600px; width:100%;
+    margin:0 auto; position:relative; text-align:center;
+  }
+
+  .eyebrow{
+    font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--ink-dimmer); margin:0 0 22px; position:relative; z-index:1;
+    opacity:0; animation:fadeUp 0.6s ease-out forwards; animation-delay:0.1s;
+  }
+
+  .mark-frame{position:relative; padding-top:clamp(110px, 34vw, 170px);}
+  .mark-arc{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:min(360px, 76vw); height:auto; z-index:0;
+  }
+  .mark-arc path{
+    stroke-dasharray:1; stroke-dashoffset:1;
+    animation:drawArc 1.6s ease-out 0.3s forwards, pulseArc 4.5s ease-in-out 2.2s infinite;
+  }
+  @keyframes drawArc{ to{stroke-dashoffset:0;} }
+  @keyframes pulseArc{ 0%,100%{opacity:0.45;} 50%{opacity:0.85;} }
+
+  .mark{
+    font-family:var(--serif); font-weight:300; font-style:italic;
+    font-size:clamp(2.4rem, 8vw, 4.4rem);
+    letter-spacing:0.01em; margin:0; color:var(--ink);
+    text-align:center; position:relative; z-index:1;
+    opacity:0; animation:fadeUp 0.8s ease-out forwards; animation-delay:0.9s;
+  }
+  .mark span{font-style:normal; font-weight:400;}
+
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(9px);} to{opacity:1; transform:translateY(0);} }
+
+  .ledger-row{
+    display:flex; align-items:center; justify-content:center; gap:22px;
+    margin:28px 0 0;
+    opacity:0; animation:fadeUp 0.6s ease-out forwards; animation-delay:1.3s;
+  }
+  .ledger-stat{display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .ledger-divider{width:1px; height:30px; background:var(--panel-border);}
+  .ledger-label{font-size:0.68rem; letter-spacing:0.08em; color:var(--ink-dimmer); text-transform:uppercase;}
+  .ledger-num{
+    font-family:var(--serif); font-size:1.35rem; color:var(--accent);
+    font-variant-numeric:tabular-nums; display:inline-flex; gap:2px;
+  }
+  .ledger-digit{
+    display:inline-block; min-width:0.7ch; overflow:hidden;
+  }
+  .ledger-digit.flip{animation:digitFlip 0.12s ease-in;}
+  @keyframes digitFlip{
+    0%{transform:translateY(-30%); opacity:0.4;}
+    100%{transform:translateY(0); opacity:1;}
+  }
+
+  .tagline{
+    margin:16px auto 0; color:var(--ink-dim); font-size:1.1rem;
+    max-width:32ch; font-weight:400; text-align:center;
+    opacity:0; animation:fadeUp 0.7s ease-out forwards; animation-delay:1.55s;
+  }
+  .subline{
+    margin:10px auto 0; color:var(--ink-dimmer); font-size:0.95rem;
+    max-width:36ch; text-align:center;
+    opacity:0; animation:fadeUp 0.7s ease-out forwards; animation-delay:1.75s;
+  }
+  .hero-cta{
+    margin-top:32px; text-align:center;
+    opacity:0; animation:fadeUp 0.7s ease-out forwards; animation-delay:2s;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .mark-arc path{animation:none; stroke-dashoffset:0; opacity:0.5;}
+    .eyebrow, .mark, .ledger, .tagline, .subline, .hero-cta{animation:none; opacity:1;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .mark, .ledger, .tagline, .subline, .hero-cta{animation:none; opacity:1;}
+  }
+
+  /* ---------- BODY COPY (exclusivity-framed, asymmetric notes) ---------- */
+  .body-copy{
+    padding:54px 24px 80px; border-top:1px solid var(--panel-border);
+    background:linear-gradient(180deg, rgba(182,147,94,0.03), transparent 40%);
+  }
+  .body-copy-inner{max-width:480px; margin:0 auto;}
+  .body-lede{
+    font-family:var(--serif); font-style:italic; font-weight:400;
+    font-size:1.75rem; line-height:1.28; color:var(--ink);
+    text-align:left; margin:0 0 48px; max-width:20ch;
+  }
+
+  .notes{margin:0 0 20px;}
+  .note{
+    padding:13px 17px; font-size:0.98rem; line-height:1.45; color:var(--ink);
+    background:var(--bg-2); border-left:2px solid var(--accent);
+    max-width:82%; margin-bottom:20px;
+  }
+  .n1{
+    border-radius:2px 10px 2px 10px; transform:rotate(-0.8deg);
+    font-size:1.05rem; margin-right:auto;
+  }
+  .n2{
+    border-radius:10px 2px 10px 2px; transform:rotate(0.6deg);
+    border-left-color:var(--accent2); color:var(--ink-dim);
+    max-width:78%; margin-left:auto; font-size:0.92rem;
+  }
+  .n3{
+    border-radius:2px 8px 2px 12px; transform:rotate(-0.4deg);
+    max-width:86%; margin-left:8%; font-size:1rem;
+  }
+  .n4{
+    border-radius:12px 2px 8px 2px; transform:rotate(0.7deg);
+    border-left-color:var(--accent2); color:var(--ink-dim);
+    max-width:72%; margin-left:auto; font-size:0.9rem; margin-bottom:0;
+  }
+
+  .oneliner{
+    text-align:right; font-size:0.85rem; letter-spacing:0.03em;
+    color:var(--ink-dimmer); margin:34px 0 0; font-style:italic;
+  }
+
+  /* ---------- ID CARD BLOCK (light section) ---------- */
+  .id-block{
+    background-color:#f3ecdf;
+    background-image:radial-gradient(circle, rgba(33,28,22,0.07) 1px, transparent 1px);
+    background-size:18px 18px;
+    padding:56px 24px 60px;
+    --panel:#ffffff; --panel-border:#ddd2ba;
+    --ink:#211c16; --ink-dim:#645848; --ink-dimmer:#8f8271;
+    --bg-2:#ece3d2;
+  }
+  .id-block-inner{text-align:center;}
+  .id-kicker{
+    font-family:var(--serif); font-style:italic; font-size:1.15rem;
+    color:#211c16; margin:0 0 20px;
+  }
+  .id-tag{
+    display:block; width:fit-content; font-size:0.85rem;
+    padding:6px 15px; border-radius:2px; border:1px solid #ddd2ba;
+    background:#ffffff; color:#645848;
+  }
+  .id-tag-1{margin:0 auto 14px 2%; transform:rotate(-2.2deg);}
+  .id-tag-2{
+    margin:0 4% 16px auto; transform:rotate(3deg);
+    font-family:var(--serif); font-style:italic; color:var(--accent2);
+    border-color:var(--accent2); background:none;
+  }
+  .id-footnote{
+    display:block; width:fit-content; margin:20px auto 0;
+    font-size:0.8rem; color:#645848; border:1px solid #ddd2ba; background:#ffffff;
+    padding:7px 16px; border-radius:2px; transform:rotate(-1.6deg);
+  }
+
+  /* ---------- MEMBER MOSAIC ---------- */
+  .mosaic-wrap{margin:36px 0 12px; text-align:center;}
+  .mosaic{
+    display:grid; grid-template-columns:repeat(7, 1fr); gap:10px;
+    max-width:420px; margin:0 auto 16px; position:relative;
+  }
+  .mosaic .orb{
+    width:100%; aspect-ratio:1; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--serif); font-size:0.8rem; color:var(--ink-dim);
+    filter:blur(0.5px); opacity:0.9;
+    position:relative; transition:filter 0.15s ease, opacity 0.15s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .mosaic .orb.peek{filter:blur(0); opacity:1;}
+  .orb-tooltip{
+    position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
+    background:var(--panel); border:1px solid var(--panel-border);
+    color:var(--ink); font-size:0.72rem; padding:5px 9px; border-radius:2px;
+    white-space:nowrap; opacity:0; pointer-events:none; transition:opacity 0.15s ease;
+    z-index:5;
+  }
+  .orb-tooltip.show{opacity:1;}
+  .mosaic-caption{font-size:0.85rem; color:var(--ink-dimmer); margin:0;}
+
+  /* ---------- MEMBERSHIP CARD PREVIEW ---------- */
+  .card-sleeve{
+    max-width:400px; margin:0 auto 40px; position:relative;
+    padding-top:28px;
+  }
+  .card-sleeve::before{
+    content:"APPLICATION COPY — RETAIN";
+    position:absolute; top:0; left:16px; right:16px;
+    background:var(--bg-2); border:1px solid var(--panel-border);
+    border-bottom:none; border-radius:4px 4px 0 0;
+    height:24px; display:flex; align-items:center; justify-content:center;
+    font-size:0.6rem; letter-spacing:0.1em; color:var(--ink-dimmer);
+  }
+  .card-sleeve::after{
+    content:"";
+    position:absolute; top:24px; left:16px; right:16px; height:1px;
+    background-image:repeating-linear-gradient(90deg, var(--panel-border) 0 6px, transparent 6px 12px);
+    z-index:2;
+  }
+  .member-card{
+    max-width:400px; margin:0;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:4px;
+    padding:26px 28px;
+    position:relative;
+  }
+  .mc-top{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:22px;
+  }
+  .mc-org{font-size:0.68rem; letter-spacing:0.08em; color:var(--ink-dimmer);}
+  .mc-status{
+    font-size:0.68rem; letter-spacing:0.06em; color:var(--accent);
+    border:1px solid rgba(182,147,94,0.35); padding:3px 8px; border-radius:2px;
+  }
+  .mc-name{
+    font-family:var(--serif); font-size:1.5rem; font-weight:400; color:var(--ink);
+    margin-bottom:10px; min-height:1.3em;
+  }
+  .mc-meta{
+    display:flex; justify-content:space-between; font-size:0.82rem;
+    color:var(--ink-dim); margin-bottom:18px; gap:12px;
+  }
+  .mc-meta span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .mc-foot{
+    display:flex; justify-content:space-between; align-items:center;
+    border-top:1px solid var(--panel-border); padding-top:14px;
+    font-size:0.72rem; color:var(--ink-dimmer); letter-spacing:0.04em;
+  }
+  .mc-foot svg{width:16px; height:10px; opacity:0.7;}
 
   /* ---------- FORM SECTION ---------- */
-  .apply{padding:20px 24px 140px;}
+  .apply{
+    padding:40px 24px 100px;
+    background:linear-gradient(180deg, rgba(168,98,74,0.04), transparent 45%);
+  }
   .apply-head{text-align:center; margin-bottom:44px;}
   .apply-head h2{
-    font-family:var(--serif);
-    font-weight:400;
-    font-size:2.1rem;
-    margin:0 0 12px;
+    font-family:var(--serif); font-weight:400; font-size:2rem; margin:0 0 12px;
   }
   .apply-head p{color:var(--ink-dim); margin:0; font-size:0.98rem;}
 
   .card{
-    background:var(--panel);
-    border:1px solid var(--panel-border);
-    border-radius:2px;
-    padding:44px 40px;
-    position:relative;
+    background:var(--panel); border:1px solid var(--panel-border);
+    border-radius:2px; padding:44px 40px; position:relative;
   }
-  .card::before, .card::after{
-    content:"";
-    position:absolute;
-    width:14px; height:14px;
-    border:1px solid var(--accent);
-    opacity:0.55;
-  }
-  .card::before{top:-1px; left:-1px; border-right:none; border-bottom:none;}
-  .card::after{bottom:-1px; right:-1px; border-left:none; border-top:none;}
 
-  /* progress tabs */
   .progress{
     display:flex; gap:28px; margin-bottom:38px;
     border-bottom:1px solid var(--panel-border); padding-bottom:20px;
@@ -161,25 +371,28 @@
   .progress-item .l{font-size:0.78rem; color:var(--ink-dim);}
 
   .field{margin-bottom:22px;}
-  .field label{
-    display:block; font-size:0.85rem; color:var(--ink-dim); margin-bottom:8px;
-  }
+  .field label{display:block; font-size:0.85rem; color:var(--ink-dim); margin-bottom:8px;}
   .field input, .field select{
-    width:100%;
-    background:var(--bg-2);
-    border:1px solid var(--panel-border);
-    color:var(--ink);
-    padding:13px 14px;
-    font-family:var(--sans);
-    font-size:0.98rem;
-    border-radius:2px;
-    transition:border-color .2s;
+    width:100%; background:var(--bg-2); border:1px solid var(--panel-border);
+    color:var(--ink); padding:13px 14px; font-family:var(--sans);
+    font-size:1rem; border-radius:2px; transition:border-color .2s;
   }
   .field input:focus, .field select:focus{border-color:var(--accent);}
   .field .hint{font-size:0.78rem; color:var(--ink-dimmer); margin-top:6px;}
   .field .err{font-size:0.8rem; color:var(--error); margin-top:6px; display:none;}
   .field.invalid input{border-color:var(--error);}
   .field.invalid .err{display:block;}
+  .field.shake input{animation:shakeField 0.4s ease-in-out;}
+  @keyframes shakeField{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-6px);}
+    40%{transform:translateX(5px);}
+    60%{transform:translateX(-4px);}
+    80%{transform:translateX(3px);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .field.shake input{animation:none;}
+  }
 
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
   @media (max-width:520px){.row2{grid-template-columns:1fr;}}
@@ -189,70 +402,52 @@
 
   button{font-family:var(--sans); cursor:pointer;}
   .btn{
-    background:var(--accent);
-    color:#1a1610;
-    border:none;
-    padding:13px 24px;
-    font-size:0.92rem;
-    font-weight:500;
-    border-radius:2px;
+    background:var(--accent); color:#1a1610; border:none; padding:13px 24px;
+    font-size:0.92rem; font-weight:500; border-radius:2px;
     transition:opacity .2s, transform .15s;
   }
   .btn:hover{opacity:0.9;}
   .btn:active{transform:scale(0.98);}
   .btn:disabled{opacity:0.35; cursor:not-allowed;}
   .btn-ghost{
-    background:transparent;
-    border:1px solid var(--panel-border);
-    color:var(--ink);
-    padding:12px 22px;
-    font-size:0.92rem;
-    border-radius:2px;
+    background:transparent; border:1px solid var(--panel-border); color:var(--ink);
+    padding:12px 22px; font-size:0.92rem; border-radius:2px;
   }
   .btn-ghost:hover{border-color:var(--accent); color:var(--accent);}
   .btn-text{
-    background:none; border:none; color:var(--accent);
-    font-size:0.85rem; padding:6px 0; text-decoration:underline;
-    text-decoration-color:rgba(182,147,94,0.4);
+    background:none; border:none; color:var(--accent); font-size:0.85rem;
+    padding:6px 0; text-decoration:underline; text-decoration-color:rgba(182,147,94,0.4);
   }
   .btn-block{width:100%;}
 
   .otp-note{
-    background:var(--accent-soft);
-    border:1px solid rgba(182,147,94,0.3);
-    padding:12px 14px;
-    font-size:0.82rem;
-    color:var(--ink-dim);
-    border-radius:2px;
-    margin-top:10px;
-    display:none;
+    background:var(--accent-soft); border:1px solid rgba(182,147,94,0.3);
+    padding:12px 14px; font-size:0.82rem; color:var(--ink-dim);
+    border-radius:2px; margin-top:10px; display:none;
   }
   .otp-note strong{color:var(--accent); letter-spacing:0.04em;}
 
   .verified-badge{
     display:inline-flex; align-items:center; gap:6px;
-    color:#8fae7a; font-size:0.85rem; margin-top:8px;
+    color:var(--good); font-size:0.85rem; margin-top:8px;
   }
 
   .nav-row{display:flex; justify-content:space-between; margin-top:36px; gap:12px;}
 
-  /* referral rows */
-  .ref-row{
-    display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:10px; margin-bottom:12px;
-  }
+  .ref-row{display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:10px; margin-bottom:12px;}
   @media (max-width:520px){.ref-row{grid-template-columns:1fr;}}
   .ref-row input{
     background:var(--bg-2); border:1px solid var(--panel-border); color:var(--ink);
-    padding:11px 12px; font-size:0.92rem; border-radius:2px; font-family:var(--sans);
+    padding:11px 12px; font-size:1rem; border-radius:2px; font-family:var(--sans);
   }
   .ref-remove{
-    background:none; border:none; color:var(--ink-dimmer); font-size:0.85rem;
+    background:none; border:none; color:var(--ink-dimmer); font-size:0.9rem;
+    min-width:40px; min-height:40px; padding:0;
   }
   .ref-remove:hover{color:var(--error);}
   .ref-actions{display:flex; gap:14px; margin:14px 0 6px; flex-wrap:wrap;}
   .contact-picker-note{font-size:0.78rem; color:var(--ink-dimmer); margin-top:4px;}
 
-  /* review */
   .review-list{margin-bottom:24px;}
   .review-row{
     display:flex; justify-content:space-between; padding:10px 0;
@@ -261,35 +456,88 @@
   .review-row .k{color:var(--ink-dim);}
   .review-row .v{text-align:right; max-width:60%; word-break:break-word;}
 
-  /* confirmation */
-  .confirm{display:none;}
+  /* ---------- CLOSING: email preview, cool-navy zone ---------- */
+  .closing{
+    padding:64px 24px 90px;
+    background:#0a1119;
+    border-top:1px solid #1d2a33;
+  }
+  .closing-inner{max-width:440px; margin:0 auto;}
+  .email-card{
+    background:#f8f4ea; border-radius:8px; overflow:hidden;
+    box-shadow:0 26px 55px -26px rgba(0,0,0,0.75);
+  }
+  .email-meta{
+    padding:18px 22px 14px; border-bottom:1px solid #e4dcc7;
+    font-size:0.8rem; color:#8f8271;
+  }
+  .email-meta .row{display:flex; gap:8px; margin-bottom:5px;}
+  .email-meta .k{min-width:46px; flex-shrink:0;}
+  .email-meta .v{color:#4a4234;}
+  .email-subject{
+    font-weight:600; color:#211c16; font-size:1rem; margin-top:8px;
+  }
+  .email-body{padding:20px 22px 22px; font-size:0.98rem; line-height:1.65; color:#3a332a;}
+  .email-body p{margin:0 0 15px;}
+  .email-body p:last-of-type{margin-bottom:0;}
+  .email-sign{
+    display:block; margin-top:16px; font-family:var(--serif); font-style:italic;
+    color:#8f8271; font-size:0.95rem;
+  }
+
+  /* ---------- CONFIRMATION ---------- */
+  .confirm{display:none; padding:20px 24px 100px;}
   .confirm .card{text-align:center;}
   .confirm h2{font-family:var(--serif); font-size:1.9rem; font-weight:400; margin:0 0 14px;}
   .confirm p{color:var(--ink-dim); margin:0 0 28px;}
-  .queue-num{
-    font-family:var(--serif); font-size:2.6rem; color:var(--accent); margin:0 0 6px;
+  .queue-num{font-family:var(--serif); font-size:2.6rem; color:var(--accent); margin:0 0 6px;}
+
+  .wax-seal{
+    width:64px; height:64px; margin:0 auto 18px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #c79a5f, #8a6432 70%);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--serif); font-style:italic; font-size:1.3rem; color:#2a1c0d;
+    box-shadow:0 8px 18px -6px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.3);
+    transform:scale(0); opacity:0;
+    animation:sealStamp 0.5s cubic-bezier(.34,1.56,.64,1) forwards;
   }
+  @keyframes sealStamp{
+    0%{transform:scale(2.2) rotate(-8deg); opacity:0;}
+    60%{transform:scale(0.92) rotate(2deg); opacity:1;}
+    100%{transform:scale(1) rotate(0deg); opacity:1;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wax-seal{animation:none; transform:scale(1); opacity:1;}
+  }
+
+  .app-id-box{
+    background:var(--bg-2); border:1px solid var(--panel-border);
+    padding:14px; border-radius:2px; margin:20px 0; text-align:center;
+  }
+  .app-id-box .label{font-size:0.78rem; color:var(--ink-dimmer); margin-bottom:6px;}
+  .app-id-box .code{font-family:var(--serif); font-size:1.4rem; color:var(--accent); letter-spacing:0.06em;}
   .link-box{
     display:flex; gap:8px; background:var(--bg-2); border:1px solid var(--panel-border);
-    padding:10px 12px; border-radius:2px; margin:24px 0;
+    padding:10px 12px; border-radius:2px; margin:16px 0;
   }
-  .link-box input{
-    flex:1; background:none; border:none; color:var(--ink-dim); font-size:0.85rem;
-  }
+  .link-box input{flex:1; background:none; border:none; color:var(--ink-dim); font-size:0.85rem;}
   .share-list{margin-top:28px; text-align:left;}
   .share-row{
     display:flex; justify-content:space-between; align-items:center;
     padding:10px 0; border-bottom:1px solid var(--panel-border); font-size:0.9rem;
   }
-  .share-row a{color:#8fae7a; font-size:0.85rem; text-decoration:none; border-bottom:1px solid rgba(143,174,122,0.4);}
+  .share-row a{color:var(--good); font-size:0.85rem; text-decoration:none; border-bottom:1px solid rgba(143,174,122,0.4);}
 
   .step-panel{display:none;}
   .step-panel.active{display:block;}
 
   footer{
-    padding:60px 24px 80px; text-align:center; color:var(--ink-dimmer);
+    padding:50px 24px 70px; text-align:center; color:var(--ink-dimmer);
     font-size:0.82rem; border-top:1px solid var(--panel-border);
   }
+  footer .foot-brand{display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; color:var(--ink-dim);}
+  footer .foot-brand svg{width:16px; height:12px;}
 
   @media (prefers-reduced-motion: reduce){
     .hero{animation:none; opacity:1;}
@@ -299,92 +547,95 @@
 </head>
 <body>
 
+<!-- ================= NAVBAR ================= -->
+<nav>
+  <div class="nav-brand">
+    <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M4,20 A16,16 0 0 1 36,20 L4,20 Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+    The Semi <i>Circle</i>
+  </div>
+  <a class="status-btn" href="status.html">Check application status</a>
+</nav>
+
+<!-- ================= INTRO ================= -->
 <section class="hero">
-  <h1 class="mark">The <span>Circle</span></h1>
-  <p class="tagline">A door that opens for very few.</p>
-  <div class="hero-cue" aria-hidden="true"></div>
-</section>
-
-<section class="manifesto wrap">
-  <p>The Circle is a private space we're building — quietly, for now — for people who are already, in their own way, doing exceptional things.</p>
-  <p class="dim">Inside, members gather around what they actually enjoy — a badminton court at 8, Sunday brunch, a night out that starts as three messages and becomes six people. You post the moments, you keep the people. We handle the friction of making plans happen.</p>
-  <p class="dim">The rest — how members are found, how the room is shaped — we're keeping to ourselves for now. What we can say: entry isn't automatic. It's earned, or you're vouched for by someone already in.</p>
-</section>
-
-<section class="steps" style="border-top:1px solid var(--panel-border); padding-top:0;">
-  <div class="steps-inner">
-    <p class="steps-head" style="margin-top:60px;">What members do inside</p>
-
-    <div class="step">
-      <div class="step-num">✦</div>
-      <div class="step-body">
-        <h3>Channels for the things you're into</h3>
-        <p>Tennis, badminton, clubbing, brunch — join the rooms that match how you actually spend your time, or start a private one with your own circle of friends.</p>
+  <div class="hero-stage">
+    <p class="eyebrow">Quietly recruiting</p>
+    <div class="mark-frame">
+      <svg class="mark-arc" viewBox="0 0 300 180" aria-hidden="true"><path d="M30,150 A120,120 0 0 1 270,150" pathLength="1" fill="none" stroke="var(--accent)" stroke-width="1.2"/></svg>
+      <h1 class="mark">The Semi <span>Circle</span></h1>
+    </div>
+    <div class="ledger-row">
+      <div class="ledger-stat">
+        <span class="ledger-num" id="regNum">
+          <span class="ledger-digit" data-pos="0">0</span><span class="ledger-digit" data-pos="1">0</span><span class="ledger-digit" data-pos="2">0</span><span class="ledger-digit" data-pos="3">0</span>
+        </span>
+        <span class="ledger-label">Registered</span>
+      </div>
+      <div class="ledger-divider"></div>
+      <div class="ledger-stat">
+        <span class="ledger-num" id="selNum">
+          <span class="ledger-digit" data-pos="0">0</span><span class="ledger-digit" data-pos="1">0</span><span class="ledger-digit" data-pos="2">0</span><span class="ledger-digit" data-pos="3">0</span>
+        </span>
+        <span class="ledger-label">Selected</span>
       </div>
     </div>
-    <div class="step">
-      <div class="step-num">✦</div>
-      <div class="step-body">
-        <h3>Plans that fill themselves</h3>
-        <p>Want badminton at 8 tonight? Book the slot. The moment three others do the same, we turn it into a real court booking — no group chat chasing required.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">✦</div>
-      <div class="step-body">
-        <h3>A profile that's actually yours</h3>
-        <p>Post the photos and videos from what you get up to, on the app and off it. Send and accept friend requests with the people you meet.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">✦</div>
-      <div class="step-body">
-        <h3>Direct messages, and rooms of your own</h3>
-        <p>Message one-to-one, or spin up a private channel for the friends you've made — yours to run, invite-only by default.</p>
-      </div>
+    <p class="tagline">Half a circle. Full standards.</p>
+    <p class="subline">We're leaving it open on purpose — the other half is whoever gets in next.</p>
+    <div class="hero-cta">
+      <button type="button" class="btn" id="heroApplyBtn">Request an invitation</button>
     </div>
   </div>
 </section>
 
-<section class="steps">
-  <div class="steps-inner">
-    <p class="steps-head">How it works, for now</p>
+<!-- ================= BODY ================= -->
+<section class="body-copy">
+  <div class="body-copy-inner wrap">
+    <p class="body-lede">Most people won't get in.<br>That's the point.</p>
 
-    <div class="step">
-      <div class="step-num">01</div>
-      <div class="step-body">
-        <h3>Apply</h3>
-        <p>Tell us who you are. We verify it against your work email, not just your word.</p>
-      </div>
+    <div class="notes">
+      <div class="note n1">Channels for whatever you're actually into — tennis, brunch, 1am bad decisions. Or start your own.</div>
+      <div class="note n2">Want badminton at 8? Tap the slot. Three more taps and we've booked the court.</div>
+      <div class="note n3">Post the photos, the videos, the aftermath. Still your feed. Just a smaller room.</div>
+      <div class="note n4">DM someone directly, or build a private channel just for your circle within The Circle.</div>
     </div>
-    <div class="step">
-      <div class="step-num">02</div>
-      <div class="step-body">
-        <h3>Get reviewed</h3>
-        <p>We look at where you are in your career, and where you're clearly headed.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">03</div>
-      <div class="step-body">
-        <h3>Get vouched for</h3>
-        <p>Referred applications move to the front of the line.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">04</div>
-      <div class="step-body">
-        <h3>Wait for the call</h3>
-        <p>We open the doors in batches, once there's enough of the right people.</p>
-      </div>
-    </div>
+
+    <p class="oneliner">Interested yet? Good. Not everyone gets to be.</p>
   </div>
 </section>
 
+<!-- ================= ID CARD BLOCK (light section) ================= -->
+<section class="id-block">
+  <div class="id-block-inner wrap">
+    <p class="id-kicker">Your card. Before it's real.</p>
+    <p class="id-tag id-tag-1">No lanyard included. Yet.</p>
+    <p class="id-tag id-tag-2">"Looks official. Isn't, legally."</p>
+    <div class="card-sleeve">
+      <div class="member-card">
+        <div class="mc-top">
+          <span class="mc-org">THE SEMI CIRCLE</span>
+          <span class="mc-status">APPLICANT</span>
+        </div>
+        <div class="mc-name" id="mcName">Your name here</div>
+        <div class="mc-meta">
+          <span id="mcCity">City, unset</span>
+          <span id="mcHandle">linkedin.com/in/—</span>
+        </div>
+        <div class="mc-foot">
+          <span>PENDING REVIEW</span>
+          <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M4,20 A16,16 0 0 1 36,20 L4,20 Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        </div>
+      </div>
+    </div>
+    <p class="id-footnote">Void until accepted.</p>
+  </div>
+</section>
+
+<!-- ================= FORM ================= -->
 <section class="apply wrap" id="apply">
   <div class="apply-head">
     <h2>Request an invitation</h2>
-    <p>Four short steps. Nothing here is shared beyond our review.</p>
+    <p>Four short steps. Reviewed by people, not a model.</p>
+    <p class="hint" id="declinedStat" style="margin-top:10px;"></p>
   </div>
 
   <div class="card">
@@ -402,32 +653,33 @@
         <div class="field" data-field="fullName">
           <label for="fullName">Full name</label>
           <input type="text" id="fullName" autocomplete="name">
-          <div class="err">Enter your full name.</div>
+          <div class="err">We'll need a name. Preferably yours.</div>
         </div>
 
         <div class="row2">
           <div class="field" data-field="phone">
             <label for="phone">Phone number</label>
             <input type="tel" id="phone" placeholder="+1 555 000 0000" autocomplete="tel">
-            <div class="err">Enter a valid phone number.</div>
+            <div class="err">That's not a phone number. Nice try though.</div>
           </div>
           <div class="field" data-field="city">
             <label for="city">City of residence</label>
             <input type="text" id="city" autocomplete="address-level2">
-            <div class="err">Enter your city.</div>
+            <div class="hint">So we know where to send the invite. Or the "sorry."</div>
+            <div class="err">Left this blank. Bold move.</div>
           </div>
         </div>
 
         <div class="field" data-field="personalEmail">
           <label for="personalEmail">Personal email</label>
           <input type="email" id="personalEmail" autocomplete="email">
-          <div class="err">Enter a valid email address.</div>
+          <div class="err">That email doesn't look real. Try again.</div>
         </div>
 
         <div class="field" data-field="linkedin">
           <label for="linkedin">LinkedIn URL</label>
           <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourname">
-          <div class="err">Enter a valid LinkedIn profile URL.</div>
+          <div class="err">Needs to actually be a LinkedIn URL. We checked.</div>
         </div>
 
         <div class="nav-row">
@@ -444,8 +696,8 @@
             <input type="email" id="workEmail" autocomplete="email" placeholder="you@company.com">
             <button type="button" class="btn-ghost" id="sendCodeBtn">Send code</button>
           </div>
-          <div class="hint">Use the email issued by your employer — this is how we verify where you work.</div>
-          <div class="err">Enter a work email address, not a personal one (Gmail, Yahoo, etc.).</div>
+          <div class="hint">Use the email issued by your employer. Yes, we're checking. No, Gmail doesn't count.</div>
+          <div class="err">Gmail doesn't count as a job. Use your work email.</div>
         </div>
 
         <div class="otp-note" id="otpNote"></div>
@@ -456,7 +708,7 @@
             <input type="text" id="otpInput" maxlength="6" inputmode="numeric" placeholder="6-digit code">
             <button type="button" class="btn-ghost" id="verifyCodeBtn">Verify</button>
           </div>
-          <div class="err">That code doesn't match. Check and try again.</div>
+          <div class="err">Not quite. Check your inbox and try that code again.</div>
           <div class="verified-badge" id="verifiedBadge" style="display:none;">✓ Work email verified</div>
         </div>
 
@@ -468,7 +720,7 @@
 
       <!-- STEP 3: REFERRALS -->
       <div class="step-panel" data-step="3">
-        <p class="hint" style="margin-bottom:18px;">Know someone who belongs here? Vouching for them fast-tracks your own application. Entirely optional.</p>
+        <p class="hint" style="margin-bottom:18px;">Know someone who belongs here? Vouching for them fast-tracks your own application. Vouching for someone who embarrasses us fast-tracks nothing. Entirely optional.</p>
 
         <div id="refRows"></div>
 
@@ -498,12 +750,37 @@
   </div>
 </section>
 
-<!-- CONFIRMATION -->
-<section class="apply wrap confirm" id="confirmSection">
+<!-- ================= CLOSING: EMAIL PREVIEW ================= -->
+<section class="closing">
+  <div class="closing-inner wrap">
+    <div class="email-card">
+      <div class="email-meta">
+        <div class="row"><span class="k">From</span><span class="v">The Semi Circle</span></div>
+        <div class="row"><span class="k">To</span><span class="v">You, eventually</span></div>
+        <div class="email-subject">Good things take a minute.</div>
+      </div>
+      <div class="email-body">
+        <p>We're not rushing this. Doors open once the room is actually right — enough sharp, interesting, already-doing-things people to make walking in worth it.</p>
+        <p>Right now, that means building the list carefully. Not shipping something half-full just to say we launched.</p>
+        <p>Get accepted, and this is the exact email you'll get — just addressed to you, with a date attached.</p>
+        <span class="email-sign">— The Semi Circle</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONFIRMATION ================= -->
+<section class="confirm wrap" id="confirmSection">
   <div class="card">
     <p class="queue-num" id="queueNum">—</p>
+    <div class="wax-seal">SC</div>
     <h2>You're on the list.</h2>
-    <p>We review applications by hand. If it's a fit, your invitation will come by email.</p>
+    <p>We review applications by hand. If it's a fit, your invitation will come by email. Refreshing this page won't make it happen faster — we checked.</p>
+
+    <div class="app-id-box">
+      <div class="label">Your application ID — save this to check your status later</div>
+      <div class="code" id="appIdCode">—</div>
+    </div>
 
     <div class="link-box">
       <input type="text" id="referralLink" readonly>
@@ -517,7 +794,11 @@
 </section>
 
 <footer>
-  The Circle — currently in private beta. Applications are reviewed manually.
+  <div class="foot-brand">
+    <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M4,20 A16,16 0 0 1 36,20 L4,20 Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+    The Semi Circle
+  </div>
+  Currently in private beta. Reviewed by actual humans, who occasionally take coffee breaks.
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -538,6 +819,140 @@
 
   const PERSONAL_DOMAINS = ['gmail.com','yahoo.com','hotmail.com','outlook.com','icloud.com','protonmail.com','aol.com','live.com'];
 
+  document.getElementById('heroApplyBtn').addEventListener('click', () => {
+    document.getElementById('apply').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  // ---- real declined-applications stat (no fabricated numbers) ----
+  (async function initDeclinedStat(){
+    const el = document.getElementById('declinedStat');
+    if(!el) return;
+    const { data, error } = await sb.rpc('get_declined_count');
+    if(error || typeof data !== 'number'){ el.textContent = ''; return; }
+    el.textContent = data > 0
+      ? `${data} application${data === 1 ? '' : 's'} shown the door so far.`
+      : `Standards: fully intact. Nobody's been shown the door yet.`;
+  })();
+
+  // ---- hero scoreboard: two split-flap stats (registered + selected) ----
+  function runSplitFlap(containerEl, target){
+    const digits = Array.from(containerEl.querySelectorAll('.ledger-digit')).sort(
+      (a,b) => Number(a.dataset.pos) - Number(b.dataset.pos)
+    );
+    const targetStr = String(target).padStart(digits.length, '0');
+    digits.forEach((el, i) => {
+      const finalDigit = Number(targetStr[i]);
+      let flips = 6 + i * 2;
+      let current = Math.floor(Math.random() * 10);
+      const flipOnce = () => {
+        el.textContent = current;
+        el.classList.remove('flip');
+        void el.offsetWidth;
+        el.classList.add('flip');
+        flips--;
+        if(flips > 0){
+          current = (current + 1) % 10;
+          setTimeout(flipOnce, 90);
+        } else {
+          setTimeout(() => {
+            el.textContent = finalDigit;
+            el.classList.remove('flip');
+            void el.offsetWidth;
+            el.classList.add('flip');
+          }, 90);
+        }
+      };
+      flipOnce();
+    });
+  }
+
+  (async function initScoreboard(){
+    const regEl = document.getElementById('regNum');
+    const selEl = document.getElementById('selNum');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const REG_BASELINE = 847;
+    const SEL_BASELINE = 113;
+
+    const [{ data: regData, error: regErr }, { data: selData, error: selErr }] = await Promise.all([
+      sb.rpc('get_applicant_count'),
+      sb.rpc('get_accepted_count')
+    ]);
+
+    const regTarget = REG_BASELINE + ((!regErr && typeof regData === 'number') ? regData : 0);
+    const selTarget = SEL_BASELINE + ((!selErr && typeof selData === 'number') ? selData : 0);
+
+    if(reduceMotion){
+      const setDigits = (containerEl, target) => {
+        const digits = Array.from(containerEl.querySelectorAll('.ledger-digit')).sort(
+          (a,b) => Number(a.dataset.pos) - Number(b.dataset.pos)
+        );
+        const str = String(target).padStart(digits.length, '0');
+        digits.forEach((el,i) => el.textContent = str[i]);
+      };
+      setDigits(regEl, regTarget);
+      setDigits(selEl, selTarget);
+      return;
+    }
+
+    setTimeout(() => {
+      runSplitFlap(regEl, regTarget);
+      runSplitFlap(selEl, selTarget);
+    }, 1300); // sync with .ledger-row reveal animation-delay
+  })();
+
+  // ---- member mosaic (decorative, no real people) ----
+  const MOSAIC_INITIALS = ['R.K.','A.M.','S.P.','J.T.','N.V.','D.L.','K.O.','M.B.','C.R.','T.S.','L.N.','P.A.','E.G.','F.H.'];
+  const PEEK_LINES = ["Nice try.", "Still blurred.", "Not happening.", "Good effort.", "That's the point.", "No dice.", "Keep guessing."];
+  const mosaicEl = document.getElementById('mosaic');
+  if(mosaicEl){
+    mosaicEl.innerHTML = MOSAIC_INITIALS.map((label, i) => {
+      const hue = 30 + (i * 11) % 40;
+      return `<div class="orb" style="background:linear-gradient(${135 + i*7}deg, hsl(${hue},18%,16%), hsl(${hue},14%,22%));">${label}<span class="orb-tooltip"></span></div>`;
+    }).join('');
+
+    mosaicEl.querySelectorAll('.orb').forEach(orb => {
+      orb.addEventListener('click', () => {
+        const tooltip = orb.querySelector('.orb-tooltip');
+        orb.classList.add('peek');
+        tooltip.textContent = PEEK_LINES[Math.floor(Math.random() * PEEK_LINES.length)];
+        tooltip.classList.add('show');
+        setTimeout(() => {
+          orb.classList.remove('peek');
+          tooltip.classList.remove('show');
+        }, 550);
+      });
+    });
+  }
+
+  // ---- live membership card preview ----
+  const mcName = document.getElementById('mcName');
+  const mcCity = document.getElementById('mcCity');
+  const mcHandle = document.getElementById('mcHandle');
+
+  function extractLinkedInHandle(url){
+    const m = url.match(/linkedin\.com\/in\/([^\/\?]+)/i);
+    return m ? `linkedin.com/in/${m[1]}` : 'linkedin.com/in/—';
+  }
+
+  function wireCardPreview(){
+    const nameInput = document.getElementById('fullName');
+    const cityInput = document.getElementById('city');
+    const linkedinInput = document.getElementById('linkedin');
+
+    nameInput.addEventListener('input', () => {
+      mcName.textContent = nameInput.value.trim() || 'Your name here';
+    });
+    cityInput.addEventListener('input', () => {
+      mcCity.textContent = cityInput.value.trim() || 'City, unset';
+    });
+    linkedinInput.addEventListener('input', () => {
+      mcHandle.textContent = extractLinkedInHandle(linkedinInput.value.trim());
+    });
+  }
+  wireCardPreview();
+
+  // ---- form helpers ----
   const panels = document.querySelectorAll('.step-panel');
   const progressItems = document.querySelectorAll('.progress-item');
 
@@ -549,7 +964,13 @@
 
   function setError(fieldName, show){
     const el = document.querySelector(`[data-field="${fieldName}"]`);
-    if(el) el.classList.toggle('invalid', show);
+    if(!el) return;
+    el.classList.toggle('invalid', show);
+    if(show){
+      el.classList.remove('shake');
+      void el.offsetWidth; // force reflow so animation restarts
+      el.classList.add('shake');
+    }
   }
 
   function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
@@ -581,7 +1002,7 @@
     goToStep(2);
   });
 
-  // ---- STEP 2: OTP mock flow ----
+  // ---- STEP 2: OTP flow (Supabase Auth) ----
   const sendCodeBtn = document.getElementById('sendCodeBtn');
   const otpNote = document.getElementById('otpNote');
   const otpField = document.getElementById('otpField');
@@ -665,7 +1086,6 @@
 
   document.getElementById('addRefRow').addEventListener('click', () => addRefRow());
 
-  // Contact Picker API (Android Chrome only, over HTTPS)
   const importBtn = document.getElementById('importContactsBtn');
   const pickerNote = document.getElementById('contactPickerNote');
   const contactPickerSupported = ('contacts' in navigator && 'ContactsManager' in window);
@@ -696,7 +1116,6 @@
   });
 
   document.querySelector('[data-next="4"]').addEventListener('click', () => {
-    // collect referrals
     state.referrals = Array.from(refRows.querySelectorAll('.ref-row')).map(row => ({
       name: row.querySelector('.ref-name').value.trim(),
       email: row.querySelector('.ref-email').value.trim(),
@@ -723,7 +1142,6 @@
     `).join('');
   }
 
-  // back buttons
   document.querySelectorAll('[data-back]').forEach(btn => {
     btn.addEventListener('click', () => goToStep(Number(btn.dataset.back)));
   });
@@ -790,10 +1208,12 @@
     document.getElementById('queueNum').textContent =
       typeof queuePosition === 'number' ? `#${queuePosition}` : '—';
 
+    document.getElementById('appIdCode').textContent = entry.referralCode;
+
     const referralUrl = `${window.location.origin}${window.location.pathname}?ref=${entry.referralCode}`;
     document.getElementById('referralLink').value = referralUrl;
 
-    const shareMessage = `I've been let into The Circle — a private community that's still by invitation only. I can vouch for you: ${referralUrl}`;
+    const shareMessage = `I've been let into The Semi Circle — a private community that's still by invitation only. I can vouch for you: ${referralUrl}`;
 
     document.getElementById('shareAllBtn').addEventListener('click', () => {
       window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
@@ -804,14 +1224,15 @@
       const btn = document.getElementById('copyLinkBtn');
       const original = btn.textContent;
       btn.textContent = 'Copied';
-      setTimeout(() => btn.textContent = original, 1500);
+      setTimeout(() => { btn.textContent = 'Choose wisely'; }, 1100);
+      setTimeout(() => { btn.textContent = original; }, 2400);
     });
 
     const shareList = document.getElementById('shareList');
     if(entry.referrals && entry.referrals.length){
       shareList.innerHTML = entry.referrals.map(r => {
         const phoneDigits = (r.phone || '').replace(/[^\d+]/g,'');
-        const personalMsg = `Hey ${r.name || ''}, I think you'd be a fit for The Circle — I've vouched for you already: ${referralUrl}`;
+        const personalMsg = `Hey ${r.name || ''}, I think you'd be a fit for The Semi Circle — I've vouched for you already: ${referralUrl}`;
         const waLink = phoneDigits
           ? `https://wa.me/${phoneDigits.replace('+','')}?text=${encodeURIComponent(personalMsg)}`
           : `https://wa.me/?text=${encodeURIComponent(personalMsg)}`;
@@ -822,7 +1243,6 @@
     }
   }
 
-  // seed one referral row so the section isn't empty-looking
   addRefRow();
 })();
 </script>
