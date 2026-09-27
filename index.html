@@ -303,7 +303,7 @@
     padding-top:28px;
   }
   .card-sleeve::before{
-    content:"APPLICATION COPY — RETAIN";
+    content:"APPLICATION COPY - RETAIN";
     position:absolute; top:0; left:16px; right:16px;
     background:var(--bg-2); border:1px solid var(--panel-border);
     border-bottom:none; border-radius:4px 4px 0 0;
@@ -563,7 +563,7 @@
 ================= INTRO ================= -->
 <section class="hero">
   <div class="hero-stage">
-    <p class="eyebrow">Quietly recruiting</p>
+    <p class="eyebrow">Buiding Quiet</p>
     <div class="mark-frame">
       <svg class="mark-arc" viewBox="0 0 300 180" aria-hidden="true"><path d="M30,150 A120,120 0 0 1 270,150" pathLength="1" fill="none" stroke="var(--accent)" stroke-width="1.2"/></svg>
       <h1 class="mark">The Semi <span>Circle</span></h1>
@@ -584,7 +584,7 @@
       </div>
     </div>
     <p class="tagline">Half a circle. Full standards.</p>
-    <p class="subline">We're leaving it open on purpose — the other half is whoever gets in next.</p>
+    <p class="subline">We're leaving it open on purpose - the other half is whoever gets in next.</p>
     <div class="hero-cta">
       <button type="button" class="btn" id="heroApplyBtn">Request an invitation</button>
     </div>
@@ -597,7 +597,7 @@
     <p class="body-lede">Most people won't get in.<br>That's the point.</p>
 
     <div class="notes">
-      <div class="note n1">Channels for whatever you're actually into — tennis, brunch, 1am bad decisions. Or start your own.</div>
+      <div class="note n1">Channels for whatever you're actually into - tennis, brunch, 1am bad decisions. Or start your own.</div>
       <div class="note n2">Want badminton at 8? Tap the slot. Three more taps and we've booked the court.</div>
       <div class="note n3">Post the photos, the videos, the aftermath. Still your feed. Just a smaller room.</div>
       <div class="note n4">DM someone directly, or build a private channel just for your circle within The Circle.</div>
@@ -622,7 +622,7 @@
         <div class="mc-name" id="mcName">Your name here</div>
         <div class="mc-meta">
           <span id="mcCity">City, unset</span>
-          <span id="mcHandle">linkedin.com/in/—</span>
+          <span id="mcHandle">linkedin.com/in/-</span>
         </div>
         <div class="mc-foot">
           <span>PENDING REVIEW</span>
@@ -669,7 +669,7 @@
           <div class="field" data-field="city">
             <label for="city">City of residence</label>
             <input type="text" id="city" autocomplete="address-level2">
-            <div class="hint">So we know where to send the invite. Or the "sorry."</div>
+            <div class="hint">So we know where to send the invite.</div>
             <div class="err">Left this blank. Bold move.</div>
           </div>
         </div>
@@ -764,10 +764,10 @@
         <div class="email-subject">Good things take a minute.</div>
       </div>
       <div class="email-body">
-        <p>We're not rushing this. Doors open once the room is actually right — enough sharp, interesting, already-doing-things people to make walking in worth it.</p>
-        <p>Right now, that means building the list carefully. Not shipping something half-full just to say we launched.</p>
-        <p>Get accepted, and this is the exact email you'll get — just addressed to you, with a date attached.</p>
-        <span class="email-sign">— The Semi Circle</span>
+        <p>We're not rushing this. We'd rather have a room full of people you'd actually want to be stuck in an elevator with than a Discord server that echoes.</p>
+        <p>So right now we're doing the deeply unglamorous work of building the list one person at a time — no bots, no "10,000 signups in 24 hours" LinkedIn flex, no half-empty room pretending it's a party.</p>
+        <p>Get accepted, and you'll get the exact email below — except it'll have your name on it, and an actual date you can put in your calendar (not a vague "coming soon" that ages like milk).</p>
+        <span class="email-sign">- The Semi Circle</span>
       </div>
     </div>
   </div>
@@ -776,14 +776,14 @@
 <!-- ================= CONFIRMATION ================= -->
 <section class="confirm wrap" id="confirmSection">
   <div class="card">
-    <p class="queue-num" id="queueNum">—</p>
+    <p class="queue-num" id="queueNum">-</p>
     <div class="wax-seal">SC</div>
     <h2>You're on the list.</h2>
-    <p>We review applications by hand. If it's a fit, your invitation will come by email. Refreshing this page won't make it happen faster — we checked.</p>
+    <p>We review applications by hand. If it's a fit, your invitation will come by email. Refreshing this page won't make it happen faster - we checked.</p>
 
     <div class="app-id-box">
-      <div class="label">Your application ID — save this to check your status later</div>
-      <div class="code" id="appIdCode">—</div>
+      <div class="label">Your application ID - save this to check your status later</div>
+      <div class="code" id="appIdCode">-</div>
     </div>
 
     <div class="link-box">
@@ -936,7 +936,7 @@
 
   function extractLinkedInHandle(url){
     const m = url.match(/linkedin\.com\/in\/([^\/\?]+)/i);
-    return m ? `linkedin.com/in/${m[1]}` : 'linkedin.com/in/—';
+    return m ? `linkedin.com/in/${m[1]}` : 'linkedin.com/in/-';
   }
 
   function wireCardPreview(){
@@ -1100,7 +1100,7 @@
 
   importBtn.addEventListener('click', async () => {
     if(!contactPickerSupported){
-      pickerNote.textContent = "Your browser doesn't support contact import yet — please add people manually above.";
+      pickerNote.textContent = "Your browser doesn't support contact import yet - please add people manually above.";
       return;
     }
     try{
@@ -1196,7 +1196,7 @@
       if(refErr) console.error('Referral insert error (non-fatal):', refErr);
     }
 
-    let queuePosition = '—';
+    let queuePosition = '-';
     const { data: countData, error: countErr } = await sb.rpc('get_applicant_count');
     if(!countErr && typeof countData === 'number') queuePosition = 847 + countData;
 
@@ -1211,14 +1211,14 @@
     confirmSection.scrollIntoView({behavior:'smooth', block:'start'});
 
     document.getElementById('queueNum').textContent =
-      typeof queuePosition === 'number' ? `#${queuePosition}` : '—';
+      typeof queuePosition === 'number' ? `#${queuePosition}` : '-';
 
     document.getElementById('appIdCode').textContent = entry.referralCode;
 
     const referralUrl = `${window.location.origin}${window.location.pathname}?ref=${entry.referralCode}`;
     document.getElementById('referralLink').value = referralUrl;
 
-    const shareMessage = `I've been let into The Semi Circle — a private community that's still by invitation only. I can vouch for you: ${referralUrl}`;
+    const shareMessage = `I've been let into The Semi Circle - a private community that's still by invitation only. I can vouch for you: ${referralUrl}`;
 
     document.getElementById('shareAllBtn').addEventListener('click', () => {
       window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
@@ -1237,7 +1237,7 @@
     if(entry.referrals && entry.referrals.length){
       shareList.innerHTML = entry.referrals.map(r => {
         const phoneDigits = (r.phone || '').replace(/[^\d+]/g,'');
-        const personalMsg = `Hey ${r.name || ''}, I think you'd be a fit for The Semi Circle — I've vouched for you already: ${referralUrl}`;
+        const personalMsg = `Hey ${r.name || ''}, I think you'd be a fit for The Semi Circle - I've vouched for you already: ${referralUrl}`;
         const waLink = phoneDigits
           ? `https://wa.me/${phoneDigits.replace('+','')}?text=${encodeURIComponent(personalMsg)}`
           : `https://wa.me/?text=${encodeURIComponent(personalMsg)}`;
