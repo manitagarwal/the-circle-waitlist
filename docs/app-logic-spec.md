@@ -25,14 +25,15 @@ A person moves through these states. Each state is derived from data, not stored
 ## 2. Invitation codes and sign-up
 
 1. **[BP]** On acceptance, the applicant receives an invitation code by email or WhatsApp.
-2. **[PROPOSED]** One code per accepted applicant. Single use, expires after 14 days, regenerable by an admin. Stored hashed or random-unguessable (10+ characters).
+2. **[DECIDED]** One code per accepted applicant. Single use, **never expires**, regenerable by an admin (regenerating invalidates the old code). Random and unguessable (10+ characters).
 3. **[BP]** Sign-up carries over name, verified work email, LinkedIn URL and phone from `applicants`. They are never asked again.
-4. **[BP]** Login is by OTP with no password.
-5. **[PROPOSED]** Launch with **email OTP only** (to the verified work email). Phone OTP needs an SMS provider and Indian sender registration; add it later.
+4. **[DECIDED, changes the blueprint]** Login is by **email only** at launch (no phone login). First sign-in is an emailed OTP to the verified work email. After that the member **creates a password and a username**; later logins use email + password (OTP stays available as a fallback / password reset).
+5. **[DECIDED]** **Username**: unique across all members; only lowercase letters, numbers, `.` and `_`. **[PROPOSED]** 3-20 characters, cannot start or end with `.` or `_`, no two `.`/`_` in a row, a reserved list is blocked (admin, support, semicircle, etc.), stored lowercase and compared case-insensitively. Changeable at most once every 30 days; old name is not reusable by others for 30 days.
 6. Redeeming a code links `auth.users.id` to the `applicants` row and creates the `members` row. A code cannot be redeemed twice or by a different account.
 
 ## 3. Profile
 
+- **[DECIDED]** Username (see section 2) is part of the profile and shown on it.
 - **[BP]** Required: interests (min 3, max 5), date of birth, gender, address, field of work. Photo is optional because there are 10-12 built-in animated avatars.
 - **[BP]** DOB is stored privately. Other members see computed age only.
 - **[BP]** No profile can be private. Every member's profile is visible to every other member.
@@ -182,12 +183,12 @@ All of this follows blueprint section 9. Restated so the schema can be derived:
 
 Numbers 1-6 block the schema; 7-12 can be answered later but I will build the default.
 
-1. **Login:** email OTP only at launch? (Default yes.)
-2. **Invitation code expiry:** 14 days OK?
-3. **Booking lock-in window:** 3 hours before start OK? (Blueprint names it but gives no number.)
-4. **Private channels:** invite-only, same 2-channel cap as Public, any member can be invited (not just friends)? (Blueprint is unresolved here.)
-5. **Channel milestone:** 50 members to unlock a third channel? (Blueprint example said 100.)
-6. **Attendance:** host marks attended/no-show after the event, defaults to attended after 48 hours? (Needed because QR check-in went away with payments.)
+1. **Login:** DECIDED. Email only; OTP first time, then password + unique username (section 2).
+2. **Invitation code expiry:** DECIDED. Never expires.
+3. **Booking lock-in window:** OPEN (explained in chat; default 3 hours before start).
+4. **Private channels:** DECIDED. Invite-only, same 2-channel cap as Public, any member can be invited.
+5. **Channel milestone:** DECIDED. 50 members to unlock a third channel.
+6. **Attendance:** DECIDED. Host marks attended/no-show; defaults to attended after 48 hours.
 7. **Joining a booking:** instant, no host approval?
 8. **Gender "prefer not to say":** allowed, and excluded from gender-specific booking slots?
 9. **"Posted photos" on profile:** photos the member adds to their own profile? (Feed was removed.)
