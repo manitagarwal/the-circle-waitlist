@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Avatar 04">
+<style>
+.bob{animation:bob 3.2s ease-in-out 1.2s infinite}
+.blink{transform-box:fill-box;transform-origin:center;animation:blink 4.2s 1.2s infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@media (prefers-reduced-motion:reduce){.bob,.blink{animation:none}}
+</style>
+<defs><clipPath id="c4"><circle cx="100" cy="100" r="100"/></clipPath></defs>
+<g clip-path="url(#c4)">
+<rect width="200" height="200" fill="#3a3328"/>
+<path d="M30 200 C34 160 66 148 100 148 C134 148 166 160 170 200 Z" fill="#ece7dd"/>
+<g class="bob">
+<circle cx="100" cy="42" r="15" fill="#1a1210"/>
+<rect x="90" y="128" width="20" height="26" rx="8" fill="#a86b43"/>
+<ellipse cx="100" cy="102" rx="38" ry="42" fill="#a86b43"/>
+
+<path d="M64 88 C62 54 138 54 136 88 C126 72 74 72 64 88 Z" fill="#1a1210"/>
+<ellipse class="blink" cx="84" cy="102" rx="4" ry="5" fill="#1a1610"/>
+<ellipse class="blink" cx="116" cy="102" rx="4" ry="5" fill="#1a1610"/>
+
+<path d="M88 124 Q100 134 112 124" fill="none" stroke="#1a1610" stroke-width="3" stroke-linecap="round"/>
+<circle cx="76" cy="116" r="6" fill="#c97b6a" opacity=".25"/><circle cx="124" cy="116" r="6" fill="#c97b6a" opacity=".25"/>
+</g></g></svg>

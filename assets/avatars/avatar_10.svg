@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Avatar 10">
+<style>
+.bob{animation:bob 3.2s ease-in-out 0.7s infinite}
+.blink{transform-box:fill-box;transform-origin:center;animation:blink 4.2s 0.7s infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@media (prefers-reduced-motion:reduce){.bob,.blink{animation:none}}
+</style>
+<defs><clipPath id="c10"><circle cx="100" cy="100" r="100"/></clipPath></defs>
+<g clip-path="url(#c10)">
+<rect width="200" height="200" fill="#2a3a3a"/>
+<path d="M30 200 C34 160 66 148 100 148 C134 148 166 160 170 200 Z" fill="#a8624a"/>
+<g class="bob">
+
+<rect x="90" y="128" width="20" height="26" rx="8" fill="#a86b43"/>
+<ellipse cx="100" cy="102" rx="38" ry="42" fill="#a86b43"/>
+<path d="M72 112 C74 140 126 140 128 112 C118 126 82 126 72 112 Z" fill="#0e0b0a" opacity=".9"/>
+<path d="M64 90 C60 50 140 46 136 86 C120 66 92 62 64 90 Z" fill="#0e0b0a"/><path d="M64 90 C70 74 92 64 118 66 C96 70 78 78 64 90 Z" fill="#0e0b0a" opacity=".6"/>
+<ellipse class="blink" cx="84" cy="102" rx="4" ry="5" fill="#1a1610"/>
+<ellipse class="blink" cx="116" cy="102" rx="4" ry="5" fill="#1a1610"/>
+
+<path d="M88 124 Q100 134 112 124" fill="none" stroke="#1a1610" stroke-width="3" stroke-linecap="round"/>
+<circle cx="76" cy="116" r="6" fill="#c97b6a" opacity=".25"/><circle cx="124" cy="116" r="6" fill="#c97b6a" opacity=".25"/>
+</g></g></svg>
