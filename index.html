@@ -966,9 +966,15 @@
     document.getElementById('apply').scrollIntoView({behavior:'smooth', block:'start'});
   }
 
-  function setError(fieldName, show){
+  const DEFAULT_ERRS = {};
+  function setError(fieldName, show, message){
     const el = document.querySelector(`[data-field="${fieldName}"]`);
     if(!el) return;
+    const errEl = el.querySelector('.err');
+    if(errEl){
+      if(!(fieldName in DEFAULT_ERRS)) DEFAULT_ERRS[fieldName] = errEl.textContent;
+      errEl.textContent = message || DEFAULT_ERRS[fieldName];
+    }
     el.classList.toggle('invalid', show);
     if(show){
       el.classList.remove('shake');
@@ -985,8 +991,28 @@
   function isValidLinkedIn(v){ return /linkedin\.com\/.+/i.test(v); }
   function isValidPhone(v){ return /^[+\d][\d\s-]{6,}$/.test(v); }
 
+  // ---- duplicate check (phone / personal email / work email already in DB) ----
+  const DUP_MSGS = {
+    phone: 'This phone number has already applied.',
+    personal_email: 'This personal email has already applied.',
+    work_email: 'This work email has already applied.'
+  };
+  const DUP_FIELD = { phone:'phone', personal_email:'personalEmail', work_email:'workEmail' };
+
+  // returns {phone, personal_email, work_email} booleans, or null if the check itself failed
+  async function checkDuplicates({phone, personalEmail, workEmail}){
+    const { data, error } = await sb.rpc('check_applicant_duplicates', {
+      p_phone: phone || null,
+      p_personal_email: personalEmail || null,
+      p_work_email: workEmail || null
+    });
+    if(error || !data){ console.error('Duplicate check failed:', error); return null; }
+    return data;
+  }
+
   // ---- STEP 1 validation ----
-  document.querySelector('[data-next="2"]').addEventListener('click', () => {
+  document.querySelector('[data-next="2"]').addEventListener('click', async (ev) => {
+    const nextBtn = ev.currentTarget;
     const fullName = document.getElementById('fullName').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const city = document.getElementById('city').value.trim();
@@ -1000,6 +1026,17 @@
     setError('personalEmail', !isValidEmail(personalEmail)); if(!isValidEmail(personalEmail)) ok=false;
     setError('linkedin', !isValidLinkedIn(linkedin)); if(!isValidLinkedIn(linkedin)) ok=false;
 
+    if(!ok) return;
+
+    nextBtn.disabled = true;
+    const dups = await checkDuplicates({phone, personalEmail});
+    nextBtn.disabled = false;
+    if(!dups){
+      setError('personalEmail', true, "Couldn't check your details right now. Try again in a moment.");
+      return;
+    }
+    if(dups.phone){ setError('phone', true, DUP_MSGS.phone); ok = false; }
+    if(dups.personal_email){ setError('personalEmail', true, DUP_MSGS.personal_email); ok = false; }
     if(!ok) return;
 
     Object.assign(state, {fullName, phone, city, personalEmail, linkedin});
@@ -1019,6 +1056,20 @@
     if(invalid) return;
 
     sendCodeBtn.disabled = true;
+    sendCodeBtn.textContent = 'Checking…';
+    const dups = await checkDuplicates({workEmail});
+    if(!dups){
+      sendCodeBtn.disabled = false;
+      sendCodeBtn.textContent = 'Send code';
+      setError('workEmail', true, "Couldn't check your email right now. Try again in a moment.");
+      return;
+    }
+    if(dups.work_email){
+      sendCodeBtn.disabled = false;
+      sendCodeBtn.textContent = 'Send code';
+      setError('workEmail', true, DUP_MSGS.work_email);
+      return;
+    }
     sendCodeBtn.textContent = 'Sending…';
 
     const { error } = await sb.auth.signInWithOtp({
@@ -1159,28 +1210,48 @@
     submitBtn.textContent = 'Submitting…';
     submitErr.style.display = 'none';
 
-    const referralCode = Math.random().toString(36).slice(2,8).toUpperCase();
     const applicantId = crypto.randomUUID();
+    const referralCode = applicantId.slice(0,8).toUpperCase(); // application ID / shareable referral code
+    const personalEmail = state.personalEmail.toLowerCase();
+    const workEmail = state.workEmail.toLowerCase();
+
+    // last-moment re-check, then resolve who referred this applicant (if anyone)
+    const dups = await checkDuplicates({phone: state.phone, personalEmail, workEmail});
+    const dupKey = dups && Object.keys(DUP_MSGS).find(k => dups[k]);
+    if(dupKey){
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit application';
+      submitErr.style.display = 'block';
+      submitErr.textContent = DUP_MSGS[dupKey];
+      return;
+    }
+
+    let referredById = null;
+    if(state.referredByCode){
+      const { data: refId } = await sb.rpc('resolve_referral_code', { p_code: state.referredByCode });
+      if(refId) referredById = refId;
+    }
 
     const { error: insertErr } = await sb.from('applicants').insert({
       id: applicantId,
       full_name: state.fullName,
       phone: state.phone,
-      personal_email: state.personalEmail,
-      work_email: state.workEmail,
+      personal_email: personalEmail,
+      work_email: workEmail,
       work_email_verified: state.workVerified,
       linkedin_url: state.linkedin,
       city: state.city,
-      referral_code: referralCode,
-      referred_by_code: state.referredByCode
+      referred_by_id: referredById
     });
 
     if(insertErr){
       submitBtn.disabled = false;
       submitBtn.textContent = 'Submit application';
       submitErr.style.display = 'block';
+      // 23505 = unique violation (race with another signup); message names the index
+      const m = insertErr.message || '';
       submitErr.textContent = insertErr.code === '23505'
-        ? 'This work email has already applied.'
+        ? (/phone/.test(m) ? DUP_MSGS.phone : /personal_email/.test(m) ? DUP_MSGS.personal_email : DUP_MSGS.work_email)
         : `Something went wrong: ${insertErr.message}`;
       return;
     }
