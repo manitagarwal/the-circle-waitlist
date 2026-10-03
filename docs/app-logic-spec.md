@@ -175,7 +175,7 @@ All of this follows blueprint section 9. Restated so the schema can be derived:
 2. All app tables use RLS. No table is readable without a `members` row (section 1).
 3. Anything affecting trust (score events, reports, moderation actions) is append-only.
 4. Timestamps are `timestamptz`, shown in IST.
-5. Reference data (interests, tags, avatars, weights, thresholds) is configuration in tables, so changing it needs no app release.
+5. Reference data (interests, tags, avatars, weights, thresholds) is configuration in tables, so changing it needs no app release. **Rules resolve as: per-activity override, else global default.**
 
 ---
 
@@ -185,7 +185,7 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 
 1. **Login:** DECIDED. Email only; OTP first time, then password + unique username (section 2).
 2. **Invitation code expiry:** DECIDED. Never expires.
-3. **Booking lock-in window:** OPEN (explained in chat; default 3 hours before start).
+3. **Booking lock-in window:** DECIDED. 3 hours before start. **Rules can differ per activity later**, so every number in sections 4, 5 and 9 (windows, caps, lock-in, thresholds) lives in a config table with a global default and optional per-interest overrides, never hard-coded.
 4. **Private channels:** DECIDED. Invite-only, same 2-channel cap as Public, any member can be invited.
 5. **Channel milestone:** DECIDED. 50 members to unlock a third channel.
 6. **Attendance:** DECIDED. Host marks attended/no-show; defaults to attended after 48 hours.
