@@ -20,8 +20,6 @@ export default function Welcome() {
       <View style={{ marginTop: 'auto', paddingBottom: 24, gap: 10 }}>
         <Button label="Log in" onPress={() => r.push('/login')} />
         <Button label="Request an invitation" variant="secondary" onPress={() => r.push('/apply')} />
-        <Button label="I have an invitation code" variant="link" onPress={() => r.push('/join')} />
-        <Text onPress={() => r.push('/status')} accessibilityRole="link" style={{ textAlign: 'center', fontFamily: fonts.body, fontSize: 13, color: colors.muted, paddingVertical: 8 }}>Applied already? Check your status</Text>
       </View>
     </Screen>
   );

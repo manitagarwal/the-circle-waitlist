@@ -1,14 +1,15 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from './supabase';
-import { createApi } from './api';
+import { createApi, type Application } from './api';
+import { computeGate, type Gate } from './gate';
+export type { Gate } from './gate';
 
 export type Member = { id: string; username: string; state: string; role: string; onboarded_at: string | null };
-export type Gate = 'loading' | 'public' | 'invited' | 'setup' | 'app';
-
 type Ctx = {
-  session: Session | null; member: Member | null; gate: Gate; recovery: boolean;
-  startRecovery: () => void; endRecovery: () => void; refreshMember: () => Promise<void>; signOut: () => Promise<void>;
+  session: Session | null; member: Member | null; application: Application | null; gate: Gate; recovery: boolean;
+  startRecovery: () => void; endRecovery: () => void; refresh: () => Promise<void>; signOut: () => Promise<void>;
 };
 const AuthCtx = createContext<Ctx>(null as never);
 export const api = createApi(supabase);
@@ -22,42 +23,49 @@ async function loadMember(id: string): Promise<Member | null> {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [member, setMember] = useState<Member | null>(null);
+  const [application, setApplication] = useState<Application | null>(null);
   const [ready, setReady] = useState(false);
   const [recovery, setRecovery] = useState(false);
-  const recoveryRef = useRef(false);
+  const sessionRef = useRef<Session | null>(null);
 
   const sync = useCallback(async (s: Session | null) => {
+    sessionRef.current = s;
     setSession(s);
-    const m = s ? await loadMember(s.user.id) : null;
+    if (!s) { setMember(null); setApplication(null); return; }
+    const m = await loadMember(s.user.id);
     // banned or deleted accounts get nothing
     if (m && (m.state === 'banned' || m.state === 'deleted')) {
       await supabase.auth.signOut();
-      setSession(null); setMember(null);
+      setSession(null); setMember(null); setApplication(null);
       return;
     }
-    setMember(m);
+    let a: Application | null = null;
+    if (!m) { try { a = await api.myApplication(); } catch { a = null; } }
+    setMember(m); setApplication(a);
   }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => sync(data.session)).finally(() => setReady(true));
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
-      if (event === 'SIGNED_OUT') { recoveryRef.current = false; setRecovery(false); }
+      if (event === 'SIGNED_OUT') setRecovery(false);
       // defer: never await supabase calls inside this callback
       setTimeout(() => void sync(s), 0);
     });
-    return () => sub.subscription.unsubscribe();
+    // coming back to the app is when an acceptance is most likely to have happened
+    const app = AppState.addEventListener('change', (st) => { if (st === 'active') void sync(sessionRef.current); });
+    return () => { sub.subscription.unsubscribe(); app.remove(); };
   }, [sync]);
 
   const value = useMemo<Ctx>(() => {
-    const gate: Gate = !ready ? 'loading' : !session ? 'public' : !member ? 'invited' : member.onboarded_at ? 'app' : 'setup';
+    const gate = computeGate({ ready, signedIn: !!session, member, applicationStatus: application?.status ?? null });
     return {
-      session, member, gate, recovery,
-      startRecovery: () => { recoveryRef.current = true; setRecovery(true); },
-      endRecovery: () => { recoveryRef.current = false; setRecovery(false); },
-      refreshMember: async () => { if (session) setMember(await loadMember(session.user.id)); },
+      session, member, application, gate, recovery,
+      startRecovery: () => setRecovery(true),
+      endRecovery: () => setRecovery(false),
+      refresh: () => sync(sessionRef.current),
       signOut: async () => { await supabase.auth.signOut(); },
     };
-  }, [ready, session, member, recovery]);
+  }, [ready, session, member, application, recovery, sync]);
 
   return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
 }

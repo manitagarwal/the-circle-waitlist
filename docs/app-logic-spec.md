@@ -10,10 +10,10 @@ A person moves through these states. Each state is derived from data, not stored
 
 | State | How you get there | What you can do |
 |---|---|---|
-| Applicant | Submit waitlist form (`applicants.status = pending`) | Check status only |
+| Applicant | Register in the app (or the website form); `applicants.status = pending`. The account stays signed in | See application status only |
 | Shortlisted | Team marks `shortlisted` | Same |
-| Accepted | Team marks `accepted`; an invitation code is issued | Redeem code in the app |
-| Member | Redeems code, logs in, completes profile | Full app |
+| Accepted | Team runs `accept_applicant(id)` | Pick a username (`activate_membership`) |
+| Member | Picks a username, completes profile | Full app |
 | Suspended | Moderation ladder (section 11) | Read only; no booking, messaging or channel creation |
 | Banned | Moderation ladder | No access |
 | Rejected | Team marks `rejected` | Check status only |
@@ -22,14 +22,16 @@ A person moves through these states. Each state is derived from data, not stored
 - **[PROPOSED]** Auth accounts already exist for every applicant who verified a work email (the waitlist uses `signInWithOtp` with `shouldCreateUser`). Having an auth account therefore means nothing. Membership = a row in `members` linked to an accepted applicant. Every app screen and every RLS policy checks for that row.
 - **[PROPOSED]** Rejected applicants may not reapply with the same phone or email (the unique indexes already enforce this).
 
-## 2. Invitation codes and sign-up
+## 2. Account-first sign-up (replaces invitation codes, decided 4 Oct 2026)
 
-1. **[BP]** On acceptance, the applicant receives an invitation code by email or WhatsApp.
-2. **[DECIDED]** One code per accepted applicant. Single use, **never expires**, regenerable by an admin (regenerating invalidates the old code). Random and unguessable (10+ characters).
-3. **[BP]** Sign-up carries over name, verified work email, LinkedIn URL and phone from `applicants`. They are never asked again.
-4. **[DECIDED, changes the blueprint]** Login is by **email only** at launch (no phone login). First sign-in is an emailed OTP to the verified work email. After that the member **creates a password and a username**; later logins use email + password (OTP stays available as a fallback / password reset).
-5. **[DECIDED]** **Username**: unique across all members; only lowercase letters, numbers, `.` and `_`. **[PROPOSED]** 3-20 characters, cannot start or end with `.` or `_`, no two `.`/`_` in a row, a reserved list is blocked (admin, support, semicircle, etc.), stored lowercase and compared case-insensitively. Changeable at most once every 30 days; old name is not reusable by others for 30 days.
-6. Redeeming a code links `auth.users.id` to the `applicants` row and creates the `members` row. A code cannot be redeemed twice or by a different account.
+1. **[DECIDED]** There is no invitation code. Registering **is** requesting an invitation: the work-email account and the application are the same thing. Work email (verified by an emailed code) is the access check.
+2. **[DECIDED]** After submitting, the person stays signed in and can log in any time. What they see depends on their application: no application yet -> the application form; pending or shortlisted -> an "under review" screen with queue position and referral code; rejected -> a polite "not this time" screen (no reapply); accepted -> "You're in", pick a username, optional password, profile setup, then the app.
+3. **[DECIDED]** The account is matched to its application by **work email** (verified by the emailed code), so website applicants are matched too. `my_application()` returns the caller's own status.
+4. **[DECIDED]** Accepting = `accept_applicant(applicant_id)` (admin only, run in the dashboard for now). It sets status `accepted` and creates nothing else. The member row is created when the person picks a username with `activate_membership(username)`, which checks that the caller's work email belongs to an accepted application.
+5. **[DECIDED]** Login is by **email only** (no phone login). Emailed code, or email + password once one is set (optional step after acceptance; reset by emailed code).
+6. **[DECIDED]** **Username**: unique across all members; lowercase letters, numbers, `.` and `_`; 3-20 characters, cannot start or end with `.` or `_`, no two in a row; reserved list blocked; changeable once every 30 days. Chosen after acceptance so names are not claimed by people who are not in.
+7. The old invitation-code path (`issue_invitation`, `redeem_invitation`, `invitations` table) is retired: execute rights revoked, table kept for history.
+8. **[OPEN]** Telling people they were accepted: email (needs the SMTP sender) and later a push. Until then they find out by opening the app.
 
 ## 3. Profile
 
@@ -184,7 +186,7 @@ All of this follows blueprint section 9. Restated so the schema can be derived:
 Numbers 1-6 block the schema; 7-12 can be answered later but I will build the default.
 
 1. **Login:** DECIDED. Email only; OTP first time, then password + unique username (section 2).
-2. **Invitation code expiry:** DECIDED. Never expires.
+2. **Invitation code expiry:** no longer applies (codes retired).
 3. **Booking lock-in window:** DECIDED. 3 hours before start. **Rules can differ per activity later**, so every number in sections 4, 5 and 9 (windows, caps, lock-in, thresholds) lives in a config table with a global default and optional per-interest overrides, never hard-coded.
 4. **Private channels:** DECIDED. Invite-only, same 2-channel cap as Public, any member can be invited.
 5. **Channel milestone:** DECIDED. 50 members to unlock a third channel.

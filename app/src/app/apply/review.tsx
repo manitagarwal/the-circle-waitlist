@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Body, Button, Notice, Screen, StepHeader, Title } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { linkedInHandle, normalizePhone } from '@/lib/validators';
-import { api } from '@/lib/auth';
+import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { cityValue, useApply } from './_layout';
 
@@ -18,6 +18,7 @@ const Row = ({ k, v }: { k: string; v: string }) => (
 export default function Review() {
   const r = useRouter();
   const { s } = useApply();
+  const { refresh } = useAuth();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const p = normalizePhone(s.phone) ?? s.phone;
@@ -26,7 +27,7 @@ export default function Review() {
     setBusy(true); setErr(null);
     try {
       await api.submitApplication({ id: s.id, fullName: s.fullName, phone: s.phone, personalEmail: s.personalEmail, workEmail: s.workEmail, linkedin: s.linkedin, city: cityValue(s), referredByCode: s.referredByCode || undefined }, s.vouches);
-      r.replace({ pathname: '/apply/submitted', params: { id: s.id } });
+      await refresh(); // the account now has an application, so routing moves to the status screen
     } catch (e: any) {
       const m = String(e?.message ?? '');
       setErr(e?.code === '23505'

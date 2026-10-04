@@ -32,3 +32,16 @@ test('errors throw', async () => {
   const { sb } = fake({ username_available: { data: null, error: { message: 'not_signed_in' } } });
   await assert.rejects(createApi(sb).usernameAvailable('abc'));
 });
+
+test('my application returns the first row or null', async () => {
+  const row = { id: 'a', full_name: 'A', status: 'pending', city: 'Delhi', created_at: '', queue_position: 1, referral_code: 'ABCD1234' };
+  const a = createApi(fake({ my_application: { data: [row], error: null } }).sb);
+  assert.equal((await a.myApplication())?.status, 'pending');
+  const b = createApi(fake({ my_application: { data: [], error: null } }).sb);
+  assert.equal(await b.myApplication(), null);
+});
+test('activate sends the username only', async () => {
+  const { sb, calls } = fake({ activate_membership: { data: { member_id: 'm', username: 'a.b' }, error: null } });
+  await createApi(sb).activate('a.b');
+  assert.deepEqual(calls[0], ['activate_membership', { p_username: 'a.b' }]);
+});

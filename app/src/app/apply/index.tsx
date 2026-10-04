@@ -33,7 +33,7 @@ export default function Details() {
       if (d.phone) dup.phone = 'This phone number has already applied.';
       if (d.personal_email) dup.personalEmail = 'This personal email has already applied.';
       setErrs(dup);
-      if (!Object.keys(dup).length) r.push('/apply/verify');
+      if (!Object.keys(dup).length) r.push(s.verified ? '/apply/vouch' : '/apply/verify');
     } catch { setErrs({ fullName: "Can't reach the server. Check your connection." }); }
     finally { setBusy(false); }
   };

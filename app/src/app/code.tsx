@@ -7,7 +7,7 @@ import { isOtp } from '@/lib/validators';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 
-/** Six-digit email code. mode: login | join | reset */
+/** Six-digit email code. mode: login | reset */
 export default function Code() {
   const r = useRouter();
   const { startRecovery } = useAuth();
@@ -30,12 +30,11 @@ export default function Code() {
       if (mode === 'reset') startRecovery(); // before verify, so the guards never flash the app
       await api.verifyCode(email, code);
       if (mode === 'reset') r.replace('/reset-password');
-      else if (mode === 'join') r.replace('/redeem'); // no member row yet: invited gate
-      // login: the auth guard routes to setup or the app
+      // login: the auth guard routes by application status
     } catch (e) { setErr(friendly(e)); } finally { setBusy(false); }
   };
   const resend = async () => {
-    try { await api.sendCode(email, mode === 'join'); setWait(30); setErr(null); } catch (e) { setErr(friendly(e)); }
+    try { await api.sendCode(email, false); setWait(30); setErr(null); } catch (e) { setErr(friendly(e)); }
   };
 
   return (

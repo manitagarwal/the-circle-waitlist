@@ -13,29 +13,32 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function Routes() {
   const { gate, recovery } = useAuth();
-  const entry = !recovery && (gate === 'public' || gate === 'invited');
+  const normal = !recovery;
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.ground }, animation: 'fade' }}>
-      <Stack.Protected guard={entry}>
+      <Stack.Protected guard={gate === 'public'}>
         <Stack.Screen name="index" />
         <Stack.Screen name="login" />
         <Stack.Screen name="forgot-password" />
         <Stack.Screen name="code" />
-        <Stack.Screen name="join" />
-        <Stack.Screen name="status" />
+      </Stack.Protected>
+      <Stack.Protected guard={normal && (gate === 'public' || gate === 'apply')}>
         <Stack.Screen name="apply" />
       </Stack.Protected>
-      <Stack.Protected guard={!recovery && gate === 'invited'}>
-        <Stack.Screen name="redeem" />
+      <Stack.Protected guard={normal && gate === 'review'}>
+        <Stack.Screen name="status" />
       </Stack.Protected>
-      <Stack.Protected guard={recovery && (gate === 'app' || gate === 'setup')}>
+      <Stack.Protected guard={normal && gate === 'accepted'}>
+        <Stack.Screen name="claim" />
+      </Stack.Protected>
+      <Stack.Protected guard={recovery && gate !== 'public' && gate !== 'loading'}>
         <Stack.Screen name="reset-password" />
       </Stack.Protected>
-      <Stack.Protected guard={!recovery && gate === 'setup'}>
+      <Stack.Protected guard={normal && gate === 'setup'}>
         <Stack.Screen name="password" />
         <Stack.Screen name="setup" />
       </Stack.Protected>
-      <Stack.Protected guard={!recovery && gate === 'app'}>
+      <Stack.Protected guard={normal && gate === 'app'}>
         <Stack.Screen name="home" />
       </Stack.Protected>
     </Stack>

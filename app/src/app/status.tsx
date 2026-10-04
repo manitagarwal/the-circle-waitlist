@@ -1,47 +1,50 @@
 import React, { useState } from 'react';
-import { Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { BackButton, Body, Button, Notice, Screen, TextField, Title } from '@/components/ui';
+import { Share, Text, View } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
+import { Body, Button, Logo, Screen, Title } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
-import { applicationCode, isApplicationCode } from '@/lib/validators';
-import { api } from '@/lib/auth';
-import { friendly } from '@/lib/messages';
+import { SITE_URL } from '@/lib/config';
+import { useAuth } from '@/lib/auth';
 
-const COPY: Record<string, { label: string; body: string }> = {
-  pending: { label: 'Under review', body: "A person is reading it. You're near the front." },
-  accepted: { label: 'Accepted', body: 'Your invitation code is in your inbox. Tap “I have an invitation code” on the welcome screen.' },
-  rejected: { label: 'Not this time', body: "We couldn't make room for this application." },
-  declined: { label: 'Not this time', body: "We couldn't make room for this application." },
-};
-
+/** Shown to anyone who has applied and is not accepted yet (in review or declined). */
 export default function Status() {
-  const r = useRouter();
-  const [code, setCode] = useState('');
+  const { application: a, session, refresh, signOut } = useAuth();
   const [busy, setBusy] = useState(false);
-  const [res, setRes] = useState<{ full_name: string; status: string } | null | undefined>(undefined);
-  const [err, setErr] = useState<string | null>(null);
-  const check = async () => {
-    setBusy(true); setErr(null);
-    try { setRes(await api.applicationStatus(code)); } catch (e) { setErr(friendly(e)); } finally { setBusy(false); }
-  };
-  const c = res ? COPY[res.status] ?? COPY.pending : null;
+  const [copied, setCopied] = useState(false);
+  if (!a) return null;
+  const declined = a.status === 'rejected';
+  const link = `${SITE_URL}/?ref=${a.referral_code}`;
+  const check = async () => { setBusy(true); await refresh(); setBusy(false); };
+
   return (
-    <Screen>
-      <BackButton />
-      <Title>Where do I stand?</Title>
-      <Body style={{ marginTop: 10 }}>Enter the application ID you were given.</Body>
-      <TextField label="Application ID" value={code} onChangeText={(v) => setCode(applicationCode(v))} autoCapitalize="characters" autoCorrect={false} maxLength={8}
-        style={{ fontFamily: fonts.title, letterSpacing: 3 }} error={err} onSubmitEditing={check} />
-      <Button label="Check" onPress={check} loading={busy} disabled={!isApplicationCode(code)} style={{ marginTop: 20 }} />
-      {res === null ? <Notice tone="plain">We can't find that ID. Check it and try again.</Notice> : null}
-      {res && c ? (
-        <View style={{ marginTop: 24, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: 16 }}>
-          <Text style={{ fontFamily: fonts.title, fontSize: 20, color: colors.ink }}>{res.full_name}</Text>
-          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.goldText, marginTop: 4 }}>{c.label}</Text>
-          <Body style={{ marginTop: 8 }}>{c.body}</Body>
+    <Screen footer={<Button label="Log out" variant="link" onPress={signOut} />}>
+      <View style={{ marginTop: 24 }}><Logo size="md" /></View>
+      {declined ? (
+        <View style={{ marginTop: 40 }}>
+          <Title italic>Not this time.</Title>
+          <Body style={{ marginTop: 8 }}>Thank you for applying, {a.full_name.split(' ')[0]}. We couldn't make room for this application. We read every one by hand, and it was not an easy call.</Body>
         </View>
-      ) : null}
-      {res?.status === 'accepted' ? <Button label="I have my code" onPress={() => r.replace('/join')} style={{ marginTop: 16 }} /> : null}
+      ) : (
+        <>
+          <View style={{ alignItems: 'center', marginTop: 40 }}>
+            <Text style={{ fontFamily: fonts.display, fontSize: 52, color: colors.ink }}>{a.queue_position != null ? `#${a.queue_position}` : '·'}</Text>
+            <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 11, letterSpacing: 1.8, color: colors.faint }}>YOUR PLACE IN THE QUEUE</Text>
+          </View>
+          <View style={{ marginTop: 28 }}>
+            <Title italic>Under review.</Title>
+            <Body style={{ marginTop: 8 }}>A person is reading your application, {a.full_name.split(' ')[0]}. When it's a fit, this screen turns into your way in. We'll also email {session?.user.email}. Refreshing won't make it faster. We checked.</Body>
+          </View>
+          <Button label="Check again" variant="secondary" onPress={check} loading={busy} style={{ marginTop: 20 }} />
+          <View style={{ marginTop: 28, padding: 16, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card }}>
+            <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted }}>Know someone who belongs? Share your code. Vouching fast-tracks them.</Text>
+            <Text selectable style={{ fontFamily: fonts.title, fontSize: 28, letterSpacing: 4, color: colors.ink, marginTop: 6 }}>{a.referral_code}</Text>
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
+              <Button label={copied ? 'Copied' : 'Copy link'} variant="secondary" style={{ flex: 1 }} onPress={async () => { await Clipboard.setStringAsync(link); setCopied(true); }} />
+              <Button label="Share" variant="secondary" style={{ flex: 1 }} onPress={() => Share.share({ message: `I've applied to The Semi Circle - a private community that's by invitation only. I can vouch for you: ${link}` })} />
+            </View>
+          </View>
+        </>
+      )}
     </Screen>
   );
 }

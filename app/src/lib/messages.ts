@@ -1,5 +1,5 @@
 const MAP: Record<string, string> = {
-  invalid_invitation: "That code doesn't match this email. Check it and try again.",
+  not_accepted: "Your application hasn't been accepted yet.",
   already_member: "You're already a member. Log in instead.",
   not_signed_in: 'Your session ended. Please sign in again.',
   username_taken: 'That username is taken.',

@@ -21,11 +21,6 @@ export function normalizePhone(v: string): string | null {
 export const isLinkedIn = (v: string) => /linkedin\.com\/.+/i.test(v.trim());
 export const linkedInHandle = (v: string) => v.match(/linkedin\.com\/in\/([^/?\s]+)/i)?.[1] ?? null;
 
-export const INVITE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-export const cleanInviteCode = (v: string) => v.toUpperCase().replace(/[^A-Z0-9]/g, '');
-export const isInviteCode = (v: string) =>
-  cleanInviteCode(v).length === 10 && [...cleanInviteCode(v)].every((c) => INVITE_ALPHABET.includes(c));
-
 export function usernameProblem(v: string): string | null {
   if (v.length < 3 || v.length > 20) return 'Use 3 to 20 characters.';
   if (!/^[a-z0-9][a-z0-9._]*[a-z0-9]$/.test(v)) return 'Lowercase letters, numbers, dot and underscore. Start and end with a letter or number.';

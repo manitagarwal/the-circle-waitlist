@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import * as Crypto from 'expo-crypto';
 import type { Vouch } from '@/lib/api';
 import { colors } from '@/theme';
+import { useAuth } from '@/lib/auth';
 
 export type ApplyState = {
   id: string; fullName: string; phone: string; city: string; cityOther: string; personalEmail: string; linkedin: string;
@@ -14,9 +15,10 @@ export const cityValue = (s: ApplyState) => (s.city === 'Other' ? s.cityOther.tr
 export const useApply = () => useContext(C);
 
 export default function ApplyLayout() {
+  const { session } = useAuth();
   const [s, setS] = useState<ApplyState>(() => ({
     id: Crypto.randomUUID(), fullName: '', phone: '', city: '', cityOther: '', personalEmail: '', linkedin: '',
-    workEmail: '', verified: false, referredByCode: '', vouches: [],
+    workEmail: session?.user.email ?? '', verified: !!session, referredByCode: '', vouches: [],
   }));
   const v = useMemo(() => ({ s, set: (p: Partial<ApplyState>) => setS((o) => ({ ...o, ...p })) }), [s]);
   return (

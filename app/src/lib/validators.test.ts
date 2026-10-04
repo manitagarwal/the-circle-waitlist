@@ -21,17 +21,12 @@ test('username', () => {
   assert.ok(v.usernameProblem('a..bc'));
   assert.equal(v.cleanUsername('Anna K!'), 'annak');
 });
-test('invite code', () => {
-  assert.ok(v.isInviteCode('abcd-efgh-jk'));
-  assert.ok(!v.isInviteCode('ABCDEFGHIO'));
-  assert.ok(!v.isInviteCode('ABC'));
-});
 test('application code', () => {
   assert.equal(v.applicationCode('3f07-db5c'), '3F07DB5C');
   assert.ok(!v.isApplicationCode('3F07'));
 });
 test('messages', () => {
-  assert.match(friendly({ message: 'invalid_invitation' }), /doesn't match/);
+  assert.match(friendly({ message: 'not_accepted' }), /hasn't been accepted/);
   assert.equal(usernameStatusText('ok'), null);
   assert.match(usernameStatusText('taken')!, /taken/);
 });

@@ -6,6 +6,10 @@ export type ApplicationInput = {
   id: string; fullName: string; phone: string; personalEmail: string; workEmail: string;
   linkedin: string; city: string; referredByCode?: string;
 };
+export type Application = {
+  id: string; full_name: string; status: string; city: string; created_at: string;
+  queue_position: number | null; referral_code: string;
+};
 export type Vouch = { name?: string; email?: string; phone?: string };
 
 /** Pure data layer. Takes the client so it can be tested with a fake. */
@@ -31,10 +35,9 @@ export function createApi(sb: SupabaseClient) {
       if (error) throw error;
     },
     usernameAvailable: (u: string) => rpc<string>('username_available', { p_username: u }),
-    redeem: (code: string, username: string) => rpc<{ member_id: string; username: string }>('redeem_invitation', { p_code: code, p_username: username }),
-    applicantCount: () => rpc<number>('get_applicant_count'),
-    applicationStatus: async (code: string) => {
-      const rows = await rpc<{ full_name: string; status: string }[]>('check_application_status', { p_code: applicationCode(code) });
+    activate: (username: string) => rpc<{ member_id: string; username: string }>('activate_membership', { p_username: username }),
+    myApplication: async (): Promise<Application | null> => {
+      const rows = await rpc<Application[]>('my_application');
       return rows?.[0] ?? null;
     },
     submitApplication: async (a: ApplicationInput, vouches: Vouch[]) => {
