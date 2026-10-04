@@ -36,6 +36,9 @@
           "contactsPermission": "Pick people you want to vouch for. We only read the ones you choose."
         }
       ]
-    ]
+    ],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }
