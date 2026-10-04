@@ -70,7 +70,7 @@ export function Logo({ size = 'lg' }: { size?: 'lg' | 'md' }) {
       <Svg width={w} height={w * 0.6} viewBox="0 0 300 180" fill="none">
         <Path d="M30,150 A120,120 0 0 1 270,150" stroke={colors.goldText} strokeWidth={3} opacity={0.8} />
       </Svg>
-      <Text style={{ fontFamily: fonts.display, fontSize: fs, color: colors.ink, marginTop: -w * 0.37 }}>
+      <Text style={{ fontFamily: fonts.display, fontSize: fs, color: colors.ink, marginTop: -w * 0.1 + 4 }}>
         The Semi <Text style={{ fontFamily: fonts.title }}>Circle</Text>
       </Text>
     </View>

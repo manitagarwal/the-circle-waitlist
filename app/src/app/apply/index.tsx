@@ -6,7 +6,7 @@ import { colors, fonts, radius } from '@/theme';
 import { CITIES } from '@/lib/config';
 import { isEmail, isLinkedIn, isPersonalEmail, normalizePhone } from '@/lib/validators';
 import { api } from '@/lib/auth';
-import { useApply } from './_layout';
+import { cityValue, useApply } from './_layout';
 
 type Errs = Partial<Record<'fullName' | 'phone' | 'city' | 'personalEmail' | 'linkedin', string>>;
 
@@ -21,6 +21,7 @@ export default function Details() {
     if (s.fullName.trim().length < 2) e.fullName = 'Enter your full name.';
     if (!normalizePhone(s.phone)) e.phone = 'Enter a 10-digit Indian mobile number.';
     if (!s.city) e.city = 'Pick your city.';
+    else if (!cityValue(s)) e.city = 'Type your city.';
     if (!isEmail(s.personalEmail)) e.personalEmail = 'Enter a valid email address.';
     if (!isLinkedIn(s.linkedin)) e.linkedin = 'Paste your LinkedIn profile link.';
     setErrs(e);
@@ -61,6 +62,7 @@ export default function Details() {
           {errs.city ?? 'Delhi NCR only for now. Elsewhere? Pick Other and we\'ll tell you when we reach you.'}
         </Text>
       </View>
+      {s.city === 'Other' ? <TextField label="Your city" value={s.cityOther} onChangeText={(v) => set({ cityOther: v })} autoComplete="off" /> : null}
       <TextField label="Personal email" value={s.personalEmail} onChangeText={(v) => set({ personalEmail: v })} keyboardType="email-address" autoCapitalize="none" autoComplete="email" error={errs.personalEmail} />
       <TextField label="LinkedIn URL" value={s.linkedin} onChangeText={(v) => set({ linkedin: v })} keyboardType="url" autoCapitalize="none" placeholder="https://linkedin.com/in/yourname" error={errs.linkedin} />
     </Screen>

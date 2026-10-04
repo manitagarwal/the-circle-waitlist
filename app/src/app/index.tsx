@@ -11,7 +11,7 @@ export default function Welcome() {
     <Screen scroll={false}>
       <View style={{ marginTop: 80, alignItems: 'center', gap: 14 }}>
         <Logo />
-        <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 11, letterSpacing: 1.8, textTransform: 'uppercase', color: colors.faint }}>Delhi NCR. Members only.</Text>
+        <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 11, letterSpacing: 1.8, textTransform: 'uppercase', color: colors.faint }}>Members only.</Text>
       </View>
       <View style={{ marginTop: 48, alignItems: 'center' }}>
         <Text style={{ fontFamily: fonts.title, fontSize: 28, lineHeight: 35, color: colors.ink, textAlign: 'center' }}>Most people won't get in.{'\n'}That's the point.</Text>

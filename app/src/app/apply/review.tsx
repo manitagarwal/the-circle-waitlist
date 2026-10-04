@@ -6,7 +6,7 @@ import { colors, fonts, radius } from '@/theme';
 import { linkedInHandle, normalizePhone } from '@/lib/validators';
 import { api } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
-import { useApply } from './_layout';
+import { cityValue, useApply } from './_layout';
 
 const Row = ({ k, v }: { k: string; v: string }) => (
   <View style={{ flexDirection: 'row', paddingVertical: 8 }}>
@@ -25,7 +25,7 @@ export default function Review() {
   const submit = async () => {
     setBusy(true); setErr(null);
     try {
-      await api.submitApplication({ id: s.id, fullName: s.fullName, phone: s.phone, personalEmail: s.personalEmail, workEmail: s.workEmail, linkedin: s.linkedin, city: s.city, referredByCode: s.referredByCode || undefined }, s.vouches);
+      await api.submitApplication({ id: s.id, fullName: s.fullName, phone: s.phone, personalEmail: s.personalEmail, workEmail: s.workEmail, linkedin: s.linkedin, city: cityValue(s), referredByCode: s.referredByCode || undefined }, s.vouches);
       r.replace({ pathname: '/apply/submitted', params: { id: s.id } });
     } catch (e: any) {
       const m = String(e?.message ?? '');
@@ -47,9 +47,9 @@ export default function Review() {
         <Row k="Name" v={s.fullName} />
         <Row k="Phone" v={`${p.slice(0, 5)} ${p.slice(5)}`} />
         <Row k="Personal email" v={s.personalEmail} />
-        <Row k="Work email" v={`${s.workEmail}, verified`} />
+        <Row k="Work email" v={s.workEmail} />
         <Row k="LinkedIn" v={linkedInHandle(s.linkedin) ? `linkedin.com/in/${linkedInHandle(s.linkedin)}` : s.linkedin} />
-        <Row k="City" v={s.city} />
+        <Row k="City" v={cityValue(s)} />
         {s.referredByCode ? <Row k="Referral code" v={s.referredByCode} /> : null}
         {s.vouches.length ? <Row k="Vouching for" v={`${s.vouches.length} ${s.vouches.length === 1 ? 'person' : 'people'}`} /> : null}
       </View>

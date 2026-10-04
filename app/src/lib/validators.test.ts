@@ -38,3 +38,7 @@ test('messages', () => {
 test('linkedin', () => {
   assert.equal(v.linkedInHandle('https://linkedin.com/in/annak/?x=1'), 'annak');
 });
+test('unknown errors keep their reason', () => {
+  assert.match(friendly({ message: 'boom' }), /\(boom\)/);
+  assert.match(friendly({ message: 'email rate limit exceeded' }), /Wait a few minutes/);
+});
