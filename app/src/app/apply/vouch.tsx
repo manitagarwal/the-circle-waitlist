@@ -28,7 +28,7 @@ export default function Vouch() {
       <Button label="Back" variant="secondary" onPress={() => r.back()} style={{ flexBasis: 112 }} />
       <Button label="Continue" onPress={() => r.push('/apply/review')} style={{ flex: 1 }} />
     </View>}>
-      <StepHeader step={3} of={4} />
+      <StepHeader step={4} of={5} />
       <Title italic>Know someone who belongs?</Title>
       <Body style={{ marginTop: 6, fontSize: 14 }}>Vouching fast-tracks your application. Vouching for someone who embarrasses us fast-tracks nothing. Entirely optional.</Body>
       <TextField label="Were you referred? Enter their code" value={s.referredByCode} onChangeText={(v) => set({ referredByCode: applicationCode(v) })} autoCapitalize="characters" maxLength={8}

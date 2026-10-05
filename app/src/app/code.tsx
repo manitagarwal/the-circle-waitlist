@@ -36,7 +36,7 @@ export default function Code() {
     } catch (e) { setErr(friendly(e)); setBusy(false); }
   };
   const resend = async () => {
-    try { await api.sendCode(email, false); setWait(60); setCode(''); setErr(null); } catch (e) { setErr(friendly(e)); }
+    try { await api.sendCode(email, true); setWait(60); setCode(''); setErr(null); } catch (e) { setErr(friendly(e)); }
   };
 
   return (

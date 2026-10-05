@@ -31,16 +31,16 @@ export default function Details() {
       const d = await api.checkDuplicates({ phone: s.phone, personalEmail: s.personalEmail });
       const dup: Errs = {};
       if (d.phone) dup.phone = 'This phone number has already applied.';
-      if (d.personal_email) dup.personalEmail = 'This personal email has already applied.';
+      if (d.personal_email && !s.personalVerified) dup.personalEmail = 'This email has already applied. Go back and log in, or tap "Forgot, or haven\'t set a password?".';
       setErrs(dup);
-      if (!Object.keys(dup).length) r.push(s.verified && s.passwordSet ? '/apply/vouch' : '/apply/verify');
+      if (!Object.keys(dup).length) r.push('/apply/verify');
     } catch { setErrs({ fullName: "Can't reach the server. Check your connection." }); }
     finally { setBusy(false); }
   };
 
   return (
     <Screen footer={<Button label="Continue" onPress={next} loading={busy} />}>
-      <StepHeader step={1} of={4} />
+      <StepHeader step={1} of={5} />
       <Title italic>Request an invitation.</Title>
       <Body style={{ marginTop: 6, fontSize: 14 }}>Four short steps. Read by people, not a model.</Body>
       <TextField label="Full name" value={s.fullName} onChangeText={(v) => set({ fullName: v })} autoComplete="name" error={errs.fullName} />
@@ -63,7 +63,8 @@ export default function Details() {
         </Text>
       </View>
       {s.city === 'Other' ? <TextField label="Your city" value={s.cityOther} onChangeText={(v) => set({ cityOther: v })} autoComplete="off" /> : null}
-      <TextField label="Personal email" value={s.personalEmail} onChangeText={(v) => set({ personalEmail: v })} keyboardType="email-address" autoCapitalize="none" autoComplete="email" error={errs.personalEmail} />
+      <TextField label="Personal email" value={s.personalEmail} onChangeText={(v) => set({ personalEmail: v })} keyboardType="email-address" autoCapitalize="none" autoComplete="email"
+        editable={!s.personalVerified} error={errs.personalEmail} hint="This is your login. We'll check it's yours in the next step." />
       <TextField label="LinkedIn URL" value={s.linkedin} onChangeText={(v) => set({ linkedin: v })} keyboardType="url" autoCapitalize="none" placeholder="https://linkedin.com/in/yourname" error={errs.linkedin} />
     </Screen>
   );

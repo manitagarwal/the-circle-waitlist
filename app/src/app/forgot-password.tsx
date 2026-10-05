@@ -15,7 +15,8 @@ export default function Forgot() {
     if (!isEmail(email)) return setErr('Enter a valid email address.');
     setBusy(true); setErr(null);
     // Always behave the same: we never reveal whether an address belongs to a member.
-    try { await api.sendCode(email, false); } catch { /* generic on purpose */ }
+    // true: also lets website applicants set up their login
+    try { await api.sendCode(email, true); } catch { /* generic on purpose */ }
     setBusy(false);
     r.push({ pathname: '/code', params: { email: normalizeEmail(email), mode: 'reset' } });
   };
@@ -23,8 +24,8 @@ export default function Forgot() {
     <Screen>
       <BackButton />
       <Title>Forgot it? Happens.</Title>
-      <Body style={{ marginTop: 10 }}>Enter your work email. We'll send a code, and you can set a new password after it.</Body>
-      <TextField label="Work email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" error={err} />
+      <Body style={{ marginTop: 10 }}>Enter your personal email, the one you log in with. We'll send a code, and you can set a new password after it.</Body>
+      <TextField label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" error={err} />
       <Notice tone="plain">If that address belongs to a member, a code is on its way. We don't say either way.</Notice>
       <Button label="Send code" onPress={send} loading={busy} style={{ marginTop: 24 }} />
       <Text onPress={() => r.replace('/login')} accessibilityRole="link" style={{ textAlign: 'center', padding: 16, fontFamily: fonts.body, fontSize: 14, color: colors.goldText }}>Remembered it? Back to log in</Text>

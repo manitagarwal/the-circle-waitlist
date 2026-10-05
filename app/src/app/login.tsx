@@ -16,7 +16,7 @@ export default function Login() {
 
   const login = async () => {
     setErr(null);
-    if (!isEmail(email) || !pw) return setErr('Enter your work email and password.');
+    if (!isEmail(email) || !pw) return setErr('Enter your email and password.');
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({ email: normalizeEmail(email), password: pw });
     setBusy(false);
@@ -28,9 +28,9 @@ export default function Login() {
       <View style={{ marginTop: 24 }}><Logo size="md" /></View>
       <View style={{ marginTop: 40 }}>
         <Title>Welcome back.</Title>
-        <Body style={{ marginTop: 10 }}>Log in with the work email you joined with.</Body>
+        <Body style={{ marginTop: 10 }}>Log in with the personal email you signed up with.</Body>
       </View>
-      <TextField label="Work email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
+      <TextField label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
       <TextField label="Password" value={pw} onChangeText={setPw} secureTextEntry autoCapitalize="none" autoComplete="current-password" textContentType="password" onSubmitEditing={login} />
       <Text onPress={() => r.push('/forgot-password')} accessibilityRole="link" style={{ alignSelf: 'flex-end', paddingVertical: 12, fontFamily: fonts.body, fontSize: 14, color: colors.goldText }}>Forgot, or haven't set a password?</Text>
       {err ? <Notice tone="error">{err}</Notice> : null}

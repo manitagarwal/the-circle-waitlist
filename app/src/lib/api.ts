@@ -13,7 +13,7 @@ export type Application = {
 export type Vouch = { name?: string; email?: string; phone?: string };
 
 /** Pure data layer. Takes the client so it can be tested with a fake. */
-export function createApi(sb: SupabaseClient) {
+export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
   const rpc = async <T>(fn: string, args?: Record<string, unknown>): Promise<T> => {
     const { data, error } = await sb.rpc(fn, args);
     if (error) throw error;
@@ -34,6 +34,16 @@ export function createApi(sb: SupabaseClient) {
       const { error } = await sb.auth.verifyOtp({ email: normalizeEmail(email), token, type: 'email' });
       if (error) throw error;
     },
+    /** Work email: proven with a code through a separate, throwaway client. */
+    sendWorkCode: async (email: string) => {
+      const { error } = await sbWork.auth.signInWithOtp({ email: normalizeEmail(email), options: { shouldCreateUser: true } });
+      if (error) throw error;
+    },
+    verifyWorkCode: async (email: string, token: string) => {
+      const { error } = await sbWork.auth.verifyOtp({ email: normalizeEmail(email), token, type: 'email' });
+      if (error) throw error;
+      await sbWork.auth.signOut({ scope: 'local' }); // discard that session; only the proof matters
+    },
     usernameAvailable: (u: string) => rpc<string>('username_available', { p_username: u }),
     activate: (username: string) => rpc<{ member_id: string; username: string }>('activate_membership', { p_username: username }),
     hasPassword: () => rpc<boolean>('has_password'),
@@ -46,7 +56,7 @@ export function createApi(sb: SupabaseClient) {
       if (a.referredByCode) referred = await rpc<string | null>('resolve_referral_code', { p_code: applicationCode(a.referredByCode) });
       const { error } = await sb.from('applicants').insert({
         id: a.id, full_name: a.fullName.trim(), phone: normalizePhone(a.phone), personal_email: normalizeEmail(a.personalEmail),
-        work_email: normalizeEmail(a.workEmail), work_email_verified: true, linkedin_url: a.linkedin.trim(), city: a.city, referred_by_id: referred,
+        work_email: normalizeEmail(a.workEmail), linkedin_url: a.linkedin.trim(), city: a.city, referred_by_id: referred,
       });
       if (error) throw error;
       if (vouches.length) {

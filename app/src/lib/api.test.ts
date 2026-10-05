@@ -45,3 +45,16 @@ test('activate sends the username only', async () => {
   await createApi(sb).activate('a.b');
   assert.deepEqual(calls[0], ['activate_membership', { p_username: 'a.b' }]);
 });
+
+test('work email is proven on a separate client', async () => {
+  const main = fake({});
+  const calls: string[] = [];
+  const work: any = { auth: {
+    signInWithOtp: async () => { calls.push('otp'); return { error: null }; },
+    verifyOtp: async () => { calls.push('verify'); return { error: null }; },
+    signOut: async () => { calls.push('signout'); return { error: null }; },
+  } };
+  const a = createApi(main.sb, work);
+  await a.sendWorkCode('A@Corp.com'); await a.verifyWorkCode('a@corp.com', '123456');
+  assert.deepEqual(calls, ['otp', 'verify', 'signout']);
+});

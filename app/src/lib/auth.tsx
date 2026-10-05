@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import type { Session } from '@supabase/supabase-js';
-import { supabase } from './supabase';
+import { supabase, workVerifier } from './supabase';
 import { createApi, type Application } from './api';
 import { computeGate, type Gate } from './gate';
 export type { Gate } from './gate';
@@ -12,7 +12,7 @@ type Ctx = {
   startRecovery: () => void; endRecovery: () => void; refresh: () => Promise<void>; signOut: () => Promise<void>;
 };
 const AuthCtx = createContext<Ctx>(null as never);
-export const api = createApi(supabase);
+export const api = createApi(supabase, workVerifier);
 export const useAuth = () => useContext(AuthCtx);
 
 async function loadMember(id: string): Promise<Member | null> {
