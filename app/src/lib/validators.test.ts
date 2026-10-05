@@ -37,3 +37,6 @@ test('unknown errors keep their reason', () => {
   assert.match(friendly({ message: 'boom' }), /\(boom\)/);
   assert.match(friendly({ message: 'email rate limit exceeded' }), /Wait a few minutes/);
 });
+test('resend wait message', () => {
+  assert.match(friendly({ message: 'For security purposes, you can only request this after 42 seconds.' }), /wait 42 seconds/);
+});

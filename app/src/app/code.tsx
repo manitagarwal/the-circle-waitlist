@@ -15,7 +15,7 @@ export default function Code() {
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [wait, setWait] = useState(30);
+  const [wait, setWait] = useState(60); // Supabase refuses a second code within 60 seconds
 
   useEffect(() => {
     if (wait <= 0) return;
@@ -24,6 +24,7 @@ export default function Code() {
   }, [wait]);
 
   const verify = async () => {
+    if (busy) return; // a code works once: a second tap would burn it and show a false "wrong code"
     if (!isOtp(code)) return setErr('Enter the six digits.');
     setBusy(true); setErr(null);
     try {
@@ -31,10 +32,12 @@ export default function Code() {
       await api.verifyCode(email, code);
       if (mode === 'reset') r.replace('/reset-password');
       // login: the auth guard routes by application status
-    } catch (e) { setErr(friendly(e)); } finally { setBusy(false); }
+      // success: stay busy until routing moves us on; release after a while in case it never does
+      setTimeout(() => setBusy(false), 8000);
+    } catch (e) { setErr(friendly(e)); setBusy(false); }
   };
   const resend = async () => {
-    try { await api.sendCode(email, false); setWait(30); setErr(null); } catch (e) { setErr(friendly(e)); }
+    try { await api.sendCode(email, false); setWait(60); setCode(''); setErr(null); } catch (e) { setErr(friendly(e)); }
   };
 
   return (
