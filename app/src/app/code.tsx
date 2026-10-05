@@ -7,11 +7,11 @@ import { isOtp } from '@/lib/validators';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 
-/** Six-digit email code. mode: login | reset */
+/** Six-digit email code. mode: reset (the emailed code is only used to reset a password) */
 export default function Code() {
   const r = useRouter();
   const { startRecovery } = useAuth();
-  const { email = '', mode = 'login' } = useLocalSearchParams<{ email: string; mode: string }>();
+  const { email = '', mode = 'reset' } = useLocalSearchParams<{ email: string; mode: string }>();
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -31,7 +31,6 @@ export default function Code() {
       if (mode === 'reset') startRecovery(); // before verify, so the guards never flash the app
       await api.verifyCode(email, code);
       if (mode === 'reset') r.replace('/reset-password');
-      // login: the auth guard routes by application status
       // success: stay busy until routing moves us on; release after a while in case it never does
       setTimeout(() => setBusy(false), 8000);
     } catch (e) { setErr(friendly(e)); setBusy(false); }

@@ -8,7 +8,7 @@ export type { Gate } from './gate';
 
 export type Member = { id: string; username: string; state: string; role: string; onboarded_at: string | null };
 type Ctx = {
-  session: Session | null; member: Member | null; application: Application | null; gate: Gate; recovery: boolean;
+  session: Session | null; member: Member | null; application: Application | null; hasPassword: boolean; gate: Gate; recovery: boolean;
   startRecovery: () => void; endRecovery: () => void; refresh: () => Promise<void>; signOut: () => Promise<void>;
 };
 const AuthCtx = createContext<Ctx>(null as never);
@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [member, setMember] = useState<Member | null>(null);
   const [application, setApplication] = useState<Application | null>(null);
+  const [hasPassword, setHasPassword] = useState(false);
   const [ready, setReady] = useState(false);
   const [recovery, setRecovery] = useState(false);
   const sessionRef = useRef<Session | null>(null);
@@ -31,17 +32,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const sync = useCallback(async (s: Session | null) => {
     sessionRef.current = s;
     setSession(s);
-    if (!s) { setMember(null); setApplication(null); return; }
+    if (!s) { setMember(null); setApplication(null); setHasPassword(false); return; }
     const m = await loadMember(s.user.id);
     // banned or deleted accounts get nothing
     if (m && (m.state === 'banned' || m.state === 'deleted')) {
       await supabase.auth.signOut();
-      setSession(null); setMember(null); setApplication(null);
+      setSession(null); setMember(null); setApplication(null); setHasPassword(false);
       return;
     }
     let a: Application | null = null;
     if (!m) { try { a = await api.myApplication(); } catch { a = null; } }
-    setMember(m); setApplication(a);
+    let pw = false;
+    try { pw = await api.hasPassword(); } catch { pw = false; }
+    setMember(m); setApplication(a); setHasPassword(pw);
   }, []);
 
   useEffect(() => {
@@ -57,15 +60,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [sync]);
 
   const value = useMemo<Ctx>(() => {
-    const gate = computeGate({ ready, signedIn: !!session, member, applicationStatus: application?.status ?? null });
+    const gate = computeGate({ ready, signedIn: !!session, member, applicationStatus: application?.status ?? null, hasPassword });
     return {
-      session, member, application, gate, recovery,
+      session, member, application, hasPassword, gate, recovery,
       startRecovery: () => setRecovery(true),
       endRecovery: () => setRecovery(false),
       refresh: () => sync(sessionRef.current),
       signOut: async () => { await supabase.auth.signOut(); },
     };
-  }, [ready, session, member, application, recovery, sync]);
+  }, [ready, session, member, application, hasPassword, recovery, sync]);
 
   return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
 }

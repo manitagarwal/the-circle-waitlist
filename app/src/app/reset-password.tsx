@@ -4,12 +4,12 @@ import { PasswordForm } from '@/components/PasswordForm';
 import { useAuth } from '@/lib/auth';
 
 export default function ResetPassword() {
-  const { endRecovery } = useAuth();
+  const { endRecovery, refresh } = useAuth();
   return (
     <Screen>
       <Title italic>Set a new password.</Title>
-      <Body style={{ marginTop: 6 }}>You're signed in. Pick a password for next time.</Body>
-      <PasswordForm submitLabel="Save password" onDone={endRecovery} />
+      <Body style={{ marginTop: 6 }}>You're signed in. Pick a password to use from now on.</Body>
+      <PasswordForm submitLabel="Save password" onDone={async () => { await refresh(); endRecovery(); }} />
     </Screen>
   );
 }

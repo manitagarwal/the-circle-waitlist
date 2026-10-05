@@ -36,6 +36,7 @@ export function createApi(sb: SupabaseClient) {
     },
     usernameAvailable: (u: string) => rpc<string>('username_available', { p_username: u }),
     activate: (username: string) => rpc<{ member_id: string; username: string }>('activate_membership', { p_username: username }),
+    hasPassword: () => rpc<boolean>('has_password'),
     myApplication: async (): Promise<Application | null> => {
       const rows = await rpc<Application[]>('my_application');
       return rows?.[0] ?? null;

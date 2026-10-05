@@ -34,8 +34,10 @@ function Routes() {
       <Stack.Protected guard={recovery && gate !== 'public' && gate !== 'loading'}>
         <Stack.Screen name="reset-password" />
       </Stack.Protected>
-      <Stack.Protected guard={normal && gate === 'setup'}>
+      <Stack.Protected guard={normal && gate === 'password'}>
         <Stack.Screen name="password" />
+      </Stack.Protected>
+      <Stack.Protected guard={normal && gate === 'setup'}>
         <Stack.Screen name="setup" />
       </Stack.Protected>
       <Stack.Protected guard={normal && gate === 'app'}>
