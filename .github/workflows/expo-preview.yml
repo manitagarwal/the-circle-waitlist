@@ -44,4 +44,5 @@ jobs:
       - name: Publish
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_PUBLIC_BUILD: ${{ github.sha }}
         run: eas update --branch preview --message "${{ github.sha }}" --non-interactive

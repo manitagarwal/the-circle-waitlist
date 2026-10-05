@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { Text } from 'react-native';
 import { Body, Button, Logo, Screen } from '@/components/ui';
 import { colors, fonts } from '@/theme';
+import { BUILD } from '@/lib/config';
 
 export default function Welcome() {
   const r = useRouter();
@@ -20,6 +21,7 @@ export default function Welcome() {
       <View style={{ marginTop: 'auto', paddingBottom: 24, gap: 10 }}>
         <Button label="Log in" onPress={() => r.push('/login')} />
         <Button label="Request an invitation" variant="secondary" onPress={() => r.push('/apply')} />
+        <Text style={{ textAlign: 'center', fontFamily: fonts.body, fontSize: 11, color: colors.faint, marginTop: 6 }}>Build {BUILD}</Text>
       </View>
     </Screen>
   );
