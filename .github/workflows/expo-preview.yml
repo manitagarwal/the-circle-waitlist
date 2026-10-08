@@ -1,0 +1,48 @@
+# Publishes the app to Expo on every push to the app folder, so it can be
+# opened in Expo Go on a phone. Needs the repo secret EXPO_TOKEN.
+name: Publish preview to Expo Go
+
+on:
+  push:
+    branches: [main, 'claude/**']
+    paths: ['app/**', '.github/workflows/expo-preview.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: expo-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: Check EXPO_TOKEN is set
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: test -n "$EXPO_TOKEN" || (echo "Add the EXPO_TOKEN secret in repo Settings > Secrets and variables > Actions" && exit 1)
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm i -g eas-cli
+      - name: Link the Expo project (first run only)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas init --non-interactive --force
+      - name: Point updates at Expo
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas update:configure --non-interactive
+      - name: Publish
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_PUBLIC_BUILD: ${{ github.sha }}
+        run: eas update --branch preview --message "${{ github.sha }}" --non-interactive

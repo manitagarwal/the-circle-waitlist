@@ -22,7 +22,7 @@ Conventions: `uuid` primary keys, `timestamptz` everywhere, `citext` for usernam
 |---|---|---|
 | `applicants` (exists) | id, full_name, phone, personal_email, work_email, work_email_verified, linkedin_url, city, status, created_at, referred_by_id | Add: `reviewed_at`, `reviewed_by`. Source of truth for contact details |
 | `referrals` (exists) | id, applicant_id, name, email, phone, created_at | Waitlist vouching |
-| `invitations` | id, applicant_id (unique), code_hash, status (active/redeemed/revoked), created_at, redeemed_at, redeemed_by (auth uid) | One per accepted applicant. Never expires. Regenerate = revoke old, create new |
+| `invitations` (retired 4 Oct 2026, kept for history) | id, applicant_id (unique), code_hash, status (active/redeemed/revoked), created_at, redeemed_at, redeemed_by (auth uid) | One per accepted applicant. Never expires. Regenerate = revoke old, create new |
 | `members` | id (= auth.users.id), applicant_id (unique), username (citext, unique), avatar_id, photo_path, bio, dob, gender, address_text, lat, lng, area, field_of_work, role (member/admin), state (active/suspended/banned), suspended_until, username_changed_at, created_at | **A row here = a member.** Name, work email, phone and LinkedIn are read from `applicants`, not copied |
 | `member_interests` | member_id, interest_id | Trigger: 3 to 5 rows per member |
 | `username_holds` | username, released_at | Old names blocked for 30 days |
@@ -76,7 +76,7 @@ Score is a function `member_score(member_id)`, not a stored number. It applies t
 
 ## 8. Functions (where the rules live)
 
-`redeem_invitation(code)`, `set_username(name)`, `create_channel(...)` (2-open cap, milestone), `create_booking(...)` (window, half-hour, 2-open, 3-per-24h, score-reduced cap), `join_booking(id)` (locks the row; checks seats, gender slot, age, min score), `leave_booking(id)` (early vs late from `booking.lockin_hours`), `mark_attendance(...)`, `continue_booking_channel(id)` (host only), `send_dm(...)`, `request_friend(...)`, `block_member(...)`, `member_score(...)`, `hosting_limit(...)`, `is_active_member()` (used by every RLS policy).
+`has_password()`, `applicants.auth_user_id` (owner, set by trigger; `my_application` and `activate_membership` use it), (true once the person has really set a password; tracked by trigger `trg_note_password_change` into `account_security`, because Supabase gives passwordless accounts a random hash), `activate_membership(username)` (replaces `redeem_invitation`, retired), `my_application()`, `accept_applicant(id)` (replaces `issue_invitation`, retired), `set_username(name)`, `create_channel(...)` (2-open cap, milestone), `create_booking(...)` (window, half-hour, 2-open, 3-per-24h, score-reduced cap), `join_booking(id)` (locks the row; checks seats, gender slot, age, min score), `leave_booking(id)` (early vs late from `booking.lockin_hours`), `mark_attendance(...)`, `continue_booking_channel(id)` (host only), `send_dm(...)`, `request_friend(...)`, `block_member(...)`, `member_score(...)`, `hosting_limit(...)`, `is_active_member()` (used by every RLS policy).
 
 Scheduled jobs (pg_cron): every 10 min complete finished bookings and delete expired booking channels; hourly default-to-attended after 48 h; hourly end finished suspensions; nightly purge of soft-deleted accounts older than 30 days.
 
@@ -99,3 +99,9 @@ Scheduled jobs (pg_cron): every 10 min complete finished bookings and delete exp
 8. Notifications and push tokens
 9. Score events, `member_score`, moderation
 10. Scheduled jobs
+
+## Events and admin portal
+- Tables: `events` (status draft/published/completed/cancelled, capacity, price_inr, age_min/max, genders, cities, min_score, cover_path), `event_rsvps` (status going/waitlist/attended/no_show/cancelled, ticket_code, checked_in_at). View `events_overview`. Private bucket `event-covers` (admins write, active members read).
+- Member functions: `rsvp_event`, cancel RSVP, ticket lookup.
+- Admin functions: `admin_events`, `admin_event_get`, `admin_save_event`, `admin_set_event_status`, `admin_event_attendees`, `admin_mark_rsvp`, `admin_check_in`, `admin_overview`, `send_broadcast`, `review_applicant`, `accept_applicant`, `apply_moderation`, `lift_moderation`, `resolve_report`, `approve_interest_suggestion`, `reject_interest_suggestion`.
+- Admin views: `admin_applicants_queue`, `admin_members`, `admin_reports_queue`, `admin_interest_suggestions`, `admin_low_score_members`. Policy `admins read bookings` lets the portal list bookings.

@@ -10,10 +10,10 @@ A person moves through these states. Each state is derived from data, not stored
 
 | State | How you get there | What you can do |
 |---|---|---|
-| Applicant | Submit waitlist form (`applicants.status = pending`) | Check status only |
+| Applicant | Register in the app (or the website form); `applicants.status = pending`. The account stays signed in | See application status only |
 | Shortlisted | Team marks `shortlisted` | Same |
-| Accepted | Team marks `accepted`; an invitation code is issued | Redeem code in the app |
-| Member | Redeems code, logs in, completes profile | Full app |
+| Accepted | Team runs `accept_applicant(id)` | Pick a username (`activate_membership`) |
+| Member | Picks a username, completes profile | Full app |
 | Suspended | Moderation ladder (section 11) | Read only; no booking, messaging or channel creation |
 | Banned | Moderation ladder | No access |
 | Rejected | Team marks `rejected` | Check status only |
@@ -22,14 +22,16 @@ A person moves through these states. Each state is derived from data, not stored
 - **[PROPOSED]** Auth accounts already exist for every applicant who verified a work email (the waitlist uses `signInWithOtp` with `shouldCreateUser`). Having an auth account therefore means nothing. Membership = a row in `members` linked to an accepted applicant. Every app screen and every RLS policy checks for that row.
 - **[PROPOSED]** Rejected applicants may not reapply with the same phone or email (the unique indexes already enforce this).
 
-## 2. Invitation codes and sign-up
+## 2. Account-first sign-up (replaces invitation codes, decided 4 Oct 2026)
 
-1. **[BP]** On acceptance, the applicant receives an invitation code by email or WhatsApp.
-2. **[DECIDED]** One code per accepted applicant. Single use, **never expires**, regenerable by an admin (regenerating invalidates the old code). Random and unguessable (10+ characters).
-3. **[BP]** Sign-up carries over name, verified work email, LinkedIn URL and phone from `applicants`. They are never asked again.
-4. **[DECIDED, changes the blueprint]** Login is by **email only** at launch (no phone login). First sign-in is an emailed OTP to the verified work email. After that the member **creates a password and a username**; later logins use email + password (OTP stays available as a fallback / password reset).
-5. **[DECIDED]** **Username**: unique across all members; only lowercase letters, numbers, `.` and `_`. **[PROPOSED]** 3-20 characters, cannot start or end with `.` or `_`, no two `.`/`_` in a row, a reserved list is blocked (admin, support, semicircle, etc.), stored lowercase and compared case-insensitively. Changeable at most once every 30 days; old name is not reusable by others for 30 days.
-6. Redeeming a code links `auth.users.id` to the `applicants` row and creates the `members` row. A code cannot be redeemed twice or by a different account.
+1. **[DECIDED]** There is no invitation code. Registering **is** requesting an invitation: the work-email account and the application are the same thing. Work email (verified by an emailed code) is the access check.
+2. **[DECIDED]** After submitting, the person stays signed in and can log in any time. What they see depends on their application: no application yet -> the application form; pending or shortlisted -> an "under review" screen with queue position and referral code; rejected -> a polite "not this time" screen (no reapply); accepted -> "You're in", pick a username, optional password, profile setup, then the app.
+3. **[DECIDED]** The account is matched to its application by **work email** (verified by the emailed code), so website applicants are matched too. `my_application()` returns the caller's own status.
+4. **[DECIDED]** Accepting = `accept_applicant(applicant_id)` (admin only, run in the dashboard for now). It sets status `accepted` and creates nothing else. The member row is created when the person picks a username with `activate_membership(username)`, which checks that the caller's work email belongs to an accepted application.
+5. **[DECIDED, 5 Oct 2026]** The login (account) email is the **personal email**; the work email is only a check on the application. Login is by **personal email + password only** (no phone login, no login by emailed code). A password is **mandatory**: it is created right after the personal email is verified by an emailed code. **Both emails are verified** (decided 8 Oct 2026 after briefly trying an unverified personal email, which was judged unsafe): the personal email by a code that creates the account, the work email by a code through a separate throwaway client. The server alone decides `work_email_verified`. An application is owned by the **account** that filed it (`applicants.auth_user_id`, set by a server trigger, never by the client), and can only be filed for a work inbox that has been confirmed (insert policy). Emailed codes are also used to **reset a forgotten password**. Application flow: details, verify personal email and create password, verify work email, vouch, review. Anyone with an account but no password (for example someone who applied on the website) is stopped at a "create your password" screen. Old passwords are not stored: Supabase keeps only a salted hash of the current one.
+6. **[DECIDED]** **Username**: unique across all members; lowercase letters, numbers, `.` and `_`; 3-20 characters, cannot start or end with `.` or `_`, no two in a row; reserved list blocked; changeable once every 30 days. Chosen after acceptance so names are not claimed by people who are not in.
+7. The old invitation-code path (`issue_invitation`, `redeem_invitation`, `invitations` table) is retired: execute rights revoked, table kept for history.
+8. **[OPEN]** Telling people they were accepted: email (needs the SMTP sender) and later a push. Until then they find out by opening the app.
 
 ## 3. Profile
 
@@ -59,7 +61,9 @@ A person moves through these states. Each state is derived from data, not stored
 - **[BP]** Anyone can join with no approval.
 - **[BP]** Max **2 channels open** per member at once.
 - **[BP]** Creating more requires a milestone. **[PROPOSED]** threshold: one of your channels reaches **50 members** (blueprint example was 100; threshold is open).
-- **[BP]** Tags: area, activity, age group, gender.
+- **[DECIDED, 8 Oct 2026]** Channel tags. Activity: every activity belongs to a bigger bucket such as Sports and fitness, and buckets are collapsible wherever activities are listed. Lobbies are named after the activity alone. **Public channels carry rules that are enforced when someone joins:** **city** (one or several cities, or none for Pan India; matched against the member's application city), **age** (optional youngest and oldest, 18 to 99, typed in) and **gender** (Anyone, or one or more of the four sign-up options). Someone who does not match can see the channel but cannot join, and is told why. **Area** is only a label. App admins bypass the rules. **Private channels have no matching rules**: they are invite-only, and anyone invited can join.
+- **[DECIDED, 9 Oct 2026] Groups replace private channels.** Channels now has Lobby, Public and **Booking** (only the chats of bookings you host or joined). A **group** (stored as a private channel) lives in Messages, in a Groups sub-tab between Friends and Strangers. Groups are casual: no activity, no matching rules. **You can only add friends**, and an admin adds them directly with **no acceptance needed**; anyone can leave. **Maximum 50 members.** There is no cap on how many groups a person can create, only an anti-spam burst limit. Being added sends a notification. The invitation path is retired. "Keep this chat" turns a booking chat into a group.
+- **[DECIDED, 9 Oct 2026] Anti-spam limits** (all are rules, editable without a release; app admins are exempt where sensible): messages 20 per minute and 300 per hour; friend requests 20 per day (on top of the existing pending and cooldown rules and the one-message-until-accepted rule); groups created 10 per day; friends added to groups 100 per day; self-joined public channels 30 per hour; booking joins 20 per hour. Existing limits stay: 5 reports per day, 3 pending interest suggestions, 12 photos, one username change every 30 days, booking limits, public channel limit of 2 open.
 
 ### 4.3 Private channels
 - **[BP]** Invite-only.
@@ -79,6 +83,7 @@ A person moves through these states. Each state is derived from data, not stored
 - **[BP]** Two kinds: **Hosted by Admin** (team events) and **Private Event** (member-created).
 - **[BP]** Member events must start **between 6 and 24 hours from now** at creation time. Admin events are exempt.
 - **[BP]** Start times are on the half hour only.
+- **[DECIDED, 8 Oct 2026]** Hosting a booking: the host picks a **date** (calendar) and a **start time** (hour, minutes limited to :00 and :30, AM or PM). The start must fall **6 to 24 hours from now** (the window rule, read from the rules table, and expected to change). **Length** is chosen in 30-minute steps from 30 minutes up to a maximum that is a rule per activity: **2 hours for everything under Sports and fitness, 6 hours for all other activities** (`booking.max_duration_minutes`, editable). The end must also fall on the hour or half hour. The Bookings list groups activities into their collapsible buckets, with day headings inside.
 - **[BP]** Max **2 hosted bookings open** per member at once, and max **3 created in any rolling 24 hours**.
 - **[BP]** Score can reduce the 2-booking cap (section 9) but never raise it.
 - **[BP]** Host sets: headcount (exact, min, or max), gender composition or gender-agnostic, minimum Score to join, age range, end time, short description.
@@ -184,7 +189,7 @@ All of this follows blueprint section 9. Restated so the schema can be derived:
 Numbers 1-6 block the schema; 7-12 can be answered later but I will build the default.
 
 1. **Login:** DECIDED. Email only; OTP first time, then password + unique username (section 2).
-2. **Invitation code expiry:** DECIDED. Never expires.
+2. **Invitation code expiry:** no longer applies (codes retired).
 3. **Booking lock-in window:** DECIDED. 3 hours before start. **Rules can differ per activity later**, so every number in sections 4, 5 and 9 (windows, caps, lock-in, thresholds) lives in a config table with a global default and optional per-interest overrides, never hard-coded.
 4. **Private channels:** DECIDED. Invite-only, same 2-channel cap as Public, any member can be invited.
 5. **Channel milestone:** DECIDED. 50 members to unlock a third channel.
@@ -195,3 +200,18 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 10. **Fast-track:** top of review queue, not automatic acceptance?
 11. **Account deletion:** soft-delete now, hard-delete after 30 days?
 12. **Lobby name:** keep "Lobby"?
+
+## Events (hosted by us)
+- Admins create events in the admin portal (draft → published → completed or cancelled). Members see published events in the Events tab.
+- Reserving is free and instant. When capacity is full the member joins a waitlist and is promoted automatically when a spot opens.
+- Each reservation gets a ticket code shown as a QR in the app. Admins check people in by typing the code in the portal.
+- Eligibility rules per event: city list, age range, genders and minimum reliability score. Rules are enforced by the database, not the app.
+- Attended and no-show feed the reliability score. Cancelling an event notifies everyone reserved.
+- Priced events are shown with their price but cannot be reserved yet ("Tickets open soon"). Payments are not built.
+- Rate limit: `event.max_rsvps_per_hour`.
+- Not in v1: event chat, reminders.
+
+## Admin portal (thesemicircle.in/admin)
+- Email and password only. The authenticator-app step is built but switched off (`REQUIRE_MFA` in admin.js). Only accounts that pass `is_admin()` get in.
+- Pages: Dashboard, Applicants (shortlist, accept, reject), Members (warn, suspend, ban, lift), Reports (dismiss, minor, severe), Events (create, edit, publish, cancel, complete, attendees, check-in, CSV, cover image), Announcements (to all or by activity), Bookings (read only), Settings (rules, activities, suggestions, blocked words), Activity log.
+- Every action calls an admin-only database function or a table with an admin-only policy.
