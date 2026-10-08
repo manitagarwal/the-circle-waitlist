@@ -37,6 +37,7 @@ export default function TabsLayout() {
       sceneStyle: { backgroundColor: colors.ground },
     }}>
       <Tabs.Screen name="channels" options={{ title: 'Channels', tabBarIcon: icon('channels') }} />
+      <Tabs.Screen name="events" options={{ title: 'Events', tabBarIcon: icon('events') }} />
       <Tabs.Screen name="bookings" options={{ title: 'Bookings', tabBarIcon: icon('bookings') }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile', tabBarIcon: icon('profile') }} />
       {/* Activity and Messages live in the top bar, not in the bottom bar */}

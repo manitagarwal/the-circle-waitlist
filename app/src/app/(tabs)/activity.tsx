@@ -33,6 +33,7 @@ export default function Activity() {
         const open = () => {
           if (n.is_unread) void api.markRead(n.id).then(reload).catch(() => {});
           if (v.go?.to === 'booking' && v.go.id) r.push({ pathname: '/booking/[id]', params: { id: v.go.id } });
+          else if (v.go?.to === 'events' && v.go.id) r.push({ pathname: '/event/[id]', params: { id: v.go.id } });
           else if (v.go) r.push((`/${v.go.to === 'booking' ? 'bookings' : v.go.to}${v.go.tab ? `?tab=${v.go.tab}` : ''}`) as never);
         };
         return (

@@ -15,7 +15,7 @@ export const NOTIFICATION_SWITCHES = [
   { key: 'joins', label: 'Someone joins a booking you listed', categories: ['booking_join', 'booking_cancelled'] },
   { key: 'social', label: 'A friend request, first message or being added to a group', categories: ['friend_request', 'group_added'] },
   { key: 'reminder', label: 'A booking of yours starts in an hour', categories: ['booking_reminder'] },
-  { key: 'news', label: 'Announcements from the team', categories: ['broadcast'] },
+  { key: 'news', label: 'Announcements from the team', categories: ['broadcast', 'event_update'] },
 ] as const;
 
 /** DD, MM, YYYY text -> 'YYYY-MM-DD', or null if it is not a real past date. */

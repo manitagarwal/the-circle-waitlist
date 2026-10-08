@@ -52,6 +52,12 @@ export type OwnRow = {
   avatar_id: number | null; photo_path: string | null; bio: string | null; dob: string; gender: string; address_text: string;
   lat: number | null; lng: number | null; area: string; field_of_work: string;
 };
+export type EventRow = {
+  id: string; title: string; description: string | null; interest_id: number | null; interest_name: string | null; cover_path: string | null;
+  venue_name: string | null; area: string | null; city: string | null; address_text: string | null; starts_at: string; ends_at: string;
+  capacity: number | null; price_inr: number; age_min: number | null; age_max: number | null; genders: string[]; cities: string[]; min_score: number | null;
+  status: 'published' | 'cancelled'; going_count: number; waitlist_count: number; my_status: 'going' | 'waitlist' | 'cancelled' | 'attended' | 'no_show' | null; my_position: number | null;
+};
 export type Vouch = { name?: string; email?: string; phone?: string };
 
 /** Pure data layer. Takes the client so it can be tested with a fake. */
@@ -273,6 +279,21 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     deleteAccount: () => rpc<{ deleted_at: string; erased_after: string }>('delete_my_account'),
     restoreAccount: () => rpc<void>('restore_my_account'),
     moderationStatus: () => rpc<{ state: string; suspended_until: string | null; last_action: string | null }>('my_moderation_status'),
+    // ---- events
+    events: async () => {
+      const { data, error } = await sb.from('events_overview').select('*').order('starts_at');
+      if (error) throw error;
+      return data as EventRow[];
+    },
+    event: async (id: string) => {
+      const { data, error } = await sb.from('events_overview').select('*').eq('id', id).maybeSingle();
+      if (error) throw error;
+      return data as EventRow | null;
+    },
+    eventRoster: (id: string) => rpc<{ member_id: string; username: string; avatar_id: number | null; photo_path: string | null }[]>('event_roster', { p_event: id }),
+    myTicket: (id: string) => rpc<string | null>('my_ticket', { p_event: id }),
+    rsvp: (id: string) => rpc<'going' | 'waitlist'>('rsvp_event', { p_event: id }),
+    cancelRsvp: (id: string) => rpc<void>('cancel_rsvp', { p_event: id }),
     // ---- activity
     notifications: async () => {
       const { data, error } = await sb.from('my_notifications').select('*').order('created_at', { ascending: false }).limit(60);

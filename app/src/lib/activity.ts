@@ -3,7 +3,7 @@ import { clock } from './format.ts';
 
 export type ActivityView = {
   title: string; body: string | null; from?: string; actions?: 'friend'; fromId?: string;
-  go?: { to: 'channels' | 'bookings' | 'messages' | 'booking'; id?: string; tab?: string };
+  go?: { to: 'channels' | 'bookings' | 'messages' | 'booking' | 'events'; id?: string; tab?: string };
 };
 
 const MODERATION: Record<string, string> = {
@@ -28,6 +28,10 @@ export function describe(n: NotificationRow): ActivityView {
       return { title: `Your booking starts in an hour. ${p.title}${p.starts_at ? `, ${clock(new Date(p.starts_at))}` : ''}.`, body: null, go: { to: 'booking', id: p.booking_id } };
     case 'booking_cancelled':
       return { title: `${p.title} was cancelled by the host.`, body: 'Its chat closes tomorrow.', go: { to: 'bookings' } };
+    case 'event_update':
+      return p.kind === 'promoted'
+        ? { title: `A spot opened up. You're going to ${p.title}.`, body: null, go: { to: 'events', id: p.event_id } }
+        : { title: `${p.title} was cancelled.`, body: 'Sorry about that. Nothing is owed on your side.', go: { to: 'events', id: p.event_id } };
     case 'group_added':
       return { title: `${p.by_username} added you to ${p.channel_name}.`, body: null, go: { to: 'messages', tab: 'groups' } };
     case 'channel_invite':
