@@ -7,15 +7,16 @@ import { Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api } from '@/lib/auth';
 import { type BookingRow, genderWanted, groupByDay, joinCheck, spots, timeRange } from '@/lib/bookings';
+import { interestIndex, loadInterestGroups } from '@/lib/interests';
 import { useLoad } from '@/lib/useLoad';
 
-function Card({ b, onPress, note }: { b: BookingRow; onPress: () => void; note?: string | null }) {
+function Card({ b, onPress, note, group }: { b: BookingRow; onPress: () => void; note?: string | null; group?: string }) {
   const sp = spots(b);
   const mix = genderWanted(b);
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: 14, marginBottom: 10 })}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{b.interest_name.toUpperCase()}</Text>
+        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}</Text>
         <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.faint }}>{b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
       </View>
       <Text style={{ fontFamily: fonts.titleMedium, fontSize: 19, color: colors.ink, marginTop: 4 }}>{b.title}</Text>
@@ -37,8 +38,8 @@ export default function Bookings() {
   const [seg, setSeg] = useState<'browse' | 'mine'>('browse');
   const [f, setF] = useState<Record<string, string | undefined>>({});
   const { data, error, loading, refreshing, pull, reload } = useLoad(async () => {
-    const [upcoming, mine, me] = await Promise.all([api.bookingsUpcoming(), api.bookingsMine(), api.myProfileBasics()]);
-    return { upcoming, mine, me };
+    const [upcoming, mine, me, groups] = await Promise.all([api.bookingsUpcoming(), api.bookingsMine(), api.myProfileBasics(), loadInterestGroups(() => api.interestGroups())]);
+    return { upcoming, mine, me, idx: interestIndex(groups) };
   });
 
   const shown = useMemo(() => (data?.upcoming ?? []).filter((b) =>
@@ -68,7 +69,7 @@ export default function Bookings() {
         {groupByDay(shown).map((g) => (
           <View key={g.day}>
             <SectionLabel>{g.day}</SectionLabel>
-            {g.rows.map((b) => <Card key={b.id} b={b} onPress={() => open(b.id)} note={b.is_host ? 'Hosting' : b.my_status === 'joined' ? "You're in" : null} />)}
+            {g.rows.map((b) => <Card key={b.id} b={b} group={data.idx.get(b.interest_id)?.group} onPress={() => open(b.id)} note={b.is_host ? 'Hosting' : b.my_status === 'joined' ? "You're in" : null} />)}
           </View>
         ))}
       </>) : null}
@@ -80,7 +81,7 @@ export default function Bookings() {
           const needsMarking = b.is_host && over && b.status !== 'cancelled';
           return (
             <View key={b.id}>
-              <Card b={b} onPress={() => open(b.id)} note={b.status === 'cancelled' ? 'Cancelled' : b.is_host ? (over ? 'Finished' : 'Hosting') : over ? 'Finished' : "You're in"} />
+              <Card b={b} group={data.idx.get(b.interest_id)?.group} onPress={() => open(b.id)} note={b.status === 'cancelled' ? 'Cancelled' : b.is_host ? (over ? 'Finished' : 'Hosting') : over ? 'Finished' : "You're in"} />
               {needsMarking ? (
                 <Pressable accessibilityRole="button" onPress={() => r.push({ pathname: '/booking/attendance/[id]', params: { id: b.id } })} style={{ marginTop: -4, marginBottom: 12, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Icon name="check" size={18} color={colors.goldText} /><Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.goldText }}>Mark who showed up</Text>

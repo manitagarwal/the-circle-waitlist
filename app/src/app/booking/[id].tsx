@@ -10,6 +10,7 @@ import { api } from '@/lib/auth';
 import { ageRange, bookingDay, freeLeaveUntil, joinCheck, spots, startsIn, timeRange } from '@/lib/bookings';
 import { clock } from '@/lib/format';
 import { friendly } from '@/lib/messages';
+import { interestIndex, loadInterestGroups } from '@/lib/interests';
 import { useLoad } from '@/lib/useLoad';
 
 const month = (iso: string) => new Intl.DateTimeFormat('en-IN', { month: 'long' }).format(new Date(iso));
@@ -34,8 +35,8 @@ export default function BookingDetail() {
   const { data, error, loading, reload } = useLoad(async () => {
     const booking = await api.booking(id);
     if (!booking) return { booking: null };
-    const [roster, host, me, score] = await Promise.all([api.bookingRoster(id), api.profile(booking.host_id), api.myProfileBasics(), api.myScore().catch(() => null)]);
-    return { booking, roster, host, me, score };
+    const [roster, host, me, score, groups] = await Promise.all([api.bookingRoster(id), api.profile(booking.host_id), api.myProfileBasics(), api.myScore().catch(() => null), loadInterestGroups(() => api.interestGroups()).catch(() => [])]);
+    return { booking, roster, host, me, score, group: interestIndex(groups).get(booking.interest_id)?.group ?? null };
   }, [id]);
 
   const b = data?.booking ?? null;
@@ -47,7 +48,7 @@ export default function BookingDetail() {
   let body: React.ReactNode = <State loading={loading} error={error} onRetry={reload} />;
   if (data && !b) body = <State empty="That booking isn't available." />;
   if (data && b && 'roster' in data) {
-    const { roster, host, me, score } = data as Required<typeof data> & { booking: NonNullable<typeof b> };
+    const { roster, host, me, score, group } = data as Required<typeof data> & { booking: NonNullable<typeof b> };
     const sp = spots(b);
     const joined = b.my_status === 'joined' || b.is_host;
     const over = new Date(b.ends_at).getTime() < Date.now();
@@ -56,7 +57,7 @@ export default function BookingDetail() {
     const qualifies = b.min_score == null || score == null ? null : score >= b.min_score;
     const menWanted = Math.max(0, (b.male_slots ?? 0) - b.male_joined), womenWanted = Math.max(0, (b.female_slots ?? 0) - b.female_joined);
     body = (<>
-      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{b.interest_name.toUpperCase()}  ·  {b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
+      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}  ·  {b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
       <Text style={{ fontFamily: fonts.title, fontSize: 28, lineHeight: 34, color: colors.ink, marginTop: 6 }}>{b.title}</Text>
       <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 6 }}>
         Hosted by <Text style={{ fontFamily: fonts.bodySemi, color: colors.ink }}>{b.host_username}</Text>{host ? `. ${host.bookings_hosted} ${host.bookings_hosted === 1 ? 'booking' : 'bookings'} hosted. Member since ${month(host.member_since)}.` : ''}

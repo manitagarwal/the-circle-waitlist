@@ -146,7 +146,7 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     leaveChannel: (id: string) => rpc<void>('leave_channel', { p_channel: id }),
     closeChannel: (id: string) => rpc<void>('close_channel', { p_channel: id }),
     respondInvite: (id: string, accept: boolean) => rpc<void>('respond_channel_invite', { p_invite: id, p_accept: accept }),
-    createChannel: (a: { kind: 'public' | 'private'; name: string; interestId: number | null; tags: Record<string, string> }) =>
+    createChannel: (a: { kind: 'public' | 'private'; name: string; interestId: number | null; tags: { city?: string; area?: string; age_min?: string; age_max?: string; gender?: string } }) =>
       rpc<string>('create_channel', { p_kind: a.kind, p_name: a.name, p_interest_id: a.interestId, p_photo_path: null, p_tags: a.tags }),
     renameChannel: (id: string, name: string) => rpc<void>('update_channel', { p_channel: id, p_name: name, p_photo_path: null }),
     inviteToChannel: (channel: string, invitee: string) => rpc<void>('invite_to_channel', { p_channel: channel, p_invitee: invitee }),

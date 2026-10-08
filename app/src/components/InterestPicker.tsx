@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { Collapsible } from './Collapsible';
 import { Notice } from './ui';
 import { Button } from './ui';
 import { colors, fonts, radius } from '@/theme';
 import { INTERESTS_MAX, INTERESTS_MIN, toggleInterest } from '@/lib/profile';
 import { api } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
+import { loadInterestGroups } from '@/lib/interests';
 
 type Group = Awaited<ReturnType<typeof api.interestGroups>>[number];
 
@@ -13,7 +15,7 @@ type Group = Awaited<ReturnType<typeof api.interestGroups>>[number];
 export function InterestPicker({ selected, onChange }: { selected: number[]; onChange: (ids: number[]) => void }) {
   const [groups, setGroups] = useState<Group[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const load = () => { setErr(null); api.interestGroups().then(setGroups).catch((e) => setErr(friendly(e))); };
+  const load = () => { setErr(null); loadInterestGroups(() => api.interestGroups()).then(setGroups).catch((e) => setErr(friendly(e))); };
   useEffect(load, []);
   const n = selected.length;
   return (
@@ -22,9 +24,8 @@ export function InterestPicker({ selected, onChange }: { selected: number[]; onC
       {err ? <><Notice tone="error">{err}</Notice><Button label="Try again" variant="secondary" onPress={load} style={{ marginTop: 12 }} /></> : null}
       {!groups && !err ? <ActivityIndicator color={colors.goldText} style={{ marginTop: 32 }} /> : null}
       {groups?.map((g) => (
-        <View key={g.id} style={{ marginTop: 20 }}>
-          <Text accessibilityRole="header" style={{ fontFamily: fonts.titleMedium, fontSize: 17, color: colors.ink, marginBottom: 8 }}>{g.name}</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        <Collapsible key={g.id} title={g.name} count={g.interests.length} selected={g.interests.filter((i) => selected.includes(i.id)).length} defaultOpen={g.interests.some((i) => selected.includes(i.id))}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingVertical: 6 }}>
             {g.interests.map((i) => {
               const on = selected.includes(i.id);
               const full = !on && n >= INTERESTS_MAX;
@@ -36,7 +37,7 @@ export function InterestPicker({ selected, onChange }: { selected: number[]; onC
               );
             })}
           </View>
-        </View>
+        </Collapsible>
       ))}
     </View>
   );

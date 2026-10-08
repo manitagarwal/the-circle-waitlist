@@ -61,7 +61,7 @@ A person moves through these states. Each state is derived from data, not stored
 - **[BP]** Anyone can join with no approval.
 - **[BP]** Max **2 channels open** per member at once.
 - **[BP]** Creating more requires a milestone. **[PROPOSED]** threshold: one of your channels reaches **50 members** (blueprint example was 100; threshold is open).
-- **[BP]** Tags: area, activity, age group, gender.
+- **[DECIDED, 8 Oct 2026]** Tags: activity (every activity belongs to a bigger bucket such as Sports and fitness, and buckets are collapsible wherever activities are listed), **city** (chosen from a list; required for public channels), **area** (optional text), **age range** (optional youngest and oldest, each 18 to 99, no preset buckets) and **gender** (Anyone, or one of the four sign-up options: male, female, non-binary, prefer not to say). Tags are labels that help people find a channel; they do not lock anyone out. Lobbies are named after the activity alone, with no "Lobby" suffix.
 
 ### 4.3 Private channels
 - **[BP]** Invite-only.

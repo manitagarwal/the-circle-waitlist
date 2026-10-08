@@ -2,6 +2,7 @@ import React from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { colors, fonts, radius } from '@/theme';
 import { Button } from './ui';
+import { ChipRow } from './ChipRow';
 
 export function TabHeader({ title, right }: { title: string; right?: React.ReactNode }) {
   return (
@@ -109,9 +110,9 @@ export function FilterBar({ defs, values, onChange }: { defs: FilterDef[]; value
   const def = defs.find((d) => d.key === open);
   return (
     <>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 8 }}>
-        {defs.map((d) => <Chip key={d.key} label={values[d.key] ? `${d.label}: ${values[d.key]}` : d.label} on={!!values[d.key]} onPress={() => setOpen(d.key)} />)}
-      </ScrollView>
+      <View style={{ marginVertical: 8 }}>
+        <ChipRow>{defs.map((d) => <Chip key={d.key} label={values[d.key] ? `${d.label}: ${values[d.key]}` : d.label} on={!!values[d.key]} onPress={() => setOpen(d.key)} />)}</ChipRow>
+      </View>
       <Sheet visible={!!def} onClose={() => setOpen(null)} title={def?.label}>
         <ScrollView>
           <Row title="Any" onPress={() => { onChange(open!, undefined); setOpen(null); }} />

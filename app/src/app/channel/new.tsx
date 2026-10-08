@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { ActivityPicker } from '@/components/ActivityPicker';
 import { Bar } from '@/components/Bar';
-import { Chip, Row, Segmented, Sheet, State } from '@/components/lists';
+import { Chip, Row, Segmented, Sheet } from '@/components/lists';
 import { Body, Button, Notice, TextField } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
-import { AGE_GROUPS, GENDER_TAGS } from '@/lib/channels';
+import { ageError, CHANNEL_CITIES } from '@/lib/channels';
+import { GENDERS } from '@/lib/profile';
 import { useLoad } from '@/lib/useLoad';
 
 export default function NewChannel() {
@@ -16,33 +18,36 @@ export default function NewChannel() {
   const [kind, setKind] = useState<'public' | 'private'>('public');
   const [name, setName] = useState('');
   const [interest, setInterest] = useState<{ id: number; name: string } | null>(null);
-  const [pick, setPick] = useState(false);
+  const [pickActivity, setPickActivity] = useState(false);
+  const [city, setCity] = useState<string | null>(null);
+  const [pickCity, setPickCity] = useState(false);
   const [area, setArea] = useState('');
-  const [age, setAge] = useState<string>('Any age');
-  const [gender, setGender] = useState<string>('Any');
+  const [ageMin, setAgeMin] = useState('');
+  const [ageMax, setAgeMax] = useState('');
+  const [gender, setGender] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  const groups = useLoad(() => api.interestGroups());
   const mine = useLoad(async () => (await api.channels()).filter((c) => c.created_by === member?.id && (c.kind === 'public' || c.kind === 'private')).length);
 
   const nameOk = name.trim().length >= 3 && name.trim().length <= 50;
-  const ready = nameOk && (kind === 'private' || !!interest);
+  const ageErr = ageError(ageMin, ageMax);
+  const ready = nameOk && !ageErr && (kind === 'private' || (!!interest && !!city));
   const create = async () => {
     setBusy(true); setErr(null);
     try {
-      const tags: Record<string, string> = {};
-      if (area.trim()) tags.area = area.trim();
-      if (age !== 'Any age') tags.age_group = age;
-      if (gender !== 'Any') tags.gender = gender;
-      const id = await api.createChannel({ kind, name: name.trim(), interestId: interest?.id ?? null, tags });
+      const id = await api.createChannel({
+        kind, name: name.trim(), interestId: interest?.id ?? null,
+        tags: { ...(city ? { city } : {}), ...(area.trim() ? { area: area.trim() } : {}), ...(ageMin.trim() ? { age_min: ageMin.trim() } : {}), ...(ageMax.trim() ? { age_max: ageMax.trim() } : {}), ...(gender ? { gender } : {}) },
+      });
       r.replace({ pathname: '/channel/[id]', params: { id } });
     } catch (e) {
       const m = String((e as Error)?.message ?? '');
-      setErr(/channel_limit/.test(m) ? 'You have two channels open. Get one to 50 members and you can open a third.' : /name_invalid/.test(m) ? 'Give it a name of 3 to 50 characters.' : /interest_required/.test(m) ? 'Pick an activity.' : friendly(e));
+      setErr(/city_required/.test(m) ? 'Pick a city.' : /interest_required/.test(m) ? 'Pick an activity.' : /age_invalid/.test(m) ? 'Check the ages. They run from 18 to 99.' : friendly(e));
     } finally { setBusy(false); }
   };
 
+  const label = (t: string) => <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 18, marginBottom: 6 }}>{t}</Text>;
   return (
     <View style={{ flex: 1, backgroundColor: colors.ground }}>
       <Bar title="New channel" />
@@ -51,30 +56,36 @@ export default function NewChannel() {
         <Body style={{ fontSize: 14 }}>{kind === 'public' ? 'Anyone can join. You own it.' : 'Invite only. Your circle.'}</Body>
         <TextField label="Name" value={name} onChangeText={setName} maxLength={50} error={name && !nameOk ? 'Use 3 to 50 characters.' : null} />
 
-        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 16, marginBottom: 6 }}>Activity{kind === 'private' ? ' (optional)' : ''}</Text>
-        <Button label={interest?.name ?? 'Choose an activity'} variant="secondary" onPress={() => setPick(true)} />
+        {label(`Activity${kind === 'private' ? ' (optional)' : ''}`)}
+        <Button label={interest?.name ?? 'Choose an activity'} variant="secondary" onPress={() => setPickActivity(true)} />
 
-        <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink, marginTop: 24 }}>Tags, so the right people find it</Text>
-        <TextField label="Area" value={area} onChangeText={setArea} placeholder="For example: Gurgaon" />
-        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 16, marginBottom: 6 }}>Age group</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>{AGE_GROUPS.map((a) => <Chip key={a} label={a} on={age === a} onPress={() => setAge(a)} />)}</ScrollView>
-        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 16, marginBottom: 6 }}>Gender</Text>
-        <View style={{ flexDirection: 'row' }}>{GENDER_TAGS.map((g) => <Chip key={g} label={g} on={gender === g} onPress={() => setGender(g)} />)}</View>
+        <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 15, color: colors.ink, marginTop: 28 }}>Where</Text>
+        {label(`City${kind === 'private' ? ' (optional)' : ''}`)}
+        <Button label={city ?? 'Choose a city'} variant="secondary" onPress={() => setPickCity(true)} />
+        <TextField label="Area (optional)" value={area} onChangeText={setArea} maxLength={60} placeholder="For example: Sector 43" />
+
+        <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 15, color: colors.ink, marginTop: 28 }}>Who it's for</Text>
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <View style={{ flex: 1 }}><TextField label="Youngest (optional)" value={ageMin} onChangeText={(v) => setAgeMin(v.replace(/\D/g, '').slice(0, 2))} keyboardType="number-pad" maxLength={2} placeholder="18" /></View>
+          <View style={{ flex: 1 }}><TextField label="Oldest (optional)" value={ageMax} onChangeText={(v) => setAgeMax(v.replace(/\D/g, '').slice(0, 2))} keyboardType="number-pad" maxLength={2} placeholder="99" /></View>
+        </View>
+        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: ageErr ? colors.error : colors.faint, marginTop: 6 }}>{ageErr ?? 'Leave both empty for all ages.'}</Text>
+        {label('Gender')}
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: 8 }}>
+          <Chip label="Anyone" on={gender == null} onPress={() => setGender(null)} />
+          {GENDERS.map((g) => <Chip key={g.value} label={g.label} on={gender === g.value} onPress={() => setGender(g.value)} />)}
+        </View>
+        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>These tags help the right people find the channel. They don't lock anyone out.</Text>
 
         {mine.data != null ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 24 }}>{mine.data} of 2 channels open. Get one channel to 50 members and you can open a third.</Text> : null}
         {err ? <Notice tone="error">{err}</Notice> : null}
         <Button label="Create channel" onPress={create} loading={busy} disabled={!ready} style={{ marginTop: 20 }} />
       </ScrollView>
 
-      <Sheet visible={pick} onClose={() => setPick(false)} title="Activity">
+      <ActivityPicker visible={pickActivity} onClose={() => setPickActivity(false)} selectedId={interest?.id} onPick={(a) => { setInterest(a); setPickActivity(false); }} />
+      <Sheet visible={pickCity} onClose={() => setPickCity(false)} title="City">
         <ScrollView>
-          <State loading={groups.loading} error={groups.error} onRetry={groups.reload} />
-          {groups.data?.map((g) => (
-            <View key={g.id}>
-              <Text style={{ fontFamily: fonts.bodySemi, fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', color: colors.faint, marginTop: 12 }}>{g.name}</Text>
-              {g.interests.map((i) => <Row key={i.id} title={i.name} onPress={() => { setInterest({ id: i.id, name: i.name }); setPick(false); }} />)}
-            </View>
-          ))}
+          {CHANNEL_CITIES.map((c) => <Row key={c} title={c} right={city === c ? <Text style={{ color: colors.sage, fontFamily: fonts.bodySemi }}>✓</Text> : undefined} onPress={() => { setCity(c); setPickCity(false); }} />)}
         </ScrollView>
       </Sheet>
     </View>

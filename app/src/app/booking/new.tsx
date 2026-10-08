@@ -2,7 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Bar } from '@/components/Bar';
-import { Chip, Row, Sheet, State } from '@/components/lists';
+import { ActivityPicker } from '@/components/ActivityPicker';
+import { ChipRow } from '@/components/ChipRow';
+import { Chip } from '@/components/lists';
 import { Body, Button, Notice, Stepper, TextField } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api } from '@/lib/auth';
@@ -41,7 +43,6 @@ export default function NewBooking() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  const groups = useLoad(() => api.interestGroups());
   const mine = useLoad(async () => {
     const m = (await api.bookingsMine()).filter((b) => b.is_host && b.kind === 'member');
     return { open: m.filter((b) => (b.status === 'open' || b.status === 'full') && new Date(b.ends_at) > new Date()).length, today: m.filter((b) => Date.parse(b.created_at) > Date.now() - 86400000).length };
@@ -74,13 +75,13 @@ export default function NewBooking() {
         <TextField label="Title" value={title} onChangeText={setTitle} maxLength={80} />
 
         {label('When')}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>{days.map((d) => <Chip key={d} label={d} on={day === d} onPress={() => { setDay(d); setStart(null); }} />)}</ScrollView>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+        <ChipRow>{days.map((d) => <Chip key={d} label={d} on={day === d} onPress={() => { setDay(d); setStart(null); }} />)}</ChipRow>
+        <View style={{ marginTop: 10 }}><ChipRow>
           {slots.filter((s) => slotDay(s) === day).map((s) => <Chip key={s} label={clock(new Date(s))} on={start === s} onPress={() => setStart(s)} />)}
-        </ScrollView>
+        </ChipRow></View>
         <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>Start on the hour or half hour, 6 to 24 hours from now.</Text>
         {label('How long')}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>{DURATIONS.map((d) => <Chip key={d.mins} label={d.label} on={dur === d.mins} onPress={() => setDur(d.mins)} />)}</ScrollView>
+        <ChipRow>{DURATIONS.map((d) => <Chip key={d.mins} label={d.label} on={dur === d.mins} onPress={() => setDur(d.mins)} />)}</ChipRow>
         {start && end ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink, marginTop: 8 }}>{clock(new Date(start))} to {clock(new Date(end))}</Text> : null}
 
         <TextField label="Where: venue" value={venue} onChangeText={setVenue} placeholder="For example: Play-A-Shot" />
@@ -90,7 +91,7 @@ export default function NewBooking() {
         {label('People')}
         {mixOn ? <Body style={{ fontSize: 14 }}>{men + women} in total, including you.</Body> : <Stepper label="People, including you" value={people} min={2} max={30} onChange={setPeople} />}
         {label('Age range')}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>{AGES.map((a, i) => <Chip key={a.label} label={a.label} on={age === i} onPress={() => setAge(i)} />)}</ScrollView>
+        <ChipRow>{AGES.map((a, i) => <Chip key={a.label} label={a.label} on={age === i} onPress={() => setAge(i)} />)}</ChipRow>
         {label('Gender mix')}
         <View style={{ flexDirection: 'row' }}><Chip label="Anyone" on={!mixOn} onPress={() => setMixOn(false)} /><Chip label="Set the mix" on={mixOn} onPress={() => setMixOn(true)} /></View>
         {mixOn ? <><Stepper label="Men, including you if you are one" value={men} min={0} max={15} onChange={setMen} /><Stepper label="Women, including you if you are one" value={women} min={0} max={15} onChange={setWomen} /></> : null}
@@ -109,17 +110,7 @@ export default function NewBooking() {
         <Button label="Post booking" onPress={post} loading={busy} disabled={!ready} style={{ marginTop: 16 }} />
       </ScrollView>
 
-      <Sheet visible={pick} onClose={() => setPick(false)} title="Activity">
-        <ScrollView>
-          <State loading={groups.loading} error={groups.error} onRetry={groups.reload} />
-          {groups.data?.map((g) => (
-            <View key={g.id}>
-              <Text style={{ fontFamily: fonts.bodySemi, fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', color: colors.faint, marginTop: 12 }}>{g.name}</Text>
-              {g.interests.map((i) => <Row key={i.id} title={i.name} onPress={() => { setInterest({ id: i.id, name: i.name }); setPick(false); }} />)}
-            </View>
-          ))}
-        </ScrollView>
-      </Sheet>
+      <ActivityPicker visible={pick} onClose={() => setPick(false)} selectedId={interest?.id} onPick={(a) => { setInterest(a); setPick(false); }} />
     </View>
   );
 }
