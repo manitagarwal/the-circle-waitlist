@@ -14,12 +14,13 @@
 <body>
 <div id="app" aria-live="polite"><p class="boot">Loading…</p></div>
 <div id="toasts" role="status" aria-live="polite"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
-<script>if (!window.supabase) document.write('<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"><\/script>');</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>if (!window.supabase) document.write('<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"><\/script>');</script>
 <script>
 window.addEventListener('error', function (e) {
+  if (e.target && e.target.tagName && e.target.tagName !== 'SCRIPT') return; // a font or icon failing is harmless
   var a = document.getElementById('app');
-  if (a && /Loading/.test(a.textContent)) a.textContent = 'The admin page could not start: ' + (e.message || 'a script failed to load') + '. Try a hard refresh (Ctrl+Shift+R).';
+  if (a && /Loading/.test(a.textContent)) a.textContent = 'The admin page could not start: ' + (e.message || ('could not load ' + ((e.target && (e.target.src || e.target.href)) || 'a file'))) + '. Try a hard refresh (Ctrl+Shift+R).';
 }, true);
 </script>
 <script src="admin.js"></script>
