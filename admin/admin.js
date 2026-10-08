@@ -4,6 +4,7 @@
 const SUPABASE_URL = 'https://qjtuahvhszxektzdmmdf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqdHVhaHZoc3p4ZWt0emRtbWRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNzkzNDUsImV4cCI6MjEwNTc1NTM0NX0.Blt9FzDgZq_BgoraEraJVZwMcIEtZh7oXkrNWm-N-aQ';
 const REQUIRE_MFA = false; // authenticator-app step is switched off for now: email and password only
+if (!window.supabase) { document.getElementById('app').textContent = 'The admin page could not load its sign-in library. Check your connection and refresh.'; throw new Error('supabase library missing'); }
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'sc-admin-session' } });
 
 const CITIES = ['Delhi', 'Gurgaon', 'Noida', 'Greater Noida', 'Faridabad', 'Ghaziabad'];
@@ -446,6 +447,11 @@ renderers.log = async (main) => {
 
 /* ---------- start ---------- */
 (async () => {
-  const { data } = await sb.auth.getSession();
-  if (data.session) await gate(); else loginScreen();
+  try {
+    const { data } = await Promise.race([sb.auth.getSession(), new Promise((_, no) => setTimeout(() => no(new Error('Could not reach the server')), 10000))]);
+    if (data.session) await gate(); else loginScreen();
+  } catch (e) {
+    try { localStorage.removeItem('sc-admin-session'); } catch {}
+    loginScreen('Please sign in again. (' + (e.message || 'session problem') + ')');
+  }
 })();
