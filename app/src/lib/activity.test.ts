@@ -19,3 +19,9 @@ test('bookings, invites, broadcasts', () => {
   assert.match(describe(n('moderation_notice', { action: 'suspension_ended' })).title, /ended/);
   assert.equal(describe(n('unknown', {})).title, 'Something happened.');
 });
+
+test('being added to a group opens the Groups tab', () => {
+  const v = describe(n('group_added', { by_username: 'aditi.s', channel_name: 'Weekend crew' }));
+  assert.equal(v.title, 'aditi.s added you to Weekend crew.');
+  assert.equal(v.go?.tab, 'groups');
+});

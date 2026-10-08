@@ -142,6 +142,8 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     },
     channelPreviews: () => rpc<ChannelPreview[]>('my_channel_previews'),
     channelInvites: () => rpc<ChannelInvite[]>('my_channel_invites'),
+    createGroup: (name: string, members: string[]) => rpc<string>('create_group', { p_name: name, p_members: members }),
+    addToGroup: (channel: string, members: string[]) => rpc<number>('add_to_group', { p_channel: channel, p_members: members }),
     joinChannel: (id: string) => rpc<void>('join_channel', { p_channel: id }),
     leaveChannel: (id: string) => rpc<void>('leave_channel', { p_channel: id }),
     closeChannel: (id: string) => rpc<void>('close_channel', { p_channel: id }),

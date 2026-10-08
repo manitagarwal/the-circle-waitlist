@@ -3,7 +3,7 @@ import { clock } from './format.ts';
 
 export type ActivityView = {
   title: string; body: string | null; from?: string; actions?: 'friend'; fromId?: string;
-  go?: { to: 'channels' | 'bookings' | 'messages' | 'booking'; id?: string };
+  go?: { to: 'channels' | 'bookings' | 'messages' | 'booking'; id?: string; tab?: string };
 };
 
 const MODERATION: Record<string, string> = {
@@ -28,8 +28,10 @@ export function describe(n: NotificationRow): ActivityView {
       return { title: `Your booking starts in an hour. ${p.title}${p.starts_at ? `, ${clock(new Date(p.starts_at))}` : ''}.`, body: null, go: { to: 'booking', id: p.booking_id } };
     case 'booking_cancelled':
       return { title: `${p.title} was cancelled by the host.`, body: 'Its chat closes tomorrow.', go: { to: 'bookings' } };
+    case 'group_added':
+      return { title: `${p.by_username} added you to ${p.channel_name}.`, body: null, go: { to: 'messages', tab: 'groups' } };
     case 'channel_invite':
-      return { title: `You've been invited to ${p.channel_name}.`, body: "It's in Channels, under Private.", go: { to: 'channels' } };
+      return { title: `You've been invited to ${p.channel_name}.`, body: "It's in Messages, under Groups.", go: { to: 'channels' } };
     case 'broadcast':
       return { title: p.title ?? 'Announcement', body: p.body ?? null, from: 'The Semi Circle' };
     case 'moderation_notice':

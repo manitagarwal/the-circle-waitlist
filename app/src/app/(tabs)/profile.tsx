@@ -34,7 +34,8 @@ export default function Profile() {
     // Lobbies come with your interests, and booking chats are temporary, so only channels you chose to be in count
     return {
       profile, score, code, friends: friends.length,
-      channels: channels.filter((c) => c.is_member && (c.kind === 'public' || c.kind === 'private')).length,
+      channels: channels.filter((c) => c.is_member && c.kind === 'public').length,
+      groups: channels.filter((c) => c.is_member && c.kind === 'private').length,
       upcomingHosting: mine.filter((b) => b.is_host && b.kind === 'member' && (b.status === 'open' || b.status === 'full') && Date.parse(b.ends_at) > now).length,
     };
   });
@@ -59,7 +60,7 @@ export default function Profile() {
           <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 11, letterSpacing: 1.4, color: colors.faint, marginTop: 10 }}>MEMBER SINCE {month(p.member_since)}</Text>
         </View>
         <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
-          <Stat n={p.bookings_hosted} label="Hosted" note={data!.upcomingHosting ? `${data!.upcomingHosting} coming up` : null} /><Stat n={data!.friends} label="Friends" /><Stat n={data!.channels} label="Channels" />
+          <Stat n={p.bookings_hosted} label="Hosted" note={data!.upcomingHosting ? `${data!.upcomingHosting} coming up` : null} /><Stat n={data!.friends} label="Friends" /><Stat n={data!.channels} label="Channels" /><Stat n={data!.groups} label="Groups" />
         </View>
 
         {data!.score != null ? (<>

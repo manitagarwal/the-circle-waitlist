@@ -4,12 +4,14 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Bar } from '@/components/Bar';
 import { PersonAvatar } from '@/components/Avatar';
 import { Icon } from '@/components/Icon';
+import { FriendPicker } from '@/components/FriendPicker';
 import { Row, SectionLabel, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice, TextField } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import type { Person } from '@/lib/api';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
+import { GROUP_MAX_MEMBERS, spotsLeft } from '@/lib/groups';
 import { useLoad } from '@/lib/useLoad';
 
 type Entry = Person & { role: string };
@@ -21,6 +23,7 @@ export default function ChannelSettings() {
   const [name, setName] = useState<string | null>(null);
   const [target, setTarget] = useState<Entry | null>(null);
   const [adding, setAdding] = useState(false);
+  const [picked, setPicked] = useState<string[]>([]);
   const [confirm, setConfirm] = useState<'leave' | 'delete' | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -42,7 +45,8 @@ export default function ChannelSettings() {
   };
   const toChannels = () => r.replace('/channels');
 
-  const invitable = (data?.friends ?? []).filter((f) => !data!.entries.some((e) => e.id === f.id));
+  const isGroup = data?.channel?.kind === 'private';
+  const inGroup = (data?.entries ?? []).map((e) => e.id);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.ground }}>
@@ -56,8 +60,8 @@ export default function ChannelSettings() {
               <Button label="Save name" variant="secondary" loading={busy} onPress={() => run(() => api.renameChannel(id, name.trim()), () => { setName(null); void reload(); })} style={{ marginTop: 12 }} />) : null}
           </>) : <Text style={{ fontFamily: fonts.title, fontSize: 24, color: colors.ink }}>{data.channel.name}</Text>}
 
-          <SectionLabel>Members, {data.entries.length}</SectionLabel>
-          {isAdmin ? <Button label="Add members" variant="secondary" onPress={() => setAdding(true)} style={{ marginBottom: 8 }} /> : null}
+          <SectionLabel>{isGroup ? `Members, ${data.entries.length} of ${GROUP_MAX_MEMBERS}` : `Members, ${data.entries.length}`}</SectionLabel>
+          {isAdmin && isGroup ? <Button label="Add friends" variant="secondary" onPress={() => { setPicked([]); setAdding(true); }} style={{ marginBottom: 8 }} /> : null}
           {data.entries.map((e) => (
             <Row key={e.id} left={<PersonAvatar person={e} />} title={e.id === member?.id ? 'You' : e.full_name ?? e.username} subtitle={`@${e.username}`}
               meta={e.role === 'admin' ? 'ADMIN' : null} tag={e.role === 'admin' ? 'admin' : null}
@@ -83,15 +87,13 @@ export default function ChannelSettings() {
         </View>) : null}
       </Sheet>
 
-      <Sheet visible={adding} onClose={() => setAdding(false)} title="Add members">
-        <ScrollView>
-          <Body style={{ fontSize: 14, marginBottom: 8 }}>Friends you can invite. They get an invitation and choose whether to join.</Body>
-          {invitable.length === 0 ? <State empty="No friends to add right now." /> : null}
-          {invitable.map((f) => (
-            <Row key={f.id} left={<PersonAvatar person={f} />} title={`@${f.username}`} right={<Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.goldText }}>Invite</Text>}
-              onPress={() => run(() => api.inviteToChannel(id, f.id), () => setAdding(false))} />
-          ))}
+      <Sheet visible={adding} onClose={() => setAdding(false)} title="Add friends">
+        <ScrollView keyboardShouldPersistTaps="handled">
+          <Body style={{ fontSize: 14, marginBottom: 4 }}>Friends you add join straight away. Only friends can be added.</Body>
+          <FriendPicker friends={data?.friends ?? []} exclude={inGroup} selected={picked} max={spotsLeft(inGroup.length, 0)} onToggle={(fid) => setPicked((p) => (p.includes(fid) ? p.filter((x) => x !== fid) : [...p, fid]))} />
         </ScrollView>
+        {err ? <Notice tone="error">{err}</Notice> : null}
+        <Button label={picked.length ? `Add ${picked.length}` : 'Pick friends to add'} loading={busy} disabled={!picked.length} onPress={() => run(() => api.addToGroup(id, picked), () => { setAdding(false); setPicked([]); void reload(); })} style={{ marginTop: 12 }} />
       </Sheet>
 
       <Sheet visible={!!confirm} onClose={() => setConfirm(null)} title={confirm === 'delete' ? 'Delete this channel?' : 'Leave this channel?'}>

@@ -50,6 +50,7 @@ function Routes() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="channel/[id]" />
         <Stack.Screen name="channel/new" />
+        <Stack.Screen name="group/new" />
         <Stack.Screen name="channel/settings/[id]" />
         <Stack.Screen name="dm/[id]" />
         <Stack.Screen name="member/[id]" />

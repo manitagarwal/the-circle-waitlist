@@ -13,7 +13,7 @@ import { bucket, loadInterestGroups } from '@/lib/interests';
 import { endsIn, listStamp } from '@/lib/format';
 import { useLoad } from '@/lib/useLoad';
 
-type Seg = 'lobby' | 'public' | 'private';
+type Seg = 'lobby' | 'public' | 'booking';
 export default function Channels() {
   const r = useRouter();
   const [seg, setSeg] = useState<Seg>('lobby');
@@ -22,8 +22,8 @@ export default function Channels() {
   const [actionErr, setActionErr] = useState<string | null>(null);
 
   const { data, error, loading, refreshing, pull, reload } = useLoad(async () => {
-    const [channels, previews, invites, expiry, groups, me] = await Promise.all([api.channels(), api.channelPreviews(), api.channelInvites(), api.bookingChatExpiry(), loadInterestGroups(() => api.interestGroups()), api.myProfileBasics()]);
-    return { channels, previews: Object.fromEntries(previews.map((p) => [p.channel_id, p])), invites, expiry, groups, me };
+    const [channels, previews, expiry, groups, me] = await Promise.all([api.channels(), api.channelPreviews(), api.bookingChatExpiry(), loadInterestGroups(() => api.interestGroups()), api.myProfileBasics()]);
+    return { channels, previews: Object.fromEntries(previews.map((p) => [p.channel_id, p])), expiry, groups, me };
   });
 
   const act = async (id: string, fn: () => Promise<unknown>) => {
@@ -36,7 +36,7 @@ export default function Channels() {
   const publicAll = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'public'), [data]);
   const publicShown = useMemo(() => (data ? bucket(data.groups, applyFilters(publicAll, filters, data.me).sort((a, b) => (a.interest_name ?? '').localeCompare(b.interest_name ?? '') || b.member_count - a.member_count), (c) => c.interest_id) : []), [data, publicAll, filters]);
   const lobbyShown = useMemo(() => (data ? bucket(data.groups, lobby, (c) => c.interest_id) : []), [data, lobby]);
-  const mine = useMemo(() => (data?.channels ?? []).filter((c) => (c.kind === 'private' || c.kind === 'booking') && c.is_member)
+  const mine = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'booking' && c.is_member)
     .sort((a, b) => (data!.previews[b.id]?.last_at ?? b.created_at).localeCompare(data!.previews[a.id]?.last_at ?? a.created_at)), [data]);
 
   const preview = (id: string) => {
@@ -50,7 +50,7 @@ export default function Channels() {
       <TabHeader title="Channels" right={
         <Pressable accessibilityRole="button" accessibilityLabel="New channel" onPress={() => r.push('/channel/new')}
           style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="plus" color={colors.goldText} /></Pressable>} />
-      <Segmented value={seg} onChange={setSeg} options={[{ value: 'lobby', label: 'Lobby' }, { value: 'public', label: 'Public' }, { value: 'private', label: 'Private' }]} />
+      <Segmented value={seg} onChange={setSeg} options={[{ value: 'lobby', label: 'Lobby' }, { value: 'public', label: 'Public' }, { value: 'booking', label: 'Booking' }]} />
       <State loading={loading} error={error} onRetry={reload} />
       {actionErr ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.error, marginVertical: 8 }}>{actionErr}</Text> : null}
 
@@ -92,25 +92,13 @@ export default function Channels() {
         ))}
       </>) : null}
 
-      {data && seg === 'private' ? (<>
-        <Body style={{ fontSize: 14, marginBottom: 4 }}>Invite only. You'll only see the ones you're in.</Body>
-        {data.invites.map((inv) => (
-          <View key={inv.id} style={{ marginTop: 12, padding: 14, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.goldBorder }}>
-            <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>INVITATION</Text>
-            <Text style={{ fontFamily: fonts.body, fontSize: 15, color: colors.ink, marginTop: 4 }}>
-              <Text style={{ fontFamily: fonts.bodySemi }}>{inv.inviter_username}</Text> invited you to <Text style={{ fontFamily: fonts.bodySemi }}>{inv.channel_name}</Text>.
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
-              <Button label="Join" loading={busy === inv.id} onPress={() => act(inv.id, () => api.respondInvite(inv.id, true))} style={{ flex: 1, height: 44 }} />
-              <Button label="Decline" variant="secondary" disabled={busy === inv.id} onPress={() => act(inv.id, () => api.respondInvite(inv.id, false))} style={{ flex: 1, height: 44 }} />
-            </View>
-          </View>
-        ))}
-        {mine.length === 0 && data.invites.length === 0 ? <State empty="Nothing here yet. Start a private channel with the plus button, or wait for an invitation." /> : null}
+      {data && seg === 'booking' ? (<>
+        <Body style={{ fontSize: 14, marginBottom: 4 }}>The chats for bookings you host or have joined.</Body>
+        {mine.length === 0 ? <State empty="Nothing here yet. When you join or host a booking, its chat shows up here." /> : null}
         {mine.map((c) => {
-          const ends = c.kind === 'booking' ? endsIn(data.expiry[c.id] ?? null) : null;
+          const ends = endsIn(data.expiry[c.id] ?? null);
           return (
-            <Row key={c.id} left={<LetterBadge name={c.name} />} title={c.name} subtitle={ends ? 'Booking chat. Disappears a day after the game.' : preview(c.id)}
+            <Row key={c.id} left={<LetterBadge name={c.name} />} title={c.name} subtitle={preview(c.id) ?? 'Booking chat'}
               meta={ends ? ends.toUpperCase() : data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} tag={ends} onPress={() => open(c.id)} />
           );
         })}

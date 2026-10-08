@@ -3,7 +3,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ActivityPicker } from '@/components/ActivityPicker';
 import { Bar } from '@/components/Bar';
-import { Chip, Row, Segmented, Sheet } from '@/components/lists';
+import { Chip, Row, Sheet } from '@/components/lists';
 import { Body, Button, Notice, TextField } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api, useAuth } from '@/lib/auth';
@@ -17,7 +17,6 @@ const toggle = <T,>(xs: T[], x: T) => (xs.includes(x) ? xs.filter((y) => y !== x
 export default function NewChannel() {
   const r = useRouter();
   const { member } = useAuth();
-  const [kind, setKind] = useState<'public' | 'private'>('public');
   const [name, setName] = useState('');
   const [interest, setInterest] = useState<{ id: number; name: string } | null>(null);
   const [pickActivity, setPickActivity] = useState(false);
@@ -32,7 +31,7 @@ export default function NewChannel() {
 
   const mine = useLoad(async () => (await api.channels()).filter((c) => c.created_by === member?.id && (c.kind === 'public' || c.kind === 'private')).length);
 
-  const isPublic = kind === 'public';
+  const isPublic = true;
   const nameOk = name.trim().length >= 3 && name.trim().length <= 50;
   const ageErr = isPublic ? ageError(ageMin, ageMax) : null;
   const ready = nameOk && !ageErr && (!isPublic || !!interest);
@@ -40,7 +39,7 @@ export default function NewChannel() {
     setBusy(true); setErr(null);
     try {
       const id = await api.createChannel({
-        kind, name: name.trim(), interestId: interest?.id ?? null,
+        kind: 'public', name: name.trim(), interestId: interest?.id ?? null,
         tags: isPublic ? {
           ...(cities.length ? { city: cities } : {}), ...(area.trim() ? { area: area.trim() } : {}),
           ...(ageMin.trim() ? { age_min: ageMin.trim() } : {}), ...(ageMax.trim() ? { age_max: ageMax.trim() } : {}), ...(genders.length ? { gender: genders } : {}),
@@ -56,11 +55,10 @@ export default function NewChannel() {
     <View style={{ flex: 1, backgroundColor: colors.ground }}>
       <Bar title="New channel" />
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
-        <Segmented value={kind} onChange={setKind} options={[{ value: 'public', label: 'Public' }, { value: 'private', label: 'Private' }]} />
-        <Body style={{ fontSize: 14 }}>{isPublic ? 'Anyone who fits the rules below can join. You own it.' : 'Invite only. Your circle. Anyone you invite can join.'}</Body>
+        <Body style={{ fontSize: 14 }}>Anyone who fits the rules below can join. You own it. For a chat with friends, start a group in Messages instead.</Body>
         <TextField label="Name" value={name} onChangeText={setName} maxLength={50} error={name && !nameOk ? 'Use 3 to 50 characters.' : null} />
 
-        {label(`Activity${isPublic ? '' : ' (optional)'}`)}
+        {label('Activity')}
         <Button label={interest?.name ?? 'Choose an activity'} variant="secondary" onPress={() => setPickActivity(true)} />
 
         {isPublic ? (<>

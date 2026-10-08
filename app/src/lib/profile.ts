@@ -13,7 +13,7 @@ export const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 /** The four switches on the notifications screen and the backend categories each one controls. */
 export const NOTIFICATION_SWITCHES = [
   { key: 'joins', label: 'Someone joins a booking you listed', categories: ['booking_join', 'booking_cancelled'] },
-  { key: 'social', label: 'A friend request or first message', categories: ['friend_request'] },
+  { key: 'social', label: 'A friend request, first message or being added to a group', categories: ['friend_request', 'group_added'] },
   { key: 'reminder', label: 'A booking of yours starts in an hour', categories: ['booking_reminder'] },
   { key: 'news', label: 'Announcements from the team', categories: ['broadcast'] },
 ] as const;
