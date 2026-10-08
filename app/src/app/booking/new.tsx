@@ -6,7 +6,7 @@ import { Chip, Row, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice, Stepper, TextField } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api } from '@/lib/auth';
-import { bookingDay, startSlots } from '@/lib/bookings';
+import { slotDay, startSlots } from '@/lib/bookings';
 import { clock } from '@/lib/format';
 import { friendly } from '@/lib/messages';
 import { useLoad } from '@/lib/useLoad';
@@ -25,7 +25,7 @@ export default function NewBooking() {
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const slots = useMemo(() => startSlots(), []);
-  const days = useMemo(() => [...new Set(slots.map((s) => bookingDay(s)))], [slots]);
+  const days = useMemo(() => [...new Set(slots.map((s) => slotDay(s)))], [slots]);
   const [day, setDay] = useState<string>(days[0] ?? '');
   const [start, setStart] = useState<string | null>(null);
   const [dur, setDur] = useState(120);
@@ -74,9 +74,9 @@ export default function NewBooking() {
         <TextField label="Title" value={title} onChangeText={setTitle} maxLength={80} />
 
         {label('When')}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>{days.map((d) => <Chip key={d} label={d === 'Tonight' ? 'Today' : d} on={day === d} onPress={() => { setDay(d); setStart(null); }} />)}</ScrollView>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>{days.map((d) => <Chip key={d} label={d} on={day === d} onPress={() => { setDay(d); setStart(null); }} />)}</ScrollView>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
-          {slots.filter((s) => bookingDay(s) === day).map((s) => <Chip key={s} label={clock(new Date(s))} on={start === s} onPress={() => setStart(s)} />)}
+          {slots.filter((s) => slotDay(s) === day).map((s) => <Chip key={s} label={clock(new Date(s))} on={start === s} onPress={() => setStart(s)} />)}
         </ScrollView>
         <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>Start on the hour or half hour, 6 to 24 hours from now.</Text>
         {label('How long')}

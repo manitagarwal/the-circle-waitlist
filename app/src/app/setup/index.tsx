@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
 import { Avatar } from '@/components/Avatar';
 import { Body, Button, Notice, Screen, StepHeader, Title } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { AVATAR_IDS } from '@/lib/avatars';
-import { MAX_PHOTO_BYTES } from '@/lib/profile';
+import { pickPhoto } from '@/lib/photo';
 import { useSetup } from './_layout';
 
 export default function Photo() {
@@ -19,14 +17,9 @@ export default function Photo() {
   const pick = async () => {
     setErr(null); setBusy(true);
     try {
-      const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 1 });
-      if (res.canceled || !res.assets[0]) return;
-      // square, 1080 px, JPEG: keeps every photo well under the 5 MB limit
-      const out = await ImageManipulator.manipulateAsync(res.assets[0].uri, [{ resize: { width: 1080 } }], { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG });
-      const size = (await (await fetch(out.uri)).arrayBuffer()).byteLength;
-      if (size > MAX_PHOTO_BYTES) return setErr('That photo is over 5 MB. Try another.');
-      set({ photoUri: out.uri, avatarId: null });
-    } catch { setErr("Couldn't open that photo. Try another."); } finally { setBusy(false); }
+      const uri = await pickPhoto();
+      if (uri) set({ photoUri: uri, avatarId: null });
+    } catch (e) { setErr((e as Error).message.includes('5 MB') ? (e as Error).message : "Couldn't open that photo. Try another."); } finally { setBusy(false); }
   };
 
   return (

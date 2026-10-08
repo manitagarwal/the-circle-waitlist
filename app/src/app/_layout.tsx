@@ -12,7 +12,7 @@ import { colors } from '@/theme';
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function Routes() {
-  const { gate, recovery } = useAuth();
+  const { gate, recovery, paused, ackPaused } = useAuth();
   const normal = !recovery;
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.ground }, animation: 'fade' }}>
@@ -40,7 +40,13 @@ function Routes() {
       <Stack.Protected guard={normal && gate === 'setup'}>
         <Stack.Screen name="setup" />
       </Stack.Protected>
-      <Stack.Protected guard={normal && gate === 'app'}>
+      <Stack.Protected guard={normal && (gate === 'closed' || gate === 'banned')}>
+        <Stack.Screen name="closed" />
+      </Stack.Protected>
+      <Stack.Protected guard={normal && gate === 'app' && paused && !ackPaused}>
+        <Stack.Screen name="paused" />
+      </Stack.Protected>
+      <Stack.Protected guard={normal && gate === 'app' && (!paused || ackPaused)}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="channel/[id]" />
         <Stack.Screen name="channel/new" />
@@ -50,6 +56,13 @@ function Routes() {
         <Stack.Screen name="booking/[id]" />
         <Stack.Screen name="booking/new" />
         <Stack.Screen name="booking/attendance/[id]" />
+        <Stack.Screen name="settings/index" />
+        <Stack.Screen name="settings/profile" />
+        <Stack.Screen name="settings/interests" />
+        <Stack.Screen name="settings/password" />
+        <Stack.Screen name="settings/blocked" />
+        <Stack.Screen name="settings/account" />
+        <Stack.Screen name="settings/guidelines" />
       </Stack.Protected>
     </Stack>
   );

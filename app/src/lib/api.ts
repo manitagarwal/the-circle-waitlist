@@ -48,6 +48,10 @@ export const REPORT_CATEGORIES = [
   { value: 'repeated_no_shows', label: 'Repeated no-shows' },
   { value: 'other', label: 'Something else' },
 ] as const;
+export type OwnRow = {
+  avatar_id: number | null; photo_path: string | null; bio: string | null; dob: string; gender: string; address_text: string;
+  lat: number | null; lng: number | null; area: string; field_of_work: string;
+};
 export type Vouch = { name?: string; email?: string; phone?: string };
 
 /** Pure data layer. Takes the client so it can be tested with a fake. */
@@ -56,6 +60,18 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     const { data, error } = await sb.rpc(fn, args);
     if (error) throw error;
     return data as T;
+  };
+  const ownRow = async (): Promise<{ row: OwnRow; interestIds: number[] }> => {
+    const { data: u } = await sb.auth.getUser();
+    const uid = u.user?.id;
+    if (!uid) throw new Error('not_signed_in');
+    const [m, mi] = await Promise.all([
+      sb.from('members').select('avatar_id, photo_path, bio, dob, gender, address_text, lat, lng, area, field_of_work').eq('id', uid).single(),
+      sb.from('member_interests').select('interest_id').eq('member_id', uid),
+    ]);
+    if (m.error) throw m.error;
+    if (mi.error) throw mi.error;
+    return { row: m.data as OwnRow, interestIds: (mi.data as { interest_id: number }[]).map((x) => x.interest_id) };
   };
   return {
     checkDuplicates: (p: { phone?: string; personalEmail?: string; workEmail?: string }) =>
@@ -227,6 +243,31 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     hostedBy: (member: string) => rpc<HostedBooking[]>('member_hosted_bookings', { p_member: member }),
     report: (a: { member: string; category: string; reason: string; safety: boolean; context?: { channel_id?: string; message_id?: string; booking_id?: string } }) =>
       rpc<string>('submit_report', { p_reported: a.member, p_category: a.category, p_reason: a.reason, p_context: a.context ?? {}, p_is_safety: a.safety }),
+    // ---- my profile and settings
+    ownRow,
+    /** Re-saves the whole profile with some fields changed (the backend has one function for it). */
+    saveProfile: async (patch: Partial<{ avatarId: number | null; photoPath: string | null; bio: string | null; interestIds: number[]; area: string; field: string }>) => {
+      const { row, interestIds } = await ownRow();
+      const photo = patch.photoPath !== undefined ? patch.photoPath : row.photo_path;
+      const avatar = patch.avatarId !== undefined ? patch.avatarId : row.avatar_id;
+      const { error } = await sb.rpc('complete_profile', {
+        p_avatar_id: photo ? null : avatar, p_photo_path: photo, p_bio: patch.bio !== undefined ? patch.bio : row.bio, p_dob: row.dob, p_gender: row.gender,
+        p_address_text: row.address_text, p_lat: row.lat, p_lng: row.lng, p_area: patch.area ?? row.area, p_field_of_work: patch.field ?? row.field_of_work,
+        p_interest_ids: patch.interestIds ?? interestIds,
+      });
+      if (error) throw error;
+    },
+    notificationPrefs: async () => {
+      const { data, error } = await sb.from('notification_prefs').select('category, enabled');
+      if (error) throw error;
+      return Object.fromEntries((data as { category: string; enabled: boolean }[]).map((p) => [p.category, p.enabled])) as Record<string, boolean>;
+    },
+    setUsername: (u: string) => rpc<string>('set_username', { p_username: u }),
+    referralCode: () => rpc<string>('my_referral_code'),
+    exportData: () => rpc<unknown>('export_my_data'),
+    deleteAccount: () => rpc<{ deleted_at: string; erased_after: string }>('delete_my_account'),
+    restoreAccount: () => rpc<void>('restore_my_account'),
+    moderationStatus: () => rpc<{ state: string; suspended_until: string | null; last_action: string | null }>('my_moderation_status'),
     // ---- activity
     notifications: async () => {
       const { data, error } = await sb.from('my_notifications').select('*').order('created_at', { ascending: false }).limit(60);

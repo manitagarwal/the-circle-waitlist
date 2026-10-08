@@ -22,6 +22,11 @@ export function bookingDay(iso: string, now = new Date()): string {
   return new Intl.DateTimeFormat('en-IN', { timeZone: IST, weekday: 'long', day: 'numeric', month: 'short' }).format(d);
 }
 
+/** Which day a slot falls on, for the host form: Today or Tomorrow (never Tonight, so the two chips stay distinct). */
+export function slotDay(iso: string, now = new Date()): 'Today' | 'Tomorrow' {
+  return Math.round((dayNum(new Date(iso)) - dayNum(now)) / 86400000) <= 0 ? 'Today' : 'Tomorrow';
+}
+
 /** "8:30 to 10:30 PM" (drops the first AM/PM when both match). */
 export function timeRange(startIso: string, endIso: string): string {
   const a = clock(new Date(startIso)), b = clock(new Date(endIso));
@@ -46,7 +51,6 @@ export function startSlots(now = new Date(), minHours = 6, maxHours = 24): strin
   return out;
 }
 
-export const slotLabel = (iso: string, now = new Date()) => `${bookingDay(iso, now) === 'Today' ? 'Today' : bookingDay(iso, now) === 'Tonight' ? 'Today' : bookingDay(iso, now)}, ${clock(new Date(iso))}`;
 
 /** The last moment a member can leave without it counting against them. */
 export const freeLeaveUntil = (startsIso: string, lockInHours = 3) => new Date(new Date(startsIso).getTime() - lockInHours * 3600000);

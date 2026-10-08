@@ -22,3 +22,10 @@ test('no password means stopped at password', () => {
   assert.equal(computeGate({ ...np, member: { onboarded_at: 'x' } }), 'password');
   assert.equal(computeGate({ ...np, member: { onboarded_at: null } }), 'password');
 });
+
+test('closed and banned accounts', () => {
+  assert.equal(computeGate({ ...base, member: { onboarded_at: 'x', state: 'deleted' } }), 'closed');
+  assert.equal(computeGate({ ...base, member: { onboarded_at: 'x', state: 'banned' } }), 'banned');
+  assert.equal(computeGate({ ...base, hasPassword: false, member: { onboarded_at: 'x', state: 'deleted' } }), 'closed');
+  assert.equal(computeGate({ ...base, member: { onboarded_at: 'x', state: 'suspended' } }), 'app');
+});

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ageRange, bookingDay, freeLeaveUntil, genderWanted, groupByDay, joinCheck, spots, startSlots, startsIn, timeRange, type BookingRow } from './bookings.ts';
+import { ageRange, bookingDay, slotDay, freeLeaveUntil, genderWanted, groupByDay, joinCheck, spots, startSlots, startsIn, timeRange, type BookingRow } from './bookings.ts';
 
 const now = new Date('2026-10-08T12:00:00Z'); // 5:30 PM IST
 const mk = (o: Partial<BookingRow> = {}): BookingRow => ({ id: 'b', kind: 'member', status: 'open', interest_id: 1, interest_name: 'Badminton', title: 'T', description: null, venue_name: null, area: null, address_outer: null,
@@ -40,4 +40,9 @@ test('join hints', () => {
 test('grouping', () => {
   const g = groupByDay([mk({ id: 'a', starts_at: '2026-10-09T03:00:00Z' }), mk({ id: 'b' })], now);
   assert.deepEqual(g.map((x) => x.day), ['Tonight', 'Tomorrow']);
+});
+
+test('slotDay never says Tonight', () => {
+  assert.equal(slotDay('2026-10-08T15:00:00Z', now), 'Today');
+  assert.equal(slotDay('2026-10-09T03:00:00Z', now), 'Tomorrow');
 });
