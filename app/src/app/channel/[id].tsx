@@ -11,6 +11,7 @@ import { api, useAuth } from '@/lib/auth';
 import type { Message, Person, Poll } from '@/lib/api';
 import { friendly } from '@/lib/messages';
 import { dayLabel, endsIn, pct, sameDay } from '@/lib/format';
+import { ReportSheet } from '@/components/ReportSheet';
 import { useLoad } from '@/lib/useLoad';
 import { supabase } from '@/lib/supabase';
 
@@ -54,6 +55,7 @@ export default function Chat() {
   const [editing, setEditing] = useState<Message | null>(null);
   const [voting, setVoting] = useState(false);
   const [joining, setJoining] = useState(false);
+  const [reporting, setReporting] = useState<Message | null>(null);
 
   const { data, error, loading, reload, setData } = useLoad(async () => {
     const [channels, messages, polls] = await Promise.all([api.channels(), api.messages(id), api.polls(id)]);
@@ -110,7 +112,7 @@ export default function Chat() {
       <View>
         {label}
         <Pressable onLongPress={() => setMenu(m)} accessibilityHint="Hold for options" style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%', marginVertical: 3 }}>
-          {!mine ? <Text style={{ fontFamily: fonts.bodySemi, fontSize: 12, color: colors.goldText, marginBottom: 2, marginLeft: 4 }}>{who}</Text> : null}
+          {!mine ? <Text accessibilityRole="link" onPress={() => !isLobby && r.push({ pathname: '/member/[id]', params: { id: m.sender_id } })} style={{ fontFamily: fonts.bodySemi, fontSize: 12, color: colors.goldText, marginBottom: 2, marginLeft: 4 }}>{who}</Text> : null}
           <View style={{ backgroundColor: mine ? colors.goldTint : colors.card, borderWidth: 1, borderColor: mine ? colors.goldBorder : colors.line, paddingVertical: 8, paddingHorizontal: 12,
             borderRadius: radius.bubble, borderBottomRightRadius: mine ? 3 : radius.bubble, borderTopLeftRadius: mine ? radius.bubble : 3 }}>
             <Text style={{ fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.ink }}>{m.body}</Text>
@@ -160,11 +162,15 @@ export default function Chat() {
             {menu && menu.sender_id === member?.id ? (<>
               <Button label="Edit message" variant="secondary" onPress={() => { setEditing(menu); setText(menu.body); setMenu(null); }} />
               <Button label="Delete message" variant="secondary" onPress={() => remove(menu)} />
-            </>) : menu && member?.role === 'admin' ? <Button label="Remove message" variant="secondary" onPress={() => remove(menu)} /> : null}
+            </>) : menu ? (<>
+              <Button label="Report member" variant="secondary" onPress={() => { setReporting(menu); setMenu(null); }} />
+              {member?.role === 'admin' ? <Button label="Remove message" variant="secondary" onPress={() => remove(menu)} /> : null}
+            </>) : null}
             <Button label="Close" variant="link" onPress={() => setMenu(null)} />
           </View>
         </Pressable>
       </Modal>
+      <ReportSheet member={reporting ? (data?.people[reporting.sender_id] ?? { id: reporting.sender_id, username: 'member' }) : null} context={reporting ? { channel_id: id, message_id: reporting.id } : undefined} onClose={() => setReporting(null)} />
     </KeyboardAvoidingView>
   );
 }

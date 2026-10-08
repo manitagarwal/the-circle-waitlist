@@ -33,6 +33,21 @@ export type BookingInput = {
   interestId: number; title: string; description: string | null; venue: string; area: string; address: string; startsAt: string; endsAt: string;
   headcountMax: number; maleSlots: number | null; femaleSlots: number | null; minScore: number | null; ageMin: number | null; ageMax: number | null;
 };
+export type DmRow = {
+  channel_id: string; other_id: string; username: string; full_name: string | null; avatar_id: number | null; photo_path: string | null;
+  friendship_status: 'none' | 'pending' | 'accepted' | 'declined'; requested_by_me: boolean; tab: 'friends' | 'strangers';
+  last_body: string | null; last_at: string | null; last_from_me: boolean | null;
+};
+export type Friendship = { other_id: string; status: 'pending' | 'accepted' | 'declined'; requested_by_me: boolean; message: string | null };
+export type HostedBooking = { id: string; title: string; interest_name: string; area: string | null; starts_at: string; status: string; kind: string };
+export type Blocked = { id: string; username: string; avatar_id: number | null; photo_path: string | null; blocked_at: string };
+export const REPORT_CATEGORIES = [
+  { value: 'harassment', label: 'Harassment or inappropriate behaviour' },
+  { value: 'fake_profile', label: 'Fake profile' },
+  { value: 'inappropriate_content', label: 'Inappropriate content' },
+  { value: 'repeated_no_shows', label: 'Repeated no-shows' },
+  { value: 'other', label: 'Something else' },
+] as const;
 export type Vouch = { name?: string; email?: string; phone?: string };
 
 /** Pure data layer. Takes the client so it can be tested with a fake. */
@@ -192,6 +207,26 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       return data as Poll[];
     },
     vote: (poll: string, option: string) => rpc<void>('vote_poll', { p_poll: poll, p_option: option }),
+    // ---- direct messages, friends, blocks, reports
+    dms: async () => {
+      const { data, error } = await sb.from('my_dms').select('*');
+      if (error) throw error;
+      return data as DmRow[];
+    },
+    friendship: async (other: string) => {
+      const { data, error } = await sb.from('my_friendships').select('other_id, status, requested_by_me, message').eq('other_id', other).maybeSingle();
+      if (error) throw error;
+      return data as Friendship | null;
+    },
+    sendDm: (to: string, body: string) => rpc<{ channel_id?: string }>('send_dm', { p_to: to, p_body: body }),
+    sendFriendRequest: (to: string, message: string | null) => rpc<string>('send_friend_request', { p_to: to, p_message: message }),
+    unfriend: (member: string) => rpc<void>('unfriend', { p_member: member }),
+    block: (member: string) => rpc<void>('block_member', { p_member: member }),
+    unblock: (member: string) => rpc<void>('unblock_member', { p_member: member }),
+    blocked: () => rpc<Blocked[]>('my_blocked_members'),
+    hostedBy: (member: string) => rpc<HostedBooking[]>('member_hosted_bookings', { p_member: member }),
+    report: (a: { member: string; category: string; reason: string; safety: boolean; context?: { channel_id?: string; message_id?: string; booking_id?: string } }) =>
+      rpc<string>('submit_report', { p_reported: a.member, p_category: a.category, p_reason: a.reason, p_context: a.context ?? {}, p_is_safety: a.safety }),
     // ---- activity
     notifications: async () => {
       const { data, error } = await sb.from('my_notifications').select('*').order('created_at', { ascending: false }).limit(60);
