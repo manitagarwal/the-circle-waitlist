@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput,
+  ActivityIndicator, KeyboardAvoidingView, RefreshControl, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput,
   TextInputProps, View, ViewStyle,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
@@ -8,10 +8,13 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, radius } from '@/theme';
 
-export function Screen({ children, footer, scroll = true }: { children: React.ReactNode; footer?: React.ReactNode; scroll?: boolean }) {
+export function Screen({ children, footer, scroll = true, onRefresh, refreshing }: {
+  children: React.ReactNode; footer?: React.ReactNode; scroll?: boolean; onRefresh?: () => void; refreshing?: boolean;
+}) {
   const insets = useSafeAreaInsets();
   const body = scroll ? (
-    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingTop: insets.top + 8 }} keyboardShouldPersistTaps="handled">
+    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingTop: insets.top + 8 }} keyboardShouldPersistTaps="handled"
+      refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.goldText} /> : undefined}>
       {children}
     </ScrollView>
   ) : (

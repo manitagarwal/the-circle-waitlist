@@ -10,6 +10,19 @@ export type Application = {
   id: string; full_name: string; status: string; city: string; created_at: string;
   queue_position: number | null; referral_code: string;
 };
+
+export type ChannelRow = {
+  id: string; kind: 'lobby' | 'public' | 'private' | 'booking' | 'dm'; name: string; photo_path: string | null;
+  interest_id: number | null; interest_name: string | null; created_by: string | null; created_at: string;
+  member_count: number; is_member: boolean; my_role: string | null; tags: { type: string; value: string }[];
+};
+export type ChannelPreview = { channel_id: string; body: string; last_at: string; sender_username: string | null; from_me: boolean };
+export type ChannelInvite = { id: string; channel_id: string; channel_name: string; inviter_username: string; created_at: string };
+export type Message = { id: string; channel_id: string; sender_id: string; body: string; created_at: string; edited_at: string | null };
+export type PollOption = { id: string; label: string; votes: number };
+export type Poll = { id: string; channel_id: string; question: string; created_at: string; closes_at: string | null; closed_at: string | null; is_open: boolean; total_votes: number; my_option_id: string | null; options: PollOption[] };
+export type Person = { id: string; username: string; full_name: string | null; avatar_id: number | null; photo_path: string | null };
+export type NotificationRow = { id: string; type: string; payload: Record<string, any>; read_at: string | null; is_unread: boolean; created_at: string };
 export type Vouch = { name?: string; email?: string; phone?: string };
 
 /** Pure data layer. Takes the client so it can be tested with a fake. */
@@ -75,6 +88,68 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       const { error } = await sb.rpc('register_push_token', { p_token: token, p_platform: platform });
       if (error) throw error;
     },
+    // ---- channels
+    channels: async () => {
+      const { data, error } = await sb.from('channels_overview').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as ChannelRow[];
+    },
+    bookingChatExpiry: async () => {
+      const { data, error } = await sb.from('channels').select('id, expires_at').eq('kind', 'booking').is('deleted_at', null);
+      if (error) throw error;
+      return Object.fromEntries((data as { id: string; expires_at: string | null }[]).map((c) => [c.id, c.expires_at]));
+    },
+    channelPreviews: () => rpc<ChannelPreview[]>('my_channel_previews'),
+    channelInvites: () => rpc<ChannelInvite[]>('my_channel_invites'),
+    joinChannel: (id: string) => rpc<void>('join_channel', { p_channel: id }),
+    leaveChannel: (id: string) => rpc<void>('leave_channel', { p_channel: id }),
+    closeChannel: (id: string) => rpc<void>('close_channel', { p_channel: id }),
+    respondInvite: (id: string, accept: boolean) => rpc<void>('respond_channel_invite', { p_invite: id, p_accept: accept }),
+    createChannel: (a: { kind: 'public' | 'private'; name: string; interestId: number | null; tags: Record<string, string> }) =>
+      rpc<string>('create_channel', { p_kind: a.kind, p_name: a.name, p_interest_id: a.interestId, p_photo_path: null, p_tags: a.tags }),
+    renameChannel: (id: string, name: string) => rpc<void>('update_channel', { p_channel: id, p_name: name, p_photo_path: null }),
+    inviteToChannel: (channel: string, invitee: string) => rpc<void>('invite_to_channel', { p_channel: channel, p_invitee: invitee }),
+    removeChannelMember: (channel: string, member: string) => rpc<void>('remove_channel_member', { p_channel: channel, p_member: member }),
+    setChannelAdmin: (channel: string, member: string, isAdmin: boolean) => rpc<void>('set_channel_admin', { p_channel: channel, p_member: member, p_is_admin: isAdmin }),
+    roster: async (channel: string) => {
+      const { data, error } = await sb.from('channel_members').select('member_id, role').eq('channel_id', channel);
+      if (error) throw error;
+      return data as { member_id: string; role: string }[];
+    },
+    friends: (me: string) => rpc<Person[]>('member_friends', { p_member: me }),
+    // ---- people
+    people: async (ids: string[]) => {
+      if (!ids.length) return [] as Person[];
+      const { data, error } = await sb.from('member_profiles').select('id, username, full_name, avatar_id, photo_path').in('id', ids);
+      if (error) throw error;
+      return data as Person[];
+    },
+    // ---- messages and polls
+    messages: async (channel: string, limit = 60) => {
+      const { data, error } = await sb.from('messages').select('id, channel_id, sender_id, body, created_at, edited_at')
+        .eq('channel_id', channel).order('created_at', { ascending: false }).limit(limit);
+      if (error) throw error;
+      return data as Message[]; // newest first
+    },
+    sendMessage: (channel: string, body: string) => rpc<string>('send_message', { p_channel: channel, p_body: body }),
+    editMessage: (id: string, body: string) => rpc<void>('edit_message', { p_message: id, p_body: body }),
+    removeMessage: (id: string) => rpc<void>('remove_message', { p_message: id }),
+    polls: async (channel: string) => {
+      const { data, error } = await sb.from('polls_overview').select('*').eq('channel_id', channel).order('created_at', { ascending: false }).limit(5);
+      if (error) throw error;
+      return data as Poll[];
+    },
+    vote: (poll: string, option: string) => rpc<void>('vote_poll', { p_poll: poll, p_option: option }),
+    // ---- activity
+    notifications: async () => {
+      const { data, error } = await sb.from('my_notifications').select('*').order('created_at', { ascending: false }).limit(60);
+      if (error) throw error;
+      return data as NotificationRow[];
+    },
+    unreadCount: () => rpc<number>('unread_notification_count'),
+    markRead: (id: string) => rpc<void>('mark_notification_read', { p_id: id }),
+    markAllRead: () => rpc<number>('mark_all_notifications_read'),
+    respondFriend: (from: string, accept: boolean) => rpc<void>('respond_friend_request', { p_from: from, p_accept: accept }),
     hasPassword: () => rpc<boolean>('has_password'),
     myApplication: async (): Promise<Application | null> => {
       const rows = await rpc<Application[]>('my_application');

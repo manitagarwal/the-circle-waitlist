@@ -41,7 +41,10 @@ function Routes() {
         <Stack.Screen name="setup" />
       </Stack.Protected>
       <Stack.Protected guard={normal && gate === 'app'}>
-        <Stack.Screen name="home" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="channel/[id]" />
+        <Stack.Screen name="channel/new" />
+        <Stack.Screen name="channel/settings/[id]" />
       </Stack.Protected>
     </Stack>
   );
