@@ -46,6 +46,35 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     },
     usernameAvailable: (u: string) => rpc<string>('username_available', { p_username: u }),
     activate: (username: string) => rpc<{ member_id: string; username: string }>('activate_membership', { p_username: username }),
+    interestGroups: async () => {
+      const [g, i] = await Promise.all([
+        sb.from('interest_groups').select('id, name, sort').order('sort'),
+        sb.from('interests').select('id, name, group_id').eq('is_active', true).order('name'),
+      ]);
+      if (g.error) throw g.error;
+      if (i.error) throw i.error;
+      return (g.data as { id: number; name: string; sort: number }[]).map((grp) => ({
+        ...grp, interests: (i.data as { id: number; name: string; group_id: number }[]).filter((x) => x.group_id === grp.id),
+      }));
+    },
+    uploadProfilePhoto: async (uid: string, bytes: ArrayBuffer) => {
+      const path = `${uid}/${Date.now()}.jpg`;
+      const { error } = await sb.storage.from('profile-photos').upload(path, bytes, { contentType: 'image/jpeg', upsert: false });
+      if (error) throw error;
+      return path;
+    },
+    completeProfile: async (args: Record<string, unknown>) => {
+      const { error } = await sb.rpc('complete_profile', args);
+      if (error) throw error;
+    },
+    setNotificationPref: async (category: string, enabled: boolean) => {
+      const { error } = await sb.rpc('set_notification_pref', { p_category: category, p_enabled: enabled });
+      if (error) throw error;
+    },
+    registerPushToken: async (token: string, platform: string) => {
+      const { error } = await sb.rpc('register_push_token', { p_token: token, p_platform: platform });
+      if (error) throw error;
+    },
     hasPassword: () => rpc<boolean>('has_password'),
     myApplication: async (): Promise<Application | null> => {
       const rows = await rpc<Application[]>('my_application');
