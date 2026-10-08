@@ -99,3 +99,9 @@ Scheduled jobs (pg_cron): every 10 min complete finished bookings and delete exp
 8. Notifications and push tokens
 9. Score events, `member_score`, moderation
 10. Scheduled jobs
+
+## Events and admin portal
+- Tables: `events` (status draft/published/completed/cancelled, capacity, price_inr, age_min/max, genders, cities, min_score, cover_path), `event_rsvps` (status going/waitlist/attended/no_show/cancelled, ticket_code, checked_in_at). View `events_overview`. Private bucket `event-covers` (admins write, active members read).
+- Member functions: `rsvp_event`, cancel RSVP, ticket lookup.
+- Admin functions: `admin_events`, `admin_event_get`, `admin_save_event`, `admin_set_event_status`, `admin_event_attendees`, `admin_mark_rsvp`, `admin_check_in`, `admin_overview`, `send_broadcast`, `review_applicant`, `accept_applicant`, `apply_moderation`, `lift_moderation`, `resolve_report`, `approve_interest_suggestion`, `reject_interest_suggestion`.
+- Admin views: `admin_applicants_queue`, `admin_members`, `admin_reports_queue`, `admin_interest_suggestions`, `admin_low_score_members`. Policy `admins read bookings` lets the portal list bookings.

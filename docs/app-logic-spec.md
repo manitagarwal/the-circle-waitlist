@@ -200,3 +200,18 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 10. **Fast-track:** top of review queue, not automatic acceptance?
 11. **Account deletion:** soft-delete now, hard-delete after 30 days?
 12. **Lobby name:** keep "Lobby"?
+
+## Events (hosted by us)
+- Admins create events in the admin portal (draft → published → completed or cancelled). Members see published events in the Events tab.
+- Reserving is free and instant. When capacity is full the member joins a waitlist and is promoted automatically when a spot opens.
+- Each reservation gets a ticket code shown as a QR in the app. Admins check people in by typing the code in the portal.
+- Eligibility rules per event: city list, age range, genders and minimum reliability score. Rules are enforced by the database, not the app.
+- Attended and no-show feed the reliability score. Cancelling an event notifies everyone reserved.
+- Priced events are shown with their price but cannot be reserved yet ("Tickets open soon"). Payments are not built.
+- Rate limit: `event.max_rsvps_per_hour`.
+- Not in v1: event chat, reminders.
+
+## Admin portal (thesemicircle.in/admin)
+- Email and password, then an authenticator-app code (TOTP). Only accounts that pass `is_admin()` get in. The code step is enforced by the page only; the database checks admin status, not the code step.
+- Pages: Dashboard, Applicants (shortlist, accept, reject), Members (warn, suspend, ban, lift), Reports (dismiss, minor, severe), Events (create, edit, publish, cancel, complete, attendees, check-in, CSV, cover image), Announcements (to all or by activity), Bookings (read only), Settings (rules, activities, suggestions, blocked words), Activity log.
+- Every action calls an admin-only database function or a table with an admin-only policy.
