@@ -43,7 +43,7 @@ const ERRORS = {
   min_score_invalid: 'The reliability score is between 0 and 10.', capacity_below_going: 'More people have already reserved than that capacity.',
   event_locked: 'A cancelled or completed event cannot be edited.', status_invalid: 'That change is not allowed for this event.', ticket_not_found: 'No ticket with that code for this event.',
   ticket_not_valid: 'That ticket is not valid (cancelled or on the waitlist).', not_joined: 'That member has not reserved a spot.', conflict_of_interest: 'You cannot act on your own case.',
-  already_resolved: 'That report was already resolved.', interest_exists: 'That activity already exists.', message_invalid: 'Title up to 80 characters, message up to 500.',
+  already_resolved: 'That report was already resolved.', interest_exists: 'That activity already exists.', message_invalid: 'Title up to 80 characters, message up to 500 (2000 for a lobby message).', channel_not_found: 'No lobby found to post in.',
 };
 const friendlyError = (e) => ERRORS[e && e.message] || (e && e.message) || 'Something went wrong.';
 
@@ -368,20 +368,51 @@ async function eventDetail(main, id) {
   code.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') checkIn(); });
 }
 
-/* ---------- announcements ---------- */
-renderers.announce = async (main) => {
+/* ---------- announcements: a notification to members, or a message posted in lobbies ---------- */
+renderers.announce = async (main, sub) => {
+  const tab = sub[0] || 'notify';
+  const bar = tabs([['notify', 'Notification'], ['lobbies', 'Lobby message']], tab, (v) => { location.hash = '#/announce/' + v; });
+  if (tab === 'lobbies') return lobbyMessage(main, bar);
   const interests = await rows(sb.from('interests').select('id,name').eq('is_active', true).order('name'));
   const title = h('input', { id: 'at', maxlength: '80' }), body = h('textarea', { id: 'ab', maxlength: '500', rows: '4' });
   const who = h('select', { id: 'aw' }, h('option', { value: '' }, 'Every active member'), interests.map((i) => h('option', { value: i.id }, 'Members into ' + i.name)));
   const go = h('button', { class: 'primary', type: 'submit' }, 'Send');
-  put(main, header('Announcements', 'Sent as a notification inside the app. It cannot be recalled.'), h('form', { class: 'panel', on: { submit: async (ev) => {
+  put(main, header('Announcements', 'A notification inside the app. It cannot be recalled.'), bar, h('form', { class: 'panel', on: { submit: async (ev) => {
     ev.preventDefault();
     if (!(await confirmBox('Send to ' + (who.value ? who.selectedOptions[0].textContent : 'every active member') + '?', title.value, 'Send'))) return;
     go.disabled = true;
     if (await act(() => rpc('send_broadcast', { p_title: title.value, p_body: body.value, p_interest_id: who.value ? Number(who.value) : null }), (n) => 'Sent to ' + n + ' members')) { title.value = ''; body.value = ''; }
     go.disabled = false;
   } } }, h('label', { class: 'f', for: 'aw' }, 'To'), who, h('label', { class: 'f', for: 'at' }, 'Title'), title, h('label', { class: 'f', for: 'ab' }, 'Message'), body, h('div', { style: 'margin-top:12px' }, go)));
-};
+}
+
+async function lobbyMessage(main, bar) {
+  const lobbies = await rpc('admin_lobbies');
+  const picked = new Set();
+  let all = true;
+  const body = h('textarea', { id: 'lb', maxlength: '2000', rows: '5' });
+  const list = h('div', { class: 'checks', style: 'max-height:260px;overflow:auto' });
+  const count = h('p', { class: 'faint' });
+  const allBox = h('input', { type: 'checkbox', checked: true, id: 'lall' });
+  const paint = () => {
+    allBox.checked = all;
+    count.textContent = all ? 'Goes to all ' + lobbies.length + ' lobbies.' : picked.size + ' of ' + lobbies.length + ' lobbies picked.';
+    put(list, lobbies.map((l) => h('label', null, h('input', { type: 'checkbox', checked: all || picked.has(l.id), disabled: all, on: { change: (e) => { if (e.target.checked) picked.add(l.id); else picked.delete(l.id); paint(); } } }), ' ' + l.name + ' (' + l.members + ')')));
+  };
+  allBox.addEventListener('change', () => { all = allBox.checked; paint(); });
+  const go = h('button', { class: 'primary', type: 'submit' }, 'Post');
+  put(main, header('Announcements', 'Posted in the lobby as the admin. Members can read it but cannot reply, and it cannot be recalled.'), bar, h('form', { class: 'panel', on: { submit: async (ev) => {
+    ev.preventDefault();
+    if (!all && !picked.size) { toast('Pick at least one lobby.', true); return; }
+    const where = all ? 'all ' + lobbies.length + ' lobbies' : picked.size + (picked.size === 1 ? ' lobby' : ' lobbies');
+    if (!(await confirmBox('Post to ' + where + '?', body.value.slice(0, 200), 'Post'))) return;
+    go.disabled = true;
+    if (await act(() => rpc('admin_post_to_lobbies', { p_body: body.value, p_channels: all ? null : [...picked] }), (n) => 'Posted in ' + n + ' lobbies')) body.value = '';
+    go.disabled = false;
+  } } }, h('label', { class: 'f', for: 'lb' }, 'Message'), body,
+    h('label', { class: 'f' }, 'Where'), h('div', { class: 'checks' }, h('label', null, allBox, ' All lobbies')), count, list, h('div', { style: 'margin-top:12px' }, go)));
+  paint();
+}
 
 /* ---------- bookings (read only) ---------- */
 renderers.bookings = async (main) => {
