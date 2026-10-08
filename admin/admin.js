@@ -3,7 +3,7 @@
 // Every action is a database function or table that only admins may use; this page is just the screen on top.
 const SUPABASE_URL = 'https://qjtuahvhszxektzdmmdf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqdHVhaHZoc3p4ZWt0emRtbWRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNzkzNDUsImV4cCI6MjEwNTc1NTM0NX0.Blt9FzDgZq_BgoraEraJVZwMcIEtZh7oXkrNWm-N-aQ';
-const REQUIRE_MFA = true; // admins must pass an authenticator-app code after the password
+const REQUIRE_MFA = false; // authenticator-app step is switched off for now: email and password only
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'sc-admin-session' } });
 
 const CITIES = ['Delhi', 'Gurgaon', 'Noida', 'Greater Noida', 'Faridabad', 'Ghaziabad'];
