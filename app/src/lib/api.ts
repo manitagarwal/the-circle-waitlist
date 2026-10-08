@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { BookingRow } from './bookings';
 import { applicationCode, normalizeEmail, normalizePhone } from './validators.ts';
 
 export type Dupes = { phone?: boolean; personal_email?: boolean; work_email?: boolean };
@@ -23,6 +24,15 @@ export type PollOption = { id: string; label: string; votes: number };
 export type Poll = { id: string; channel_id: string; question: string; created_at: string; closes_at: string | null; closed_at: string | null; is_open: boolean; total_votes: number; my_option_id: string | null; options: PollOption[] };
 export type Person = { id: string; username: string; full_name: string | null; avatar_id: number | null; photo_path: string | null };
 export type NotificationRow = { id: string; type: string; payload: Record<string, any>; read_at: string | null; is_unread: boolean; created_at: string };
+export type RosterEntry = { member_id: string; username: string; avatar_id: number | null; photo_path: string | null; status: string; is_host: boolean };
+export type Profile = {
+  id: string; username: string; full_name: string | null; avatar_id: number | null; photo_path: string | null; bio: string | null; age: number | null;
+  gender: string | null; area: string | null; field_of_work: string | null; member_since: string; interests: string[] | null; bookings_hosted: number;
+};
+export type BookingInput = {
+  interestId: number; title: string; description: string | null; venue: string; area: string; address: string; startsAt: string; endsAt: string;
+  headcountMax: number; maleSlots: number | null; femaleSlots: number | null; minScore: number | null; ageMin: number | null; ageMax: number | null;
+};
 export type Vouch = { name?: string; email?: string; phone?: string };
 
 /** Pure data layer. Takes the client so it can be tested with a fake. */
@@ -117,6 +127,48 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       return data as { member_id: string; role: string }[];
     },
     friends: (me: string) => rpc<Person[]>('member_friends', { p_member: me }),
+    // ---- bookings
+    bookingsUpcoming: async () => {
+      const { data, error } = await sb.from('bookings_overview').select('*').in('status', ['open', 'full']).gt('ends_at', new Date().toISOString()).order('starts_at');
+      if (error) throw error;
+      return data as BookingRow[];
+    },
+    bookingsMine: async () => {
+      const since = new Date(Date.now() - 7 * 86400000).toISOString();
+      const { data, error } = await sb.from('bookings_overview').select('*').or('is_host.eq.true,my_status.not.is.null').gte('ends_at', since).order('starts_at', { ascending: false });
+      if (error) throw error;
+      return data as BookingRow[];
+    },
+    booking: async (id: string) => {
+      const { data, error } = await sb.from('bookings_overview').select('*').eq('id', id).maybeSingle();
+      if (error) throw error;
+      return data as BookingRow | null;
+    },
+    bookingRoster: (id: string) => rpc<RosterEntry[]>('booking_roster', { p_booking: id }),
+    joinBooking: (id: string) => rpc<void>('join_booking', { p_booking: id }),
+    leaveBooking: (id: string) => rpc<void>('leave_booking', { p_booking: id }),
+    cancelBooking: (id: string) => rpc<void>('cancel_booking', { p_booking: id }),
+    createBooking: (b: BookingInput) => rpc<string>('create_booking', {
+      p_interest_id: b.interestId, p_title: b.title, p_description: b.description, p_venue_name: b.venue, p_area: b.area, p_address_outer: b.address,
+      p_lat: null, p_lng: null, p_starts_at: b.startsAt, p_ends_at: b.endsAt, p_headcount_min: null, p_headcount_max: b.headcountMax,
+      p_male_slots: b.maleSlots, p_female_slots: b.femaleSlots, p_min_score: b.minScore, p_age_min: b.ageMin, p_age_max: b.ageMax, p_as_admin: false,
+    }),
+    markAttendance: (booking: string, member: string, attended: boolean) => rpc<void>('mark_attendance', { p_booking: booking, p_member: member, p_attended: attended }),
+    keepBookingChat: (booking: string) => rpc<void>('continue_booking_channel', { p_booking: booking }),
+    /** Age and gender of the signed-in member, for "can I join this?" hints. */
+    myProfileBasics: async () => {
+      const { data: u } = await sb.auth.getUser();
+      const id = u.user?.id;
+      if (!id) return { age: null as number | null, gender: null as string | null };
+      const { data } = await sb.from('member_profiles').select('age, gender').eq('id', id).maybeSingle();
+      return { age: (data?.age as number | null) ?? null, gender: (data?.gender as string | null) ?? null };
+    },
+    myScore: () => rpc<number>('my_score'),
+    profile: async (id: string) => {
+      const { data, error } = await sb.from('member_profiles').select('*').eq('id', id).maybeSingle();
+      if (error) throw error;
+      return data as Profile | null;
+    },
     // ---- people
     people: async (ids: string[]) => {
       if (!ids.length) return [] as Person[];

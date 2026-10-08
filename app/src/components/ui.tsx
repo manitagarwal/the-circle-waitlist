@@ -132,3 +132,23 @@ export const strong = (t: string) => <Text style={{ fontFamily: fonts.bodySemi, 
 const styles = StyleSheet.create({
   glow: { position: 'absolute', top: -120, left: '50%', width: 520, height: 520, marginLeft: -260, borderRadius: 260, backgroundColor: colors.goldTint, opacity: 0.22 },
 });
+
+/** Plus / minus control for a whole number. */
+export function Stepper({ label, value, min, max, onChange }: { label: string; value: number; min: number; max: number; onChange: (n: number) => void }) {
+  const btn = (txt: string, disabled: boolean, onPress: () => void, a11y: string) => (
+    <Pressable accessibilityRole="button" accessibilityLabel={a11y} disabled={disabled} onPress={onPress}
+      style={{ width: 44, height: 44, borderRadius: radius.control, borderWidth: 1, borderColor: colors.lineStrong, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', opacity: disabled ? 0.4 : 1 }}>
+      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 20, color: colors.ink }}>{txt}</Text>
+    </Pressable>
+  );
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
+      <Text style={{ fontFamily: fonts.body, fontSize: 15, color: colors.ink }}>{label}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        {btn('−', value <= min, () => onChange(value - 1), `Fewer ${label}`)}
+        <Text accessibilityLiveRegion="polite" style={{ minWidth: 28, textAlign: 'center', fontFamily: fonts.titleMedium, fontSize: 20, color: colors.ink }}>{value}</Text>
+        {btn('+', value >= max, () => onChange(value + 1), `More ${label}`)}
+      </View>
+    </View>
+  );
+}

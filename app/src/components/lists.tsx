@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { colors, fonts, radius } from '@/theme';
 import { Button } from './ui';
 
@@ -98,5 +98,27 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
         </Pressable>
       </Pressable>
     </Modal>
+  );
+}
+
+export type FilterDef = { key: string; label: string; options: string[] };
+
+/** A row of filter chips; each opens a sheet to pick one option or "Any". */
+export function FilterBar({ defs, values, onChange }: { defs: FilterDef[]; values: Record<string, string | undefined>; onChange: (key: string, value: string | undefined) => void }) {
+  const [open, setOpen] = React.useState<string | null>(null);
+  const def = defs.find((d) => d.key === open);
+  return (
+    <>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 8 }}>
+        {defs.map((d) => <Chip key={d.key} label={values[d.key] ? `${d.label}: ${values[d.key]}` : d.label} on={!!values[d.key]} onPress={() => setOpen(d.key)} />)}
+      </ScrollView>
+      <Sheet visible={!!def} onClose={() => setOpen(null)} title={def?.label}>
+        <ScrollView>
+          <Row title="Any" onPress={() => { onChange(open!, undefined); setOpen(null); }} />
+          {def?.options.map((o) => <Row key={o} title={o} onPress={() => { onChange(open!, o); setOpen(null); }} right={values[open!] === o ? <Text style={{ color: colors.sage, fontFamily: fonts.bodySemi }}>✓</Text> : undefined} />)}
+          {def && def.options.length === 0 ? <State empty="No options yet." /> : null}
+        </ScrollView>
+      </Sheet>
+    </>
   );
 }

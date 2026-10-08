@@ -45,6 +45,9 @@ function Routes() {
         <Stack.Screen name="channel/[id]" />
         <Stack.Screen name="channel/new" />
         <Stack.Screen name="channel/settings/[id]" />
+        <Stack.Screen name="booking/[id]" />
+        <Stack.Screen name="booking/new" />
+        <Stack.Screen name="booking/attendance/[id]" />
       </Stack.Protected>
     </Stack>
   );
