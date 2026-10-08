@@ -11,11 +11,7 @@ function Check({ ok, text }: { ok: boolean; text: string }) {
 }
 
 /** Sets the signed-in user's password. A password is mandatory, so there is no skip. */
-export function PasswordForm({ onDone, submitLabel, submit }: {
-  onDone: () => void | Promise<void>; submitLabel: string;
-  /** Replaces the default "set the signed-in user's password" call (used to create the account). */
-  submit?: (password: string) => Promise<void>;
-}) {
+export function PasswordForm({ onDone, submitLabel }: { onDone: () => void | Promise<void>; submitLabel: string }) {
   const [pw, setPw] = useState('');
   const [again, setAgain] = useState('');
   const [busy, setBusy] = useState(false);
@@ -25,9 +21,7 @@ export function PasswordForm({ onDone, submitLabel, submit }: {
   const save = async () => {
     if (busy) return;
     setBusy(true); setErr(null);
-    let error: { message: string } | null = null;
-    if (submit) { try { await submit(pw); } catch (e) { error = { message: (e as Error).message ?? '' }; } }
-    else error = (await supabase.auth.updateUser({ password: pw })).error;
+    const { error } = await supabase.auth.updateUser({ password: pw });
     if (error) {
       setBusy(false);
       setErr(/weak|pwned|leak|common/i.test(error.message) ? 'That password has appeared in a data leak. Pick another.'

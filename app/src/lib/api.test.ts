@@ -58,9 +58,3 @@ test('work email is proven on a separate client', async () => {
   await a.sendWorkCode('A@Corp.com'); await a.verifyWorkCode('a@corp.com', '123456');
   assert.deepEqual(calls, ['otp', 'verify', 'signout']);
 });
-
-test('sign up needs a session back (email confirmation must be off)', async () => {
-  const mk = (session: unknown) => ({ auth: { signUp: async (a: any) => ({ data: { session }, error: null, a }) } }) as any;
-  await createApi(mk({ access_token: 'x' })).signUp('A@x.com', 'password1');
-  await assert.rejects(createApi(mk(null)).signUp('a@x.com', 'password1'), /confirm_email_required/);
-});

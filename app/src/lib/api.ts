@@ -30,13 +30,6 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       const { error } = await sb.auth.signInWithOtp({ email: normalizeEmail(email), options: { shouldCreateUser: createUser } });
       if (error) throw error;
     },
-    /** Creates the account from the personal email and a password. No emailed code: the work email is the check. */
-    signUp: async (email: string, password: string) => {
-      const { data, error } = await sb.auth.signUp({ email: normalizeEmail(email), password, options: { data: { password_set: true } } });
-      if (error) throw error;
-      // No session means "Confirm email" is still switched on in Supabase, which would block everyone.
-      if (!data.session) throw new Error('confirm_email_required');
-    },
     verifyCode: async (email: string, token: string) => {
       const { error } = await sb.auth.verifyOtp({ email: normalizeEmail(email), token, type: 'email' });
       if (error) throw error;
