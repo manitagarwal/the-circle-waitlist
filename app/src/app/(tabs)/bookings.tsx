@@ -81,19 +81,23 @@ export default function Bookings() {
 
       {data && seg === 'mine' ? (<>
         <State empty={data.mine.length === 0 ? "You haven't joined or hosted anything yet." : null} />
-        {data.mine.map((b) => {
-          const over = new Date(b.ends_at).getTime() < now;
-          const needsMarking = b.is_host && over && b.status !== 'cancelled';
-          return (
-            <View key={b.id}>
-              <Card b={b} group={data.idx.get(b.interest_id)?.group} onPress={() => open(b.id)} note={b.status === 'cancelled' ? 'Cancelled' : b.is_host ? (over ? 'Finished' : 'Hosting') : over ? 'Finished' : "You're in"} />
-              {needsMarking ? (
-                <Pressable accessibilityRole="button" onPress={() => r.push({ pathname: '/booking/attendance/[id]', params: { id: b.id } })} style={{ marginTop: -4, marginBottom: 12, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Icon name="check" size={18} color={colors.goldText} /><Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.goldText }}>Mark who showed up</Text>
-                </Pressable>) : null}
-            </View>
-          );
-        })}
+        {bucket(data.groups, data.mine, (b) => b.interest_id).map((bk) => (
+          <Collapsible key={bk.group.id} title={bk.group.name} count={bk.items.length}>
+            {bk.items.map((b) => {
+              const over = new Date(b.ends_at).getTime() < now;
+              const needsMarking = b.is_host && over && b.status !== 'cancelled';
+              return (
+                <View key={b.id}>
+                  <Card b={b} onPress={() => open(b.id)} note={b.status === 'cancelled' ? 'Cancelled' : b.is_host ? (over ? 'Finished' : 'Hosting') : over ? 'Finished' : "You're in"} />
+                  {needsMarking ? (
+                    <Pressable accessibilityRole="button" onPress={() => r.push({ pathname: '/booking/attendance/[id]', params: { id: b.id } })} style={{ marginTop: -4, marginBottom: 12, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <Icon name="check" size={18} color={colors.goldText} /><Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.goldText }}>Mark who showed up</Text>
+                    </Pressable>) : null}
+                </View>
+              );
+            })}
+          </Collapsible>
+        ))}
       </>) : null}
     </Screen>
   );

@@ -13,11 +13,12 @@ import { useLoad } from '@/lib/useLoad';
 
 const month = (iso: string) => new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date(iso)).toUpperCase();
 
-function Stat({ n, label }: { n: number | string; label: string }) {
+function Stat({ n, label, note }: { n: number | string; label: string; note?: string | null }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', paddingVertical: 12, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line }}>
       <Text style={{ fontFamily: fonts.title, fontSize: 24, color: colors.ink }}>{n}</Text>
       <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted }}>{label}</Text>
+      {note ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 11, color: colors.goldText, marginTop: 2 }}>{note}</Text> : null}
     </View>
   );
 }
@@ -28,8 +29,14 @@ export default function Profile() {
   const [copied, setCopied] = useState(false);
   const { data, error, loading, refreshing, pull, reload } = useLoad(async () => {
     const me = member!.id;
-    const [profile, score, code, friends, channels] = await Promise.all([api.profile(me), api.myScore().catch(() => null), api.referralCode().catch(() => null), api.friends(me).catch(() => []), api.channels().catch(() => [])]);
-    return { profile, score, code, friends: friends.length, channels: channels.filter((c) => c.is_member && c.kind !== 'dm').length };
+    const [profile, score, code, friends, channels, mine] = await Promise.all([api.profile(me), api.myScore().catch(() => null), api.referralCode().catch(() => null), api.friends(me).catch(() => []), api.channels().catch(() => []), api.bookingsMine().catch(() => [])]);
+    const now = Date.now();
+    // Lobbies come with your interests, and booking chats are temporary, so only channels you chose to be in count
+    return {
+      profile, score, code, friends: friends.length,
+      channels: channels.filter((c) => c.is_member && (c.kind === 'public' || c.kind === 'private')).length,
+      upcomingHosting: mine.filter((b) => b.is_host && b.kind === 'member' && (b.status === 'open' || b.status === 'full') && Date.parse(b.ends_at) > now).length,
+    };
   });
   const p = data?.profile;
   const photo = useSignedUrl(p?.photo_path);
@@ -52,7 +59,7 @@ export default function Profile() {
           <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 11, letterSpacing: 1.4, color: colors.faint, marginTop: 10 }}>MEMBER SINCE {month(p.member_since)}</Text>
         </View>
         <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
-          <Stat n={p.bookings_hosted} label="Hosted" /><Stat n={data!.friends} label="Friends" /><Stat n={data!.channels} label="Channels" />
+          <Stat n={p.bookings_hosted} label="Hosted" note={data!.upcomingHosting ? `${data!.upcomingHosting} coming up` : null} /><Stat n={data!.friends} label="Friends" /><Stat n={data!.channels} label="Channels" />
         </View>
 
         {data!.score != null ? (<>
