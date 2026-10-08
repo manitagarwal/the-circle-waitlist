@@ -8,7 +8,7 @@ import { Body, Button, Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
-import { applyFilters, channelSummary, filterOptions, FIT_MY_AGE, GENDER_AUDIENCE, type Filters } from '@/lib/channels';
+import { applyFilters, channelFit, channelSummary, filterOptions, FITS_ME, GENDER_AUDIENCE, type Filters } from '@/lib/channels';
 import { bucket, loadInterestGroups } from '@/lib/interests';
 import { endsIn, listStamp } from '@/lib/format';
 import { useLoad } from '@/lib/useLoad';
@@ -23,7 +23,7 @@ export default function Channels() {
 
   const { data, error, loading, refreshing, pull, reload } = useLoad(async () => {
     const [channels, previews, invites, expiry, groups, me] = await Promise.all([api.channels(), api.channelPreviews(), api.channelInvites(), api.bookingChatExpiry(), loadInterestGroups(() => api.interestGroups()), api.myProfileBasics()]);
-    return { channels, previews: Object.fromEntries(previews.map((p) => [p.channel_id, p])), invites, expiry, groups, myAge: me.age };
+    return { channels, previews: Object.fromEntries(previews.map((p) => [p.channel_id, p])), invites, expiry, groups, me };
   });
 
   const act = async (id: string, fn: () => Promise<unknown>) => {
@@ -34,7 +34,7 @@ export default function Channels() {
   const lobby = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'lobby' && c.is_member)
     .sort((a, b) => (data!.previews[b.id]?.last_at ?? '').localeCompare(data!.previews[a.id]?.last_at ?? '') || a.name.localeCompare(b.name)), [data]);
   const publicAll = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'public'), [data]);
-  const publicShown = useMemo(() => (data ? bucket(data.groups, applyFilters(publicAll, filters, data.myAge).sort((a, b) => (a.interest_name ?? '').localeCompare(b.interest_name ?? '') || b.member_count - a.member_count), (c) => c.interest_id) : []), [data, publicAll, filters]);
+  const publicShown = useMemo(() => (data ? bucket(data.groups, applyFilters(publicAll, filters, data.me).sort((a, b) => (a.interest_name ?? '').localeCompare(b.interest_name ?? '') || b.member_count - a.member_count), (c) => c.interest_id) : []), [data, publicAll, filters]);
   const lobbyShown = useMemo(() => (data ? bucket(data.groups, lobby, (c) => c.interest_id) : []), [data, lobby]);
   const mine = useMemo(() => (data?.channels ?? []).filter((c) => (c.kind === 'private' || c.kind === 'booking') && c.is_member)
     .sort((a, b) => (data!.previews[b.id]?.last_at ?? b.created_at).localeCompare(data!.previews[a.id]?.last_at ?? a.created_at)), [data]);
@@ -72,18 +72,22 @@ export default function Channels() {
           { key: 'city', label: 'City', options: filterOptions(publicAll, 'city') },
           { key: 'area', label: 'Area', options: filterOptions(publicAll, 'area') },
           { key: 'activity', label: 'Activity', options: filterOptions(publicAll, 'activity') },
-          { key: 'age', label: 'Age', options: [FIT_MY_AGE] },
           { key: 'gender', label: 'Gender', options: Object.values(GENDER_AUDIENCE) },
+          { key: 'fit', label: 'Fits me', options: [FITS_ME] },
         ]} />
         {publicAll.length === 0 ? <State empty="No public channels yet. Start the first one with the plus button." /> : null}
         {publicAll.length > 0 && publicShown.length === 0 ? <State empty="Nothing matches those filters." /> : null}
         {publicShown.map((b) => (
           <Collapsible key={b.group.id} title={b.group.name} count={b.items.length}>
-            {b.items.map((c) => (
-              <Row key={c.id} left={<LetterBadge name={c.name} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}`} onPress={() => open(c.id)}
-                right={c.is_member ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.sage }}>Joined</Text>
-                  : <Button label="Join" variant="secondary" loading={busy === c.id} onPress={() => act(c.id, () => api.joinChannel(c.id))} style={{ height: 40, paddingHorizontal: 16 }} />} />
-            ))}
+            {b.items.map((c) => {
+              const why = c.is_member ? null : channelFit(c, data.me);
+              return (
+                <Row key={c.id} left={<LetterBadge name={c.name} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
+                  right={c.is_member ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.sage }}>Joined</Text>
+                    : why ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.faint, maxWidth: 70, textAlign: 'center' }}>Not for you</Text>
+                    : <Button label="Join" variant="secondary" loading={busy === c.id} onPress={() => act(c.id, () => api.joinChannel(c.id))} style={{ height: 40, paddingHorizontal: 16 }} />} />
+              );
+            })}
           </Collapsible>
         ))}
       </>) : null}

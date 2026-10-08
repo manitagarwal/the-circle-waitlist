@@ -61,7 +61,7 @@ A person moves through these states. Each state is derived from data, not stored
 - **[BP]** Anyone can join with no approval.
 - **[BP]** Max **2 channels open** per member at once.
 - **[BP]** Creating more requires a milestone. **[PROPOSED]** threshold: one of your channels reaches **50 members** (blueprint example was 100; threshold is open).
-- **[DECIDED, 8 Oct 2026]** Tags: activity (every activity belongs to a bigger bucket such as Sports and fitness, and buckets are collapsible wherever activities are listed), **city** (chosen from a list; required for public channels), **area** (optional text), **age range** (optional youngest and oldest, each 18 to 99, no preset buckets) and **gender** (Anyone, or one of the four sign-up options: male, female, non-binary, prefer not to say). Tags are labels that help people find a channel; they do not lock anyone out. Lobbies are named after the activity alone, with no "Lobby" suffix.
+- **[DECIDED, 8 Oct 2026]** Channel tags. Activity: every activity belongs to a bigger bucket such as Sports and fitness, and buckets are collapsible wherever activities are listed. Lobbies are named after the activity alone. **Public channels carry rules that are enforced when someone joins:** **city** (one or several cities, or none for Pan India; matched against the member's application city), **age** (optional youngest and oldest, 18 to 99, typed in) and **gender** (Anyone, or one or more of the four sign-up options). Someone who does not match can see the channel but cannot join, and is told why. **Area** is only a label. App admins bypass the rules. **Private channels have no matching rules**: they are invite-only, and anyone invited can join.
 
 ### 4.3 Private channels
 - **[BP]** Invite-only.

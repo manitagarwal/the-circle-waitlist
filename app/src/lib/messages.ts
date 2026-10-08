@@ -39,6 +39,12 @@ const MAP: Record<string, string> = {
   channel_expired: 'That chat has already closed.',
   channel_limit: 'You have two channels open. Get one to 50 members and you can open a third.',
   // channels and messages
+  city_not_matched: 'This channel is for members in other cities.',
+  gender_not_matched: "This channel is set up for a different group of members.",
+  age_not_matched: "You're outside this channel's age range.",
+  age_invalid: 'Check the ages. They run from 18 to 99.',
+  gender_invalid: 'Pick from the gender options.',
+  tag_invalid: 'One of those details is too long.',
   channel_not_joinable: "You can't join that channel.",
   lobby_read_only: 'Only the team posts in a Lobby.',
   message_invalid: 'Write something first (up to 2000 characters).',

@@ -146,7 +146,7 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     leaveChannel: (id: string) => rpc<void>('leave_channel', { p_channel: id }),
     closeChannel: (id: string) => rpc<void>('close_channel', { p_channel: id }),
     respondInvite: (id: string, accept: boolean) => rpc<void>('respond_channel_invite', { p_invite: id, p_accept: accept }),
-    createChannel: (a: { kind: 'public' | 'private'; name: string; interestId: number | null; tags: { city?: string; area?: string; age_min?: string; age_max?: string; gender?: string } }) =>
+    createChannel: (a: { kind: 'public' | 'private'; name: string; interestId: number | null; tags: { city?: string[]; area?: string; age_min?: string; age_max?: string; gender?: string[] } }) =>
       rpc<string>('create_channel', { p_kind: a.kind, p_name: a.name, p_interest_id: a.interestId, p_photo_path: null, p_tags: a.tags }),
     renameChannel: (id: string, name: string) => rpc<void>('update_channel', { p_channel: id, p_name: name, p_photo_path: null }),
     inviteToChannel: (channel: string, invitee: string) => rpc<void>('invite_to_channel', { p_channel: channel, p_invitee: invitee }),
@@ -186,13 +186,11 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     }),
     markAttendance: (booking: string, member: string, attended: boolean) => rpc<void>('mark_attendance', { p_booking: booking, p_member: member, p_attended: attended }),
     keepBookingChat: (booking: string) => rpc<void>('continue_booking_channel', { p_booking: booking }),
-    /** Age and gender of the signed-in member, for "can I join this?" hints. */
+    /** Age, gender and city of the signed-in member, for "does this fit me?" hints. */
     myProfileBasics: async () => {
-      const { data: u } = await sb.auth.getUser();
-      const id = u.user?.id;
-      if (!id) return { age: null as number | null, gender: null as string | null };
-      const { data } = await sb.from('member_profiles').select('age, gender').eq('id', id).maybeSingle();
-      return { age: (data?.age as number | null) ?? null, gender: (data?.gender as string | null) ?? null };
+      const rows = await rpc<{ age: number | null; gender: string | null; city: string | null }[]>('my_match_profile').catch(() => []);
+      const r = rows?.[0];
+      return { age: r?.age ?? null, gender: r?.gender ?? null, city: r?.city ?? null };
     },
     myScore: () => rpc<number>('my_score'),
     profile: async (id: string) => {

@@ -10,6 +10,7 @@ import { colors, fonts, radius } from '@/theme';
 import { api, useAuth } from '@/lib/auth';
 import type { Message, Person, Poll } from '@/lib/api';
 import { friendly } from '@/lib/messages';
+import { channelFit } from '@/lib/channels';
 import { dayLabel, endsIn, pct, sameDay } from '@/lib/format';
 import { ReportSheet } from '@/components/ReportSheet';
 import { useLoad } from '@/lib/useLoad';
@@ -60,10 +61,11 @@ export default function Chat() {
   const { data, error, loading, reload, setData } = useLoad(async () => {
     const [channels, messages, polls] = await Promise.all([api.channels(), api.messages(id), api.polls(id)]);
     const channel = channels.find((c) => c.id === id) ?? null;
+    const me = await api.myProfileBasics();
     const ids = [...new Set(messages.map((m) => m.sender_id))];
     const people: Record<string, Person> = Object.fromEntries((await api.people(ids)).map((p) => [p.id, p]));
     const expiry = channel?.kind === 'booking' ? (await api.bookingChatExpiry())[id] ?? null : null;
-    return { channel, messages, polls, people, expiry };
+    return { channel, messages, polls, people, expiry, why: channel && !channel.is_member ? channelFit(channel, me) : null };
   }, [id]);
 
   // live updates: any change to this channel's messages refreshes the list
@@ -134,7 +136,10 @@ export default function Chat() {
       )}
       {err ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.error, paddingHorizontal: 16, paddingBottom: 6 }}>{err}</Text> : null}
       {channel && !channel.is_member && channel.kind === 'public' ? (
-        <View style={{ padding: 16, paddingBottom: insets.bottom + 16 }}><Button label="Join channel" onPress={join} loading={joining} /></View>
+        <View style={{ padding: 16, paddingBottom: insets.bottom + 16 }}>
+          <Button label="Join channel" onPress={join} loading={joining} disabled={!!data?.why} />
+          {data?.why ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, textAlign: 'center', marginTop: 8 }}>{data.why}</Text> : null}
+        </View>
       ) : channel && !canPost ? (
         <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, textAlign: 'center', padding: 16, paddingBottom: insets.bottom + 16 }}>Only the team posts here. You can vote in polls and read everything.</Text>
       ) : channel ? (
