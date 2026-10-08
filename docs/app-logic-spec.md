@@ -81,6 +81,7 @@ A person moves through these states. Each state is derived from data, not stored
 - **[BP]** Two kinds: **Hosted by Admin** (team events) and **Private Event** (member-created).
 - **[BP]** Member events must start **between 6 and 24 hours from now** at creation time. Admin events are exempt.
 - **[BP]** Start times are on the half hour only.
+- **[DECIDED, 8 Oct 2026]** Hosting a booking: the host picks a **date** (calendar) and a **start time** (hour, minutes limited to :00 and :30, AM or PM). The start must fall **6 to 24 hours from now** (the window rule, read from the rules table, and expected to change). **Length** is chosen in 30-minute steps from 30 minutes up to a maximum that is a rule per activity: **2 hours for everything under Sports and fitness, 6 hours for all other activities** (`booking.max_duration_minutes`, editable). The end must also fall on the hour or half hour. The Bookings list groups activities into their collapsible buckets, with day headings inside.
 - **[BP]** Max **2 hosted bookings open** per member at once, and max **3 created in any rolling 24 hours**.
 - **[BP]** Score can reduce the 2-booking cap (section 9) but never raise it.
 - **[BP]** Host sets: headcount (exact, min, or max), gender composition or gender-agnostic, minimum Score to join, age range, end time, short description.

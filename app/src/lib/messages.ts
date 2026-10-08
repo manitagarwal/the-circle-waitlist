@@ -25,6 +25,8 @@ const MAP: Record<string, string> = {
   hosting_limit: "You've reached your limit of open bookings. Finish or cancel one first.",
   daily_booking_limit: "That's your limit of bookings for today.",
   outside_booking_window: 'Pick a start time between 6 and 24 hours from now.',
+  duration_too_long: "That's longer than this kind of booking can run.",
+  end_not_half_hour: 'End on the hour or half hour.',
   start_not_half_hour: 'Start on the hour or half hour.',
   time_invalid: 'The end has to be after the start.',
   title_invalid: 'Give it a title of 3 to 80 characters.',

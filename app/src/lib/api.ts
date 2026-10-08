@@ -192,6 +192,11 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       const r = rows?.[0];
       return { age: r?.age ?? null, gender: r?.gender ?? null, city: r?.city ?? null };
     },
+    bookingMaxDuration: async (interest: number) => (await rpc<number>('booking_max_duration', { p_interest: interest }).catch(() => 360)) as number,
+    bookingWindow: async (interest: number) => {
+      const rows = await rpc<{ min_hours: number; max_hours: number }[]>('booking_window', { p_interest: interest }).catch(() => []);
+      return { min: rows?.[0]?.min_hours ?? 6, max: rows?.[0]?.max_hours ?? 24 };
+    },
     myScore: () => rpc<number>('my_score'),
     profile: async (id: string) => {
       const { data, error } = await sb.from('member_profiles').select('*').eq('id', id).maybeSingle();

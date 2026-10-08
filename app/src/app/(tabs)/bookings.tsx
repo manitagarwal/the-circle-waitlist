@@ -2,12 +2,13 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
+import { Collapsible } from '@/components/Collapsible';
 import { FilterBar, Segmented, SectionLabel, State, TabHeader } from '@/components/lists';
 import { Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api } from '@/lib/auth';
 import { type BookingRow, genderWanted, groupByDay, joinCheck, spots, timeRange } from '@/lib/bookings';
-import { interestIndex, loadInterestGroups } from '@/lib/interests';
+import { bucket, interestIndex, loadInterestGroups } from '@/lib/interests';
 import { useLoad } from '@/lib/useLoad';
 
 function Card({ b, onPress, note, group }: { b: BookingRow; onPress: () => void; note?: string | null; group?: string }) {
@@ -39,7 +40,7 @@ export default function Bookings() {
   const [f, setF] = useState<Record<string, string | undefined>>({});
   const { data, error, loading, refreshing, pull, reload } = useLoad(async () => {
     const [upcoming, mine, me, groups] = await Promise.all([api.bookingsUpcoming(), api.bookingsMine(), api.myProfileBasics(), loadInterestGroups(() => api.interestGroups())]);
-    return { upcoming, mine, me, idx: interestIndex(groups) };
+    return { upcoming, mine, me, groups, idx: interestIndex(groups) };
   });
 
   const shown = useMemo(() => (data?.upcoming ?? []).filter((b) =>
@@ -66,11 +67,15 @@ export default function Bookings() {
           { key: 'fit', label: 'Fits me', options: ['Only ones I can join'] },
         ]} />
         <State empty={shown.length === 0 && !loading ? (data.upcoming.length === 0 ? 'No bookings yet. Host the first one.' : 'Nothing matches those filters.') : null} />
-        {groupByDay(shown).map((g) => (
-          <View key={g.day}>
-            <SectionLabel>{g.day}</SectionLabel>
-            {g.rows.map((b) => <Card key={b.id} b={b} group={data.idx.get(b.interest_id)?.group} onPress={() => open(b.id)} note={b.is_host ? 'Hosting' : b.my_status === 'joined' ? "You're in" : null} />)}
-          </View>
+        {bucket(data.groups, shown, (b) => b.interest_id).map((bk) => (
+          <Collapsible key={bk.group.id} title={bk.group.name} count={bk.items.length}>
+            {groupByDay(bk.items).map((g) => (
+              <View key={g.day}>
+                <SectionLabel>{g.day}</SectionLabel>
+                {g.rows.map((b) => <Card key={b.id} b={b} onPress={() => open(b.id)} note={b.is_host ? 'Hosting' : b.my_status === 'joined' ? "You're in" : null} />)}
+              </View>
+            ))}
+          </Collapsible>
         ))}
       </>) : null}
 

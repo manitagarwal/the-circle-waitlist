@@ -5,15 +5,15 @@ import { Bar } from '@/components/Bar';
 import { ActivityPicker } from '@/components/ActivityPicker';
 import { ChipRow } from '@/components/ChipRow';
 import { Chip } from '@/components/lists';
+import { DatePickerSheet, TimePickerSheet } from '@/components/Pickers';
 import { Body, Button, Notice, Stepper, TextField } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api } from '@/lib/auth';
-import { slotDay, startSlots } from '@/lib/bookings';
+import { clampDuration, type Clock12, DURATION_STEP, durationLabel, istToIso, MIN_DURATION, startError, todayIST, type YMD, ymdLabel, clockLabel } from '@/lib/schedule';
 import { clock } from '@/lib/format';
 import { friendly } from '@/lib/messages';
 import { useLoad } from '@/lib/useLoad';
 
-const DURATIONS = [{ label: '1 hour', mins: 60 }, { label: '1.5 hours', mins: 90 }, { label: '2 hours', mins: 120 }, { label: '3 hours', mins: 180 }];
 const AGES: { label: string; min: number | null; max: number | null }[] = [
   { label: 'Any age', min: null, max: null }, { label: '18 to 25', min: 18, max: 25 }, { label: '25 to 35', min: 25, max: 35 },
   { label: '35 to 45', min: 35, max: 45 }, { label: '45 and over', min: 45, max: null },
@@ -26,11 +26,13 @@ export default function NewBooking() {
   const [pick, setPick] = useState(false);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
-  const slots = useMemo(() => startSlots(), []);
-  const days = useMemo(() => [...new Set(slots.map((s) => slotDay(s)))], [slots]);
-  const [day, setDay] = useState<string>(days[0] ?? '');
-  const [start, setStart] = useState<string | null>(null);
-  const [dur, setDur] = useState(120);
+  const [date, setDate] = useState<YMD | null>(null);
+  const [clockVal, setClockVal] = useState<Clock12 | null>(null);
+  const [pickDate, setPickDate] = useState(false);
+  const [pickTime, setPickTime] = useState(false);
+  const [dur, setDur] = useState(60);
+  const [maxDur, setMaxDur] = useState(360);
+  const [win, setWin] = useState({ min: 6, max: 24 });
   const [venue, setVenue] = useState('');
   const [area, setArea] = useState('');
   const [address, setAddress] = useState('');
@@ -48,9 +50,16 @@ export default function NewBooking() {
     return { open: m.filter((b) => (b.status === 'open' || b.status === 'full') && new Date(b.ends_at) > new Date()).length, today: m.filter((b) => Date.parse(b.created_at) > Date.now() - 86400000).length };
   });
 
+  const start = date && clockVal ? istToIso(date, clockVal) : null;
   const end = start ? new Date(new Date(start).getTime() + dur * 60000).toISOString() : null;
+  const startErr = startError(start, new Date(), win.min, win.max);
+  const chooseActivity = (a: { id: number; name: string }) => {
+    setInterest(a); setPick(false);
+    void api.bookingMaxDuration(a.id).then((m) => { setMaxDur(m); setDur((d) => clampDuration(d, m)); });
+    void api.bookingWindow(a.id).then(setWin);
+  };
   const headcount = mixOn ? men + women : people;
-  const ready = !!interest && title.trim().length >= 3 && !!start && venue.trim() && area.trim() && address.trim() && headcount >= 2;
+  const ready = !!interest && title.trim().length >= 3 && !!start && !startErr && venue.trim() && area.trim() && address.trim() && headcount >= 2;
 
   const post = async () => {
     if (!interest || !start || !end) return;
@@ -74,15 +83,26 @@ export default function NewBooking() {
         <Button label={interest?.name ?? 'Choose an activity'} variant="secondary" onPress={() => setPick(true)} />
         <TextField label="Title" value={title} onChangeText={setTitle} maxLength={80} />
 
-        {label('When')}
-        <ChipRow>{days.map((d) => <Chip key={d} label={d} on={day === d} onPress={() => { setDay(d); setStart(null); }} />)}</ChipRow>
-        <View style={{ marginTop: 10 }}><ChipRow>
-          {slots.filter((s) => slotDay(s) === day).map((s) => <Chip key={s} label={clock(new Date(s))} on={start === s} onPress={() => setStart(s)} />)}
-        </ChipRow></View>
-        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>Start on the hour or half hour, 6 to 24 hours from now.</Text>
+        {label('Date')}
+        <Button label={date ? ymdLabel(date) : 'Choose a date'} variant="secondary" onPress={() => setPickDate(true)} />
+        {label('Start time')}
+        <Button label={clockVal ? clockLabel(clockVal) : 'Choose a time'} variant="secondary" onPress={() => setPickTime(true)} />
+        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: startErr ? colors.error : colors.faint, marginTop: 6 }}>
+          {startErr ?? `Start on the hour or half hour, between ${win.min} and ${win.max} hours from now.`}
+        </Text>
+
         {label('How long')}
-        <ChipRow>{DURATIONS.map((d) => <Chip key={d.mins} label={d.label} on={dur === d.mins} onPress={() => setDur(d.mins)} />)}</ChipRow>
-        {start && end ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink, marginTop: 8 }}>{clock(new Date(start))} to {clock(new Date(end))}</Text> : null}
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Shorter" disabled={dur <= MIN_DURATION} onPress={() => setDur((d) => d - DURATION_STEP)}
+            style={{ width: 48, height: 48, borderRadius: 6, borderWidth: 1, borderColor: colors.lineStrong, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', opacity: dur <= MIN_DURATION ? 0.4 : 1 }}>
+            <Text style={{ fontFamily: fonts.bodySemi, fontSize: 22, color: colors.ink }}>−</Text></Pressable>
+          <Text accessibilityLiveRegion="polite" style={{ fontFamily: fonts.titleMedium, fontSize: 20, color: colors.ink }}>{durationLabel(dur)}</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Longer" disabled={dur >= maxDur} onPress={() => setDur((d) => d + DURATION_STEP)}
+            style={{ width: 48, height: 48, borderRadius: 6, borderWidth: 1, borderColor: colors.lineStrong, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', opacity: dur >= maxDur ? 0.4 : 1 }}>
+            <Text style={{ fontFamily: fonts.bodySemi, fontSize: 22, color: colors.ink }}>+</Text></Pressable>
+        </View>
+        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>In 30-minute steps, up to {durationLabel(maxDur)}{interest ? ` for ${interest.name}` : ''}.</Text>
+        {start && end ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink, marginTop: 8 }}>{clock(new Date(start))} to {clock(new Date(end))}{ymdLabel(todayIST(new Date(end))) !== ymdLabel(todayIST(new Date(start))) ? ', next day' : ''}</Text> : null}
 
         <TextField label="Where: venue" value={venue} onChangeText={setVenue} placeholder="For example: Play-A-Shot" />
         <TextField label="Area" value={area} onChangeText={setArea} placeholder="For example: Sector 43, Gurgaon" hint="Everyone sees the venue and area." />
@@ -110,7 +130,9 @@ export default function NewBooking() {
         <Button label="Post booking" onPress={post} loading={busy} disabled={!ready} style={{ marginTop: 16 }} />
       </ScrollView>
 
-      <ActivityPicker visible={pick} onClose={() => setPick(false)} selectedId={interest?.id} onPick={(a) => { setInterest(a); setPick(false); }} />
+      <DatePickerSheet visible={pickDate} value={date} onClose={() => setPickDate(false)} onPick={setDate} />
+      <TimePickerSheet key={String(pickTime)} visible={pickTime} value={clockVal} onClose={() => setPickTime(false)} onPick={setClockVal} />
+      <ActivityPicker visible={pick} onClose={() => setPick(false)} selectedId={interest?.id} onPick={chooseActivity} />
     </View>
   );
 }
