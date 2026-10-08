@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import { Tabs } from 'expo-router';
+import { AppBar } from '@/components/AppBar';
 import { Icon } from '@/components/Icon';
 import { colors, fonts } from '@/theme';
 import { api, useAuth } from '@/lib/auth';
@@ -28,17 +29,19 @@ export default function TabsLayout() {
   const icon = (name: string) => ({ color }: { color: unknown }) => <Icon name={name} size={24} color={String(color)} />;
   return (
     <Tabs screenOptions={{
-      headerShown: false,
+      headerShown: true,
+      header: () => <AppBar unread={unread} />,
       tabBarActiveTintColor: colors.goldText, tabBarInactiveTintColor: colors.faint,
-      tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.line, height: 68, paddingTop: 8, paddingBottom: 12 },
+      tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.line, height: 72, paddingTop: 8, paddingBottom: 16 },
       tabBarLabelStyle: { fontFamily: fonts.bodyMedium, fontSize: 11 },
       sceneStyle: { backgroundColor: colors.ground },
     }}>
       <Tabs.Screen name="channels" options={{ title: 'Channels', tabBarIcon: icon('channels') }} />
-      <Tabs.Screen name="activity" options={{ title: 'Activity', tabBarIcon: icon('activity'), tabBarBadge: unread > 0 ? unread : undefined, tabBarBadgeStyle: { backgroundColor: colors.clay } }} />
       <Tabs.Screen name="bookings" options={{ title: 'Bookings', tabBarIcon: icon('bookings') }} />
-      <Tabs.Screen name="messages" options={{ title: 'Messages', tabBarIcon: icon('messages') }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile', tabBarIcon: icon('profile') }} />
+      {/* Activity and Messages live in the top bar, not in the bottom bar */}
+      <Tabs.Screen name="activity" options={{ title: 'Activity', href: null }} />
+      <Tabs.Screen name="messages" options={{ title: 'Messages', href: null }} />
     </Tabs>
   );
 }

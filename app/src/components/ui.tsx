@@ -4,7 +4,7 @@ import {
   TextInputProps, View, ViewStyle,
 } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { useRouter } from 'expo-router';
+import { useRouter, useSegments } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, radius } from '@/theme';
 
@@ -12,13 +12,15 @@ export function Screen({ children, footer, scroll = true, onRefresh, refreshing 
   children: React.ReactNode; footer?: React.ReactNode; scroll?: boolean; onRefresh?: () => void; refreshing?: boolean;
 }) {
   const insets = useSafeAreaInsets();
+  const inTabs = useSegments()[0] === '(tabs)'; // the fixed top bar already clears the status bar
+  const topPad = inTabs ? 8 : insets.top + 8;
   const body = scroll ? (
-    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingTop: insets.top + 8 }} keyboardShouldPersistTaps="handled"
+    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingTop: topPad }} keyboardShouldPersistTaps="handled"
       refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.goldText} /> : undefined}>
       {children}
     </ScrollView>
   ) : (
-    <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: insets.top + 8 }}>{children}</View>
+    <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: topPad }}>{children}</View>
   );
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
