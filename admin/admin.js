@@ -201,13 +201,28 @@ renderers.dashboard = async (main) => {
       card('Upcoming bookings', c.bookings_upcoming, '#/bookings'), card('Accepted applicants', c.applicants_accepted, '#/applicants')));
 };
 
+// Emails the applicant that they are accepted (done by a Supabase function that sends through Resend).
+async function sendAcceptance(a, resend) {
+  const { data, error } = await sb.functions.invoke('send-acceptance', { body: { applicant_id: a.id, resend } });
+  let code = data && data.error;
+  if (error) { try { code = (await error.context.json()).error; } catch { code = 'email_failed'; } }
+  if (code) { toast('Accepted, but the email was not sent: ' + (EMAIL_ERRORS[code] || code), true); return; }
+  if (data && data.already) toast('They were already emailed.'); else toast('Acceptance email sent to ' + a.personal_email);
+}
+const EMAIL_ERRORS = { email_not_configured: 'the Resend key is not set in Supabase yet', email_failed: 'Resend refused it', not_accepted: 'they are not accepted', not_allowed: 'not allowed' };
+
 /* ---------- applicants ---------- */
 renderers.applicants = async (main, sub) => {
   const status = sub[0] || 'pending';
   const all = await rows(sb.from('admin_applicants_queue').select('*').order('created_at', { ascending: false }).limit(500));
   const list = all.filter((a) => a.status === status);
   const set = (id, s, msg) => async () => { if (await act(() => rpc('review_applicant', { p_applicant: id, p_status: s }), msg)) refresh(); };
-  const accept = (a) => async () => { if (await confirmBox('Accept ' + a.full_name + '?', 'They get full access the next time they open the app.', 'Accept')) { if (await act(() => rpc('accept_applicant', { p_applicant: a.id }), 'Accepted')) refresh(); } };
+  const accept = (a) => async () => {
+    if (!(await confirmBox('Accept ' + a.full_name + '?', 'They get full access the next time they open the app, and we email them to say so.', 'Accept'))) return;
+    if (!(await act(() => rpc('accept_applicant', { p_applicant: a.id }), 'Accepted'))) return;
+    await sendAcceptance(a, false);
+    refresh();
+  };
   put(main, header('Applicants', all.length + ' in the queue'),
     tabs([['pending', 'Pending'], ['shortlisted', 'Shortlisted'], ['accepted', 'Accepted'], ['rejected', 'Rejected']], status, (v) => { location.hash = '#/applicants/' + v; }),
     list.length ? table(['Name', 'Contact', 'City', 'Work email', 'Signals', 'Applied', ''], list.map((a) => tr([
@@ -220,7 +235,8 @@ renderers.applicants = async (main, sub) => {
         a.status !== 'accepted' ? h('button', { class: 'small primary', on: { click: accept(a) } }, 'Accept') : null,
         a.status === 'pending' ? h('button', { class: 'small', on: { click: set(a.id, 'shortlisted', 'Shortlisted') } }, 'Shortlist') : null,
         a.status !== 'rejected' && a.status !== 'accepted' ? h('button', { class: 'small danger', on: { click: async () => { if (await confirmBox('Reject ' + a.full_name + '?', 'They will see that their application was not accepted.', 'Reject', true)) set(a.id, 'rejected', 'Rejected')(); } } }, 'Reject') : null,
-        a.status === 'rejected' ? h('button', { class: 'small', on: { click: set(a.id, 'pending', 'Moved back to pending') } }, 'Reopen') : null),
+        a.status === 'rejected' ? h('button', { class: 'small', on: { click: set(a.id, 'pending', 'Moved back to pending') } }, 'Reopen') : null,
+        a.status === 'accepted' ? h('button', { class: 'small', on: { click: async () => { await sendAcceptance(a, true); } } }, 'Resend email') : null),
     ]))) : h('p', { class: 'muted' }, 'Nobody here.'));
 };
 
