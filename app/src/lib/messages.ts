@@ -86,6 +86,7 @@ const MAP: Record<string, string> = {
   last_admin: 'You are the last admin, so this account cannot be deleted.',
   not_accepted: "Your application hasn't been accepted yet.",
   already_member: "You're already a member. Log in instead.",
+  outside_area: 'The Semi Circle is only in Delhi NCR for now.',
   not_signed_in: 'Your session ended. Please sign in again.',
   bookings_not_allowed: "This activity doesn't have bookings. Start a channel for it instead.",
   headcount_too_big: 'That is more people than this activity allows.',
