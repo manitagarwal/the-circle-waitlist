@@ -17,6 +17,7 @@ import { dayLabel, endsIn, pct, sameDay } from '@/lib/format';
 import { ReportSheet } from '@/components/ReportSheet';
 import { useLoad } from '@/lib/useLoad';
 import { supabase } from '@/lib/supabase';
+import { useUnread } from '@/lib/unread';
 import { SvgXml } from 'react-native-svg';
 import { activityIcon } from '@/lib/activityIcons';
 
@@ -89,6 +90,10 @@ export default function Chat() {
   const channel = data?.channel;
   const isLobby = channel?.kind === 'lobby';
   const canPost = !!channel?.is_member && (!isLobby || member?.role === 'admin');
+  const { refresh: refreshUnread } = useUnread();
+  useEffect(() => {
+    if (channel?.is_member) api.markChannelRead(id).then(refreshUnread).catch(() => {});
+  }, [id, channel?.is_member, items.length]); // eslint-disable-line react-hooks/exhaustive-deps
   const subtitle = channel ? (channel.kind === 'booking' ? endsIn(data!.expiry) : `${channel.member_count} ${channel.member_count === 1 ? 'member' : 'members'}`) : null;
 
   const send = async () => {

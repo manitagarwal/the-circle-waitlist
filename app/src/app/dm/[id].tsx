@@ -7,6 +7,7 @@ import { PersonAvatar } from '@/components/Avatar';
 import { Icon } from '@/components/Icon';
 import { ReportSheet } from '@/components/ReportSheet';
 import { Info } from '@/components/Info';
+import { useUnread } from '@/lib/unread';
 import { DayDivider, Sheet, State } from '@/components/lists';
 import { Button } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
@@ -58,7 +59,12 @@ export default function DmThread() {
   const respond = async (accept: boolean) => { setBusy(true); try { await api.respondFriend(other, accept); await reload(); } catch (e) { setErr(friendly(e)); } finally { setBusy(false); } };
   const act = async (fn: () => Promise<unknown>, after?: () => void) => { setBusy(true); setMenu(false); try { await fn(); after ? after() : await reload(); } catch (e) { setErr(friendly(e)); } finally { setBusy(false); } };
 
+  const { refresh: refreshUnread } = useUnread();
   const msgs = data?.messages ?? [];
+  const dmChannel = data?.dm?.channel_id;
+  useEffect(() => {
+    if (dmChannel) api.markChannelRead(dmChannel).then(refreshUnread).catch(() => {});
+  }, [dmChannel, msgs.length]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <Bar title={name} subtitle={data?.rel?.status === 'accepted' ? 'Friends' : 'Not friends yet'} left={data?.person ? <PersonAvatar person={data.person} size={36} /> : undefined}

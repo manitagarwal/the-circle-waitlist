@@ -313,6 +313,8 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       return data as NotificationRow[];
     },
     unreadCount: () => rpc<number>('unread_notification_count'),
+    unreadMessages: () => rpc<{ channel_id: string; kind: string; unread: number }[]>('my_unread'),
+    markChannelRead: (channel: string) => rpc<void>('mark_channel_read', { p_channel: channel }),
     markRead: (id: string) => rpc<void>('mark_notification_read', { p_id: id }),
     markAllRead: () => rpc<number>('mark_all_notifications_read'),
     respondFriend: (from: string, accept: boolean) => rpc<void>('respond_friend_request', { p_from: from, p_accept: accept }),

@@ -265,3 +265,7 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - Avatars are twelve tonal figures. Photos are circles.
 - Explanations live behind a small "i" (`Info`), not on the screen.
 - Motion: springs on presses, tabs and the floating bar; items fade up; rings draw in; everything respects reduce-motion.
+
+## Unread
+- A dot on a channel, group or DM badge means it has messages you haven't opened; it goes away when you open the chat. Messages (DMs and groups) and Activity show a count on their header icons. Counts update live.
+- Messages and Activity open as their own screens with a back button; the bottom bar is hidden there, like Find people.

@@ -114,3 +114,6 @@ Scheduled jobs (pg_cron): every 10 min complete finished bookings and delete exp
 
 ## invite_to_public_channel(p_channel, p_invitee)
 Security definer. Caller must be in the public channel; invitee must be an active, onboarded member, not already in it, not blocked either way. Inserts a `channel_invite` notification (payload: channel_id, channel_name, inviter_id, inviter_username). Idempotent per inviter/invitee/channel per day; rate rule `channel.max_invites_per_day` = 30.
+
+## Unread messages (migration 037a)
+`channel_members.last_read_at` (default now) is when a member last opened a chat. `mark_channel_read(channel)` sets it to now for the caller. `my_unread()` returns, per channel the caller is in (any kind, including DMs), the count of messages from others newer than `last_read_at` (deleted and blocked senders excluded).

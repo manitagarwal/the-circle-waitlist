@@ -4,14 +4,33 @@ import Svg, { Path, SvgXml } from 'react-native-svg';
 import { useRouter } from 'expo-router';
 import { Icon } from './Icon';
 import { Info } from './Info';
-import { Arcs } from './Arch';
 import { useUnread } from '@/lib/unread';
 import { activityIcon } from '@/lib/activityIcons';
 import { colors, fonts, radius } from '@/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button } from './ui';
+import { BackButton, Button } from './ui';
 import { ChipRow } from './ChipRow';
 import { FadeUp, PressScale, useReduceMotion } from './motion';
+
+/** A small round count for an icon: the number of unread things, or nothing when there are none. */
+export function CountBadge({ n }: { n: number }) {
+  if (!n) return null;
+  return (
+    <View accessibilityLabel={`${n} unread`} style={{ position: 'absolute', top: -3, right: -3, minWidth: 20, height: 20, borderRadius: 10, paddingHorizontal: 5, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.ground, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 10.5, color: colors.inkOn }}>{n > 99 ? '99+' : n}</Text>
+    </View>
+  );
+}
+
+/** A half circle resting on a short line: the quiet mark under a heading. */
+function Dome() {
+  return (
+    <Svg width={44} height={12} viewBox="0 0 44 12" style={{ marginTop: 2 }}>
+      <Path d="M0 11.5H44" stroke={colors.lineStrong} strokeWidth={1.5} />
+      <Path d="M3 11.5A6 6 0 0 1 15 11.5Z" fill={colors.ink} />
+    </Svg>
+  );
+}
 
 /** The top of a main screen: the name and quick actions (find people, messages, activity), then a large heading. */
 export function TabHeader({ title, right, info }: { title: string; right?: React.ReactNode; info?: string }) {
@@ -20,7 +39,6 @@ export function TabHeader({ title, right, info }: { title: string; right?: React
   const round = { width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: colors.line, alignItems: 'center' as const, justifyContent: 'center' as const };
   return (
     <View>
-      <Arcs width={300} style={{ position: 'absolute', right: -90, top: -50 }} />
       <View style={{ height: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Svg width={22} height={12} viewBox="0 0 22 12"><Path d="M1 12A10 10 0 0 1 21 12z" fill={colors.ink} /></Svg>
@@ -28,10 +46,11 @@ export function TabHeader({ title, right, info }: { title: string; right?: React
         </View>
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <PressScale accessibilityRole="button" accessibilityLabel="Find people" onPress={() => r.push('/people')} style={round}><Icon name="search" size={20} /></PressScale>
-          <PressScale accessibilityRole="button" accessibilityLabel="Messages" onPress={() => r.navigate('/messages' as never)} style={round}><Icon name="messages" size={20} /></PressScale>
-          <PressScale accessibilityRole="button" accessibilityLabel={unread ? `Activity, ${unread} unread` : 'Activity'} onPress={() => r.navigate('/activity' as never)} style={round}>
-            <Icon name="activity" size={20} />
-            {unread ? <View style={{ position: 'absolute', top: 10, right: 11, width: 10, height: 10, borderRadius: 5, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.ground }} /> : null}
+          <PressScale accessibilityRole="button" accessibilityLabel={unread.messages ? `Messages, ${unread.messages} unread` : 'Messages'} onPress={() => r.push('/messages')} style={round}>
+            <Icon name="messages" size={20} /><CountBadge n={unread.messages} />
+          </PressScale>
+          <PressScale accessibilityRole="button" accessibilityLabel={unread.activity ? `Activity, ${unread.activity} unread` : 'Activity'} onPress={() => r.push('/activity')} style={round}>
+            <Icon name="activity" size={20} /><CountBadge n={unread.activity} />
           </PressScale>
         </View>
       </View>
@@ -42,6 +61,24 @@ export function TabHeader({ title, right, info }: { title: string; right?: React
         </View>
         {right}
       </View>
+      <Dome />
+    </View>
+  );
+}
+
+/** The top of a screen you open from a main one: a back button, then the heading. The bottom bar is hidden here. */
+export function PageHeader({ title, right, info }: { title: string; right?: React.ReactNode; info?: string }) {
+  return (
+    <View>
+      <View style={{ height: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <BackButton />
+        {right}
+      </View>
+      <View style={{ minHeight: 60, flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 10 }}>
+        <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 42, lineHeight: 48, letterSpacing: -1, color: colors.ink }}>{title}</Text>
+        {info ? <Info text={info} title={title} style={{ marginTop: 10 }} /> : null}
+      </View>
+      <Dome />
     </View>
   );
 }
@@ -107,19 +144,30 @@ export function RingBadge({ name, unread, size = 60, activity }: { name: string;
   );
 }
 
-export function Row({ left, title, subtitle, meta, right, onPress, tag }: {
-  left?: React.ReactNode; title: string; subtitle?: string | null; meta?: string | null; right?: React.ReactNode; onPress?: () => void; tag?: string | null;
+/** Puts a small dot on the corner of whatever it wraps when there is something new. */
+export function WithDot({ on, children }: { on?: boolean; children: React.ReactNode }) {
+  return (
+    <View>
+      {children}
+      {on ? <View accessibilityLabel="New messages" style={{ position: 'absolute', top: 1, right: 1, width: 12, height: 12, borderRadius: 6, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.ground }} /> : null}
+    </View>
+  );
+}
+
+export function Row({ left, title, subtitle, meta, right, onPress, tag, unread }: {
+  left?: React.ReactNode; title: string; subtitle?: string | null; meta?: string | null; right?: React.ReactNode; onPress?: () => void; tag?: string | null; unread?: number;
 }) {
   const body = (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, gap: 16, minHeight: 84 }}>
       {left}
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-          <Text numberOfLines={1} style={{ flexShrink: 1, fontFamily: fonts.bodySemi, fontSize: 16, color: colors.ink }}>{title}</Text>
-          {meta ? <Text style={{ fontFamily: fonts.body, fontSize: 12.5, color: colors.faint }}>{meta}</Text> : null}
+          <Text numberOfLines={1} style={{ flexShrink: 1, fontFamily: unread ? fonts.bodySemi : fonts.bodySemi, fontSize: 16, color: colors.ink }}>{title}</Text>
+          {meta ? <Text style={{ fontFamily: unread ? fonts.bodySemi : fonts.body, fontSize: 12.5, color: unread ? colors.ink : colors.faint }}>{meta}</Text> : null}
         </View>
-        {subtitle ? <Text numberOfLines={2} style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{subtitle}</Text> : null}
+        {subtitle ? <Text numberOfLines={2} style={{ fontFamily: unread ? fonts.bodyMedium : fonts.body, fontSize: 14, color: unread ? colors.ink : colors.muted, marginTop: 2 }}>{subtitle}</Text> : null}
       </View>
+      {unread ? <View accessibilityLabel={`${unread} unread`} style={{ minWidth: 22, height: 22, borderRadius: 11, paddingHorizontal: 6, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, color: colors.inkOn }}>{unread > 99 ? '99+' : unread}</Text></View> : null}
       {right}
     </View>
   );

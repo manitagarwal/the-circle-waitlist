@@ -8,6 +8,7 @@ import { useFonts } from 'expo-font';
 import { Fraunces_400Regular, Fraunces_500Medium } from '@expo-google-fonts/fraunces';
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import { AuthProvider, useAuth } from '@/lib/auth';
+import { UnreadProvider } from '@/lib/unread';
 import { colors, isDark } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -71,6 +72,8 @@ function Routes() {
         <Stack.Screen name="member/[id]" />
         <Stack.Screen name="friends" />
         <Stack.Screen name="people" />
+        <Stack.Screen name="messages" />
+        <Stack.Screen name="activity" />
         <Stack.Screen name="event/[id]" />
         <Stack.Screen name="booking/[id]" />
         <Stack.Screen name="booking/new" />
@@ -95,7 +98,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <AuthProvider>
-        <Routes />
+        <UnreadProvider><Routes /></UnreadProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

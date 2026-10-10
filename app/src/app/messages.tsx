@@ -3,18 +3,20 @@ import { Pressable, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { PersonAvatar } from '@/components/Avatar';
 import { Icon } from '@/components/Icon';
-import { ArchBadge, Row, Segmented, State, TabHeader } from '@/components/lists';
+import { RingBadge, Row, WithDot, Segmented, State, PageHeader } from '@/components/lists';
 import { Info } from '@/components/Info';
 import { Screen } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api } from '@/lib/auth';
 import { listStamp } from '@/lib/format';
 import { useLoad } from '@/lib/useLoad';
+import { useUnread } from '@/lib/unread';
 
 type Seg = 'friends' | 'groups' | 'strangers';
 
 export default function Messages() {
   const r = useRouter();
+  const unread = useUnread();
   const { tab } = useLocalSearchParams<{ tab?: string }>();
   const [seg, setSeg] = useState<Seg>('friends');
   useEffect(() => { if (tab === 'groups') setSeg('groups'); }, [tab]);
@@ -30,7 +32,7 @@ export default function Messages() {
 
   return (
     <Screen onRefresh={pull} refreshing={refreshing}>
-      <TabHeader title="Messages" right={seg === 'groups' ? (
+      <PageHeader title="Messages" right={seg === 'groups' ? (
         <Pressable accessibilityRole="button" accessibilityLabel="New group" onPress={() => r.push('/group/new')} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="plus" color={colors.inkOn} strokeWidth={2.2} /></Pressable>) : undefined} />
       <Segmented value={seg} onChange={setSeg} options={[{ value: 'friends', label: 'Friends' }, { value: 'groups', label: 'Groups' }, { value: 'strangers', label: 'Strangers' }]} />
@@ -38,11 +40,11 @@ export default function Messages() {
         empty={data && seg !== 'groups' && dmRows.length === 0 ? (seg === 'friends' ? 'No conversations with friends yet.' : 'No messages from strangers.') : data && seg === 'groups' && data.groups.length === 0 ? 'No groups yet. Start one with the plus button and add your friends.' : null} />
 
       {seg === 'groups' ? data?.groups.map((g) => (
-        <Row key={g.id} left={<ArchBadge name={g.name} />} title={g.name} meta={data.prev[g.id] ? listStamp(data.prev[g.id].last_at) : null}
+        <Row key={g.id} unread={unread.byChannel[g.id]} left={<RingBadge name={g.name} unread={!!unread.byChannel[g.id]} />} title={g.name} meta={data.prev[g.id] ? listStamp(data.prev[g.id].last_at) : null}
           subtitle={data.prev[g.id] ? `${data.prev[g.id].from_me ? 'You' : data.prev[g.id].sender_username ?? 'Someone'}: ${data.prev[g.id].body}` : `${g.member_count} members`}
           onPress={() => r.push({ pathname: '/channel/[id]', params: { id: g.id } })} />
       )) : dmRows.map((d) => (
-        <Row key={d.channel_id} left={<PersonAvatar person={d} />} title={d.username} meta={d.last_at ? listStamp(d.last_at) : null}
+        <Row key={d.channel_id} unread={unread.byChannel[d.channel_id]} left={<WithDot on={!!unread.byChannel[d.channel_id]}><PersonAvatar person={d} size={56} /></WithDot>} title={d.username} meta={d.last_at ? listStamp(d.last_at) : null}
           subtitle={d.last_body ? `${d.last_from_me ? 'You: ' : ''}${d.last_body}` : null}
           onPress={() => r.push({ pathname: '/dm/[id]', params: { id: d.other_id } })} />
       ))}

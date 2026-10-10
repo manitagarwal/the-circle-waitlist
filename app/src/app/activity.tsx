@@ -4,7 +4,7 @@ import { FadeUp } from '@/components/motion';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, Button } from '@/components/ui';
-import { State, TabHeader } from '@/components/lists';
+import { State, PageHeader } from '@/components/lists';
 import { colors, fonts } from '@/theme';
 import { describe } from '@/lib/activity';
 import { ago } from '@/lib/format';
@@ -26,7 +26,7 @@ export default function Activity() {
 
   return (
     <Screen onRefresh={pull} refreshing={refreshing}>
-      <TabHeader title="Activity" right={unread > 0 ? (
+      <PageHeader title="Activity" right={unread > 0 ? (
         <Text accessibilityRole="button" onPress={() => run('all', () => api.markAllRead())} style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink, textDecorationLine: 'underline', padding: 10 }}>Mark all read</Text>) : undefined} />
       <State loading={loading} error={error} onRetry={reload} empty={data && data.length === 0 ? 'Nothing yet. When something needs you, it shows up here.' : null} />
       {err ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.error, marginVertical: 8 }}>{err}</Text> : null}
