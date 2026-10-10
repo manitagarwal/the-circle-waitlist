@@ -51,7 +51,10 @@ export default function Details() {
       <TextField label="Full name" value={s.fullName} onChangeText={(v) => set({ fullName: v })} autoComplete="name" error={errs.fullName} />
       <PhoneField dial={s.dial} number={s.phone} onChange={(v) => set({ dial: v.dial, phone: v.number })} error={errs.phone} />
       <View style={{ marginTop: 16 }}>
-        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginBottom: 6 }}>City</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+          <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted }}>City</Text>
+          <Info text="Delhi NCR only for now. Elsewhere? Pick Other and we'll tell you when we reach you." title="City" size={18} style={{ marginTop: 0 }} />
+        </View>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           {CITIES.map((c) => {
             const on = s.city === c;
@@ -60,9 +63,7 @@ export default function Details() {
             );
           })}
         </View>
-        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: errs.city ? colors.error : colors.faint, marginTop: 6 }}>
-          {errs.city ?? 'Delhi NCR only for now. Elsewhere? Pick Other and we\'ll tell you when we reach you.'}
-        </Text>
+        {errs.city ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.error, marginTop: 6 }}>{errs.city}</Text> : null}
       </View>
       {s.city === 'Other' ? <TextField label="Your city" value={s.cityOther} onChangeText={(v) => set({ cityOther: v })} autoComplete="off" /> : null}
       <TextField label="Personal email" value={s.personalEmail} onChangeText={(v) => set({ personalEmail: v })} keyboardType="email-address" autoCapitalize="none" autoComplete="email"

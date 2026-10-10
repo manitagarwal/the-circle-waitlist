@@ -257,8 +257,11 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - Every channel tied to an activity shows that activity's clipart (51 drawings, `activityIcons.ts`) instead of a letter; channels without an activity keep the letter.
 
 ## Design rules (current)
-- No red anywhere: errors are shown in bold ink. Accent is brass only.
-- Activity groups are a chip rail above one list (All, Sports, Music...), not stacked sections (pickers keep collapsible groups).
-- Explanations live behind a small "i" (`Info`), not as text on the screen. Field hints and section labels (`SectionLabel info=`) use it too.
-- Activity clipart is monochrome: bold ink outlines with a neutral stone tint.
-- Profile photos and avatars are circles.
+- Quiet luxury: warm ivory ground (deep charcoal in dark mode, following the phone's setting when the app opens), charcoal ink, stone surfaces, no accent colour and never red (errors are bold ink).
+- Type: Fraunces for headings, Inter for text. Large headings with generous space.
+- Navigation: a floating dark pill at the bottom; the current tab opens to show its name. Header row on main screens: name, find people, messages, activity.
+- Tabs inside a screen are text with a sliding underline. Activity groups are a chip rail above one list.
+- Activity clipart is monochrome (currentColor), bold, on a stone circle; chat shows it faintly as a watermark; events without a picture get a stone cover with drawn rings and the clipart.
+- Avatars are twelve tonal figures. Photos are circles.
+- Explanations live behind a small "i" (`Info`), not on the screen.
+- Motion: springs on presses, tabs and the floating bar; items fade up; rings draw in; everything respects reduce-motion.

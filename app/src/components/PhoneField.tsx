@@ -10,11 +10,11 @@ export function PhoneField({ dial, number, onChange, error, label = 'Phone numbe
 }) {
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
-  const border = error ? colors.error : focus ? colors.ink : 'transparent';
-  const box = { height: 56, borderRadius: radius.control, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: border } as const;
+  const border = focus || error ? colors.ink : 'transparent';
+  const box = { height: 56, borderRadius: radius.control, backgroundColor: colors.surface, borderWidth: 1, borderColor: border } as const;
   return (
     <View style={{ marginTop: 16 }}>
-      <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginBottom: 6 }}>{label}</Text>
+      <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted, marginBottom: 6 }}>{label}</Text>
       <View style={{ flexDirection: 'row', gap: 8 }}>
         <Pressable accessibilityRole="button" accessibilityLabel={`Country code, plus ${dial}. Change`} onPress={() => setOpen(true)}
           style={[box, { minWidth: 92, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }]}>
@@ -26,7 +26,7 @@ export function PhoneField({ dial, number, onChange, error, label = 'Phone numbe
           maxLength={dial === '91' ? 16 : maxLength(dial) + 6} // room to paste "+91 98765 43210"; it is trimmed on input
           onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
           onChangeText={(t) => { const r = readInput(dial, t); onChange(r.resolved ? { dial: r.dial, number: r.national } : { dial, number: t.slice(0, 6) }); }}
-          style={[box, { flex: 1, paddingHorizontal: 14, fontSize: 16, fontFamily: fonts.body, color: colors.ink }]}
+          style={[box, { flex: 1, minWidth: 0, paddingHorizontal: 14, fontSize: 16, fontFamily: fonts.body, color: colors.ink }]}
         />
       </View>
       {error ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.error, marginTop: 6 }}>{error}</Text> : null}

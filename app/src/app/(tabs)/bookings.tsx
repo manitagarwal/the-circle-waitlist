@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
 import { Buckets } from '@/components/Buckets';
+import { LetterBadge } from '@/components/lists';
 import { FilterBar, Segmented, SectionLabel, State, TabHeader } from '@/components/lists';
 import { Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
@@ -15,20 +16,18 @@ function Card({ b, onPress, note, group }: { b: BookingRow; onPress: () => void;
   const sp = spots(b);
   const mix = genderWanted(b);
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: colors.surface, borderRadius: radius.card, padding: 14, marginBottom: 10 })}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.3, color: colors.faint }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}</Text>
-        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.faint }}>{b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
-      </View>
-      <Text style={{ fontFamily: fonts.title, fontSize: 23, color: colors.ink, marginTop: 4 }}>{b.title}</Text>
-      <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{timeRange(b.starts_at, b.ends_at)}</Text>
-      <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted }}>{[b.venue_name, b.area].filter(Boolean).join(', ')}</Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 10 }}>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink }}>{sp.count}</Text>
-          {mix ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted }}>{mix}</Text> : null}
+    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: colors.surface, borderRadius: radius.card, padding: 16, marginBottom: 12, flexDirection: 'row', gap: 14, alignItems: 'center' })}>
+      <LetterBadge name={b.title} activity={b.interest_name} size={56} />
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontFamily: fonts.title, fontSize: 21, color: colors.ink }}>{b.title}</Text>
+        <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{timeRange(b.starts_at, b.ends_at)}</Text>
+        <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted }}>{[b.venue_name, b.area].filter(Boolean).join(', ')}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 8 }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13.5, color: colors.ink }}>{sp.count}{mix ? `, ${mix}` : ''}</Text>
+          </View>
+          {note ? <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.ink }}>{note}</Text> : sp.left ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted }}>{sp.left}</Text> : null}
         </View>
-        {note ? <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.sage }}>{note}</Text> : sp.left ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.goldText }}>{sp.left}</Text> : null}
       </View>
     </Pressable>
   );
