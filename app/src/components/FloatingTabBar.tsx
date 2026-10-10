@@ -6,9 +6,10 @@ import { useReduceMotion } from './motion';
 import { colors, fonts } from '@/theme';
 
 const TABS = [
-  { name: 'channels', label: 'Channels' },
+  { name: 'home', label: 'Home' },
   { name: 'events', label: 'Events' },
   { name: 'bookings', label: 'Bookings' },
+  { name: 'channels', label: 'Chats' },
   { name: 'profile', label: 'Profile' },
 ] as const;
 

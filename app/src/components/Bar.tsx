@@ -23,7 +23,7 @@ export function Bar({ title, subtitle, left, right, onTitlePress }: {
   return (
     <View style={{ paddingTop: insets.top, backgroundColor: colors.ground }}>
       <View style={{ minHeight: 60, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14 }}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={() => (r.canGoBack() ? r.back() : r.replace('/channels'))}
+        <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={() => (r.canGoBack() ? r.back() : r.replace('/home'))}
           style={{ width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center', marginLeft: 4, marginRight: 8 }}><Icon name="back" /></Pressable>
         {onTitlePress ? <Pressable accessibilityRole="button" onPress={onTitlePress} style={{ flex: 1, flexDirection: 'row' }}>{titleBlock}</Pressable> : titleBlock}
         {right}

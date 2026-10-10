@@ -306,3 +306,6 @@ Booking limits per category (editable in the portal, Settings > Categories; an a
 A host may close joining earlier than the default, never later. The database enforces all of it (`create_booking`, `join_booking`, `set_booking_close_hours`); `booking_limits(activity)` tells the app what to offer. Hosts can also set a minimum reliability (5+ to 9+), and members can filter bookings by it.
 
 Lobbies are the member's own choice: picking an interest adds its Lobby, but changing interests never removes one. Any Lobby can be joined or left from "Browse all lobbies". Interests (3 to 5) remain a profile tag and the starting set of Lobbies. Members whose old activities were retired see a prompt to choose at least 3.
+
+## Home (the opening tab)
+Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-of-day greeting; Coming up (your next bookings and events as colour cards, or a prompt to find a booking); Your lobbies (with unread counts); Starting soon (open bookings, those in your interests first, skipping full, closed and your own); one upcoming event you have not joined; Pick up where you left off (up to three chats with unread messages). There are no people suggestions. Pull to refresh; it reloads each time you return to it. Logic lives in `app/src/lib/home.ts` (tested).
