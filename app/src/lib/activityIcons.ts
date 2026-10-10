@@ -1,7 +1,7 @@
-// One small illustration per activity, drawn in the app's style: ink outlines with a touch of yellow.
-const Y = '#f7b32b';
-const K = '#16120e';
-const svg = (inner: string) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="${K}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+// One small illustration per activity: bold ink outlines with a neutral stone tint, no colour.
+const Y = '#e4dfd5';
+const K = '#1d1c1a';
+const svg = (inner: string) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="${K}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
 
 const ICONS: Record<string, string> = {
   // sports

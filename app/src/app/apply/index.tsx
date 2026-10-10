@@ -10,6 +10,7 @@ import { Pill } from '@/components/Pill';
 import { PhoneField } from '@/components/PhoneField';
 import { api } from '@/lib/auth';
 import { cityValue, useApply } from './_layout';
+import { Info } from '@/components/Info';
 
 type Errs = Partial<Record<'fullName' | 'phone' | 'city' | 'personalEmail' | 'linkedin', string>>;
 
@@ -46,7 +47,7 @@ export default function Details() {
     <Screen footer={<Button label="Continue" onPress={next} loading={busy} />}>
       <StepHeader step={1} of={5} />
       <Title italic>Request an invitation.</Title>
-      <Body style={{ marginTop: 6, fontSize: 14 }}>Five short steps. Read by people, not a model.</Body>
+      <Info text={"Five short steps. Read by people, not a model."} />
       <TextField label="Full name" value={s.fullName} onChangeText={(v) => set({ fullName: v })} autoComplete="name" error={errs.fullName} />
       <PhoneField dial={s.dial} number={s.phone} onChange={(v) => set({ dial: v.dial, phone: v.number })} error={errs.phone} />
       <View style={{ marginTop: 16 }}>

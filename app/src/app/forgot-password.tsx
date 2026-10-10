@@ -6,6 +6,7 @@ import { FadeUp } from '@/components/motion';
 import { colors, fonts } from '@/theme';
 import { isEmail, normalizeEmail } from '@/lib/validators';
 import { api } from '@/lib/auth';
+import { Info } from '@/components/Info';
 
 export default function Forgot() {
   const r = useRouter();
@@ -30,7 +31,7 @@ export default function Forgot() {
       <FadeUp>
         <View style={{ marginTop: 18 }}>
           <Title>Forgot it? Happens.</Title>
-          <Body style={{ marginTop: 8 }}>Enter your personal email, the one you log in with. We'll send a code, and you can set a new password after it.</Body>
+          <Info text={"Enter your personal email, the one you log in with. We'll send a code, and you can set a new password after it."} />
         </View>
       </FadeUp>
       <FadeUp delay={100}>

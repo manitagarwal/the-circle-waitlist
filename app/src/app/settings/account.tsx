@@ -7,6 +7,7 @@ import { Body, Button, Notice } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
+import { Info } from '@/components/Info';
 
 export default function AccountData() {
   const { refresh } = useAuth();
@@ -39,7 +40,7 @@ export default function AccountData() {
       <Bar title="Your data and account" />
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }}>
         <Text style={{ fontFamily: fonts.title, fontSize: 26, color: colors.ink }}>Take a copy</Text>
-        <Body style={{ marginTop: 6 }}>Everything we hold about you in one file: your profile, application, friends, bookings, messages, reports you've filed and your reliability history.</Body>
+        <Info text={"Everything we hold about you in one file: your profile, application, friends, bookings, messages, reports you've filed and your reliability history."} />
         <Button label="Export my data" variant="secondary" onPress={exportIt} loading={busy === 'export'} style={{ marginTop: 14 }} />
         {note ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.sage, marginTop: 8 }}>{note}</Text> : null}
 
@@ -49,7 +50,7 @@ export default function AccountData() {
         {step(3, 'You have 30 days to change your mind. After that your personal data is erased for good.')}
         {err ? <Notice tone="error">{err}</Notice> : null}
         <Button label="Delete my account" variant="secondary" onPress={() => setConfirm(true)} style={{ marginTop: 16 }} />
-        <Body style={{ fontSize: 13, marginTop: 12 }}>Your messages stay in the channels they were sent to, under an anonymous name. Reports and reliability history are kept without your details.</Body>
+        <Info text={"Your messages stay in the channels they were sent to, under an anonymous name. Reports and reliability history are kept without your details."} />
       </ScrollView>
       <Sheet visible={confirm} onClose={() => setConfirm(false)} title="Delete your account?">
         <Body style={{ marginBottom: 16 }}>You can restore it any time in the next 30 days. After that it's gone for good.</Body>

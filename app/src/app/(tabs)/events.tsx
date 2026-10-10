@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Collapsible } from '@/components/Collapsible';
+import { Buckets } from '@/components/Buckets';
 import { EventCard } from '@/components/EventCard';
 import { Segmented, SectionLabel, State, TabHeader } from '@/components/lists';
 import { Screen } from '@/components/ui';
@@ -31,17 +31,8 @@ export default function Events() {
       <State loading={loading} error={error} onRetry={reload}
         empty={data && seg === 'upcoming' && upcoming.length === 0 ? 'No events right now. We announce new ones here and in Activity.' : data && seg === 'mine' && mine.length === 0 ? "You haven't reserved a spot at an event yet." : null} />
       {data && seg === 'upcoming' ? (<>
-        {bucket(data.groups, upcoming, (e) => e.interest_id).map((bk) => (
-          <Collapsible key={bk.group.id} title={bk.group.name} count={bk.items.length}>
-            {groupByDay(bk.items).map((g) => (
-              <View key={g.day}><SectionLabel>{g.day}</SectionLabel>{g.rows.map((e) => <EventCard key={e.id} e={e} onPress={() => open(e.id)} />)}</View>
-            ))}
-          </Collapsible>
-        ))}
-        {loose.length ? (
-          <Collapsible title="More events" count={loose.length}>
-            {groupByDay(loose).map((g) => <View key={g.day}><SectionLabel>{g.day}</SectionLabel>{g.rows.map((e) => <EventCard key={e.id} e={e} onPress={() => open(e.id)} />)}</View>)}
-          </Collapsible>) : null}
+        <Buckets buckets={[...bucket(data.groups, upcoming, (e) => e.interest_id), ...(loose.length ? [{ group: { id: 'more', name: 'More events' }, items: loose }] : [])]}
+          render={(items) => groupByDay(items).map((g) => <View key={g.day}><SectionLabel>{g.day}</SectionLabel>{g.rows.map((e) => <EventCard key={e.id} e={e} onPress={() => open(e.id)} />)}</View>)} />
       </>) : null}
       {data && seg === 'mine' ? mine.map((e) => <EventCard key={e.id} e={e} onPress={() => open(e.id)} />) : null}
     </Screen>

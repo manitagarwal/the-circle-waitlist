@@ -255,3 +255,10 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - Inviting to a public channel: any member of the channel can invite any active member from channel settings, "Invite people". The invitee gets an Activity notification that opens the channel; they still join under the channel's own rules. Rules: one invite per person per channel per day, cap `channel.max_invites_per_day` (30) per member per day, no invites across a block.
 - Groups (private) are unchanged: admins add friends directly.
 - Every channel tied to an activity shows that activity's clipart (51 drawings, `activityIcons.ts`) instead of a letter; channels without an activity keep the letter.
+
+## Design rules (current)
+- No red anywhere: errors are shown in bold ink. Accent is brass only.
+- Activity groups are a chip rail above one list (All, Sports, Music...), not stacked sections (pickers keep collapsible groups).
+- Explanations live behind a small "i" (`Info`), not as text on the screen. Field hints and section labels (`SectionLabel info=`) use it too.
+- Activity clipart is monochrome: bold ink outlines with a neutral stone tint.
+- Profile photos and avatars are circles.

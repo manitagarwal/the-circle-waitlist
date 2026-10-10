@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
-import { Collapsible } from '@/components/Collapsible';
+import { Buckets } from '@/components/Buckets';
 import { FilterBar, Segmented, SectionLabel, State, TabHeader } from '@/components/lists';
 import { Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
@@ -67,23 +67,20 @@ export default function Bookings() {
           { key: 'fit', label: 'Fits me', options: ['Only ones I can join'] },
         ]} />
         <State empty={shown.length === 0 && !loading ? (data.upcoming.length === 0 ? 'No bookings yet. Host the first one.' : 'Nothing matches those filters.') : null} />
-        {bucket(data.groups, shown, (b) => b.interest_id).map((bk) => (
-          <Collapsible key={bk.group.id} title={bk.group.name} count={bk.items.length}>
-            {groupByDay(bk.items).map((g) => (
+        <Buckets buckets={bucket(data.groups, shown, (b) => b.interest_id)} render={(items) => (<>
+            {groupByDay(items).map((g) => (
               <View key={g.day}>
                 <SectionLabel>{g.day}</SectionLabel>
                 {g.rows.map((b) => <Card key={b.id} b={b} onPress={() => open(b.id)} note={b.is_host ? 'Hosting' : b.my_status === 'joined' ? "You're in" : null} />)}
               </View>
             ))}
-          </Collapsible>
-        ))}
+        </>)} />
       </>) : null}
 
       {data && seg === 'mine' ? (<>
         <State empty={data.mine.length === 0 ? "You haven't joined or hosted anything yet." : null} />
-        {bucket(data.groups, data.mine, (b) => b.interest_id).map((bk) => (
-          <Collapsible key={bk.group.id} title={bk.group.name} count={bk.items.length}>
-            {bk.items.map((b) => {
+        <Buckets buckets={bucket(data.groups, data.mine, (b) => b.interest_id)} render={(items) => (<>
+            {items.map((b) => {
               const over = new Date(b.ends_at).getTime() < now;
               const needsMarking = b.is_host && over && b.status !== 'cancelled';
               return (
@@ -96,8 +93,7 @@ export default function Bookings() {
                 </View>
               );
             })}
-          </Collapsible>
-        ))}
+        </>)} />
       </>) : null}
     </Screen>
   );

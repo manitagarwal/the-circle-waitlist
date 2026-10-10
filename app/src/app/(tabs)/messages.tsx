@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { PersonAvatar } from '@/components/Avatar';
 import { Icon } from '@/components/Icon';
 import { ArchBadge, Row, Segmented, State, TabHeader } from '@/components/lists';
+import { Info } from '@/components/Info';
 import { Screen } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api } from '@/lib/auth';
@@ -47,9 +48,7 @@ export default function Messages() {
           subtitle={d.last_body ? `${d.last_from_me ? 'You: ' : ''}${d.last_body}` : null}
           onPress={() => r.push({ pathname: '/dm/[id]', params: { id: d.other_id } })} />
       ))}
-      <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, textAlign: 'center', marginTop: 20 }}>
-        {seg === 'groups' ? 'Groups are for friends only. You can add up to 50 people, and anyone can leave.' : 'Message anyone from their profile. Strangers get one message until they accept you as a friend.'}
-      </Text>
+      <Info text={seg === 'groups' ? 'Groups are for friends only. You can add up to 50 people, and anyone can leave.' : 'Message anyone from their profile. Strangers get one message until they accept you as a friend.'} style={{ alignSelf: 'center', marginTop: 20 }} />
     </Screen>
   );
 }

@@ -5,6 +5,7 @@ import { Bar } from '@/components/Bar';
 import { PasswordForm } from '@/components/PasswordForm';
 import { Body } from '@/components/ui';
 import { colors } from '@/theme';
+import { Info } from '@/components/Info';
 
 export default function ChangePassword() {
   const r = useRouter();
@@ -12,7 +13,7 @@ export default function ChangePassword() {
     <View style={{ flex: 1, backgroundColor: colors.ground }}>
       <Bar title="Password" />
       <ScrollView contentContainerStyle={{ padding: 20 }} keyboardShouldPersistTaps="handled">
-        <Body>Choose a new password. You'll use it the next time you log in.</Body>
+        <Info text={"Choose a new password. You'll use it the next time you log in."} />
         <PasswordForm submitLabel="Save password" onDone={() => r.back()} />
       </ScrollView>
     </View>

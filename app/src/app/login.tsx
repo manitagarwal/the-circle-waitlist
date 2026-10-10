@@ -7,6 +7,7 @@ import { colors, fonts } from '@/theme';
 import { isEmail, normalizeEmail } from '@/lib/validators';
 import { supabase } from '@/lib/supabase';
 import { friendly } from '@/lib/messages';
+import { Info } from '@/components/Info';
 
 export default function Login() {
   const r = useRouter();
@@ -34,7 +35,7 @@ export default function Login() {
       <FadeUp>
         <View style={{ marginTop: 18 }}>
           <Title>Welcome back.</Title>
-          <Body style={{ marginTop: 8 }}>Log in with your personal email and password.</Body>
+          <Info text={"Log in with your personal email and password."} />
         </View>
       </FadeUp>
       <FadeUp delay={100}>

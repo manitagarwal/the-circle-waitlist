@@ -50,7 +50,7 @@ export default function MemberProfile() {
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }}>
         <State loading={loading} error={error} onRetry={reload} empty={data && !p ? "That profile isn't available." : null} />
         {p ? (<>
-          <FadeUp distance={40}><View style={{ marginTop: 4 }}><ArchPhoto uri={photo} avatarId={p.avatar_id} maxWidth={350} /></View></FadeUp>
+          <FadeUp distance={40}><View style={{ marginTop: 4 }}><ArchPhoto uri={photo} avatarId={p.avatar_id} size={180} /></View></FadeUp>
           <FadeUp delay={350}>
             <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 37, lineHeight: 41, color: colors.ink, marginTop: 16 }}>{p.full_name ?? p.username}</Text>
             <Text style={{ fontFamily: fonts.body, fontSize: 15, color: colors.muted, marginTop: 4 }}>{['@' + p.username, p.age, p.area, p.field_of_work].filter(Boolean).join(' · ')}</Text>

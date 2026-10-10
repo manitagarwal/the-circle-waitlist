@@ -7,6 +7,7 @@ import { Body, Button, Screen, StepHeader, TextField, Title } from '@/components
 import { colors, fonts, radius } from '@/theme';
 import { ageOn, GENDERS, MIN_AGE, parseDob } from '@/lib/profile';
 import { useSetup } from './_layout';
+import { Info } from '@/components/Info';
 
 type Errs = Partial<Record<'dob' | 'gender' | 'address' | 'area' | 'field', string>>;
 
@@ -61,7 +62,7 @@ export default function About() {
     </View>}>
       <StepHeader step={3} of={4} />
       <Title italic>A little about you.</Title>
-      <Body style={{ marginTop: 6, fontSize: 14 }}>Name, work email and LinkedIn came with your application. Nothing to retype.</Body>
+      <Info text={"Name, work email and LinkedIn came with your application. Nothing to retype."} />
 
       <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 15, color: colors.ink, marginTop: 20 }}>Date of birth</Text>
       <View style={{ flexDirection: 'row', gap: 8 }}>

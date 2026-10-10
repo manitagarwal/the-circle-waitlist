@@ -14,8 +14,8 @@ export const colors = {
   goldTint: 'rgba(176,138,74,0.12)',
   goldBorder: 'rgba(176,138,74,0.55)',
   sage: '#3f6b52',
-  error: '#b3261e',
-  clay: '#b08a4a',          // unread dots
+  error: '#1d1c1a',
+  clay: '#5d5953',          // unread dots
   terracotta: '#756f66',
   surface: '#f2efe9',
   accentSoft: '#f6f0e4',

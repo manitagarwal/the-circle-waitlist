@@ -6,6 +6,7 @@ import { colors, fonts } from '@/theme';
 import { isOtp } from '@/lib/validators';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
+import { Info } from '@/components/Info';
 
 /** Six-digit email code. mode: reset (the emailed code is only used to reset a password) */
 export default function Code() {
@@ -40,7 +41,7 @@ export default function Code() {
   };
 
   return (
-    <Screen footer={<Body style={{ textAlign: 'center', fontSize: 13, color: colors.faint }}>The code works once and expires in ten minutes.</Body>}>
+    <Screen footer={<Info text={"The code works once and expires in ten minutes."} />}>
       <BackButton />
       <Title>Check your inbox.</Title>
       <Body style={{ marginTop: 10 }}>Six digits, sent to {strong(String(email))}. Spam folder if it plays hard to get.</Body>

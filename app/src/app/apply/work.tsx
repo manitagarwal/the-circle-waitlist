@@ -6,6 +6,7 @@ import { isEmail, isOtp, isPersonalEmail, normalizeEmail } from '@/lib/validator
 import { api } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { useApply } from './_layout';
+import { Info } from '@/components/Info';
 
 /** Step 3: verify the work email. This is a check on the application, not a login. */
 export default function VerifyWork() {
@@ -44,7 +45,7 @@ export default function VerifyWork() {
     </View>}>
       <StepHeader step={3} of={5} />
       <Title italic>Let's make it official.</Title>
-      <Body style={{ marginTop: 6, fontSize: 14 }}>Use your work or business email. We verify every member this way, and personal inboxes like Gmail don't pass. You won't log in with it.</Body>
+      <Info text={"Use your work or business email. We verify every member this way, and personal inboxes like Gmail don't pass. You won't log in with it."} />
       <TextField label="Work email" value={s.workEmail} onChangeText={(v) => { set({ workEmail: v, workVerified: false }); setSent(false); }}
         keyboardType="email-address" autoCapitalize="none" autoComplete="email" error={err} ok={s.workVerified} editable={!s.workVerified} />
       {!sent && !s.workVerified ? <Button label="Send code" onPress={send} loading={busy === 'send'} style={{ marginTop: 16 }} /> : null}

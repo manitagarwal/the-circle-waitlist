@@ -47,7 +47,7 @@ export default function Profile() {
           <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.ink }}>Settings</Text></Pressable>} />
       <State loading={loading} error={error} onRetry={reload} />
       {p ? (<>
-        <FadeUp distance={40}><View style={{ marginTop: 8 }}><ArchPhoto uri={photo} avatarId={p.avatar_id} maxWidth={170} /></View></FadeUp>
+        <FadeUp distance={40}><View style={{ marginTop: 8 }}><ArchPhoto uri={photo} avatarId={p.avatar_id} size={150} /></View></FadeUp>
         <FadeUp delay={300}>
           <View style={{ alignItems: 'center', marginTop: 14 }}>
             <Text style={{ fontFamily: fonts.display, fontSize: 32, lineHeight: 36, color: colors.ink }}>{p.full_name ?? p.username}</Text>
@@ -62,16 +62,15 @@ export default function Profile() {
         </View>
 
         {data!.score != null ? (<>
-          <SectionLabel>Your reliability</SectionLabel>
+          <SectionLabel info="Only you can see this. It goes up when you show up, and down when you cancel late or don't show.">Your reliability</SectionLabel>
           <View style={{ padding: 14, backgroundColor: colors.surface, borderRadius: radius.card }}>
             <Text style={{ fontFamily: fonts.display, fontSize: 35, color: colors.ink }}>{Number(data!.score).toFixed(1)} <Text style={{ fontSize: 19, color: colors.muted, letterSpacing: 0 }}>/ 10</Text></Text>
             <View style={{ marginTop: 8 }}><GrowBar pct={Number(data!.score) * 10} color={colors.gold} track={colors.lineStrong} /></View>
-            <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 2 }}>Only you can see this. It goes up when you show up, and down when you cancel late or don't.</Text>
           </View>
         </>) : null}
 
         {data!.code ? (<>
-          <SectionLabel>Your referral code, private to you</SectionLabel>
+          <SectionLabel info="Private to you. Share your link to vouch for someone you know.">Referral code</SectionLabel>
           <View style={{ padding: 14, backgroundColor: colors.surface, borderRadius: radius.card }}>
             <Text selectable style={{ fontFamily: fonts.display, fontSize: 30, letterSpacing: 4, color: colors.ink }}>{data!.code}</Text>
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>

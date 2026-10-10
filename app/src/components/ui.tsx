@@ -8,6 +8,7 @@ import { useRouter, useSegments } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, radius } from '@/theme';
 import { PressScale, useReduceMotion } from './motion';
+import { Info } from './Info';
 
 export function Screen({ children, footer, scroll = true, onRefresh, refreshing }: {
   children: React.ReactNode; footer?: React.ReactNode; scroll?: boolean; onRefresh?: () => void; refreshing?: boolean;
@@ -113,15 +114,17 @@ export function TextField({ label, error, hint, ok, style, ...rest }: TextInputP
   const border = error ? colors.error : ok ? colors.sage : focus ? colors.ink : 'transparent';
   return (
     <View style={{ marginTop: 16 }}>
-      <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted, marginBottom: 6 }}>{label}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+        <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted }}>{label}</Text>
+        {hint && !error ? <Info text={hint} title={label} size={18} style={{ marginTop: 0 }} /> : null}
+      </View>
       <TextInput
         accessibilityLabel={label} placeholderTextColor="#8f887c"
         onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
         style={[{ height: 56, borderRadius: radius.control, backgroundColor: focus || error || ok ? colors.ground : colors.surface, borderWidth: 1.5, borderColor: border, paddingHorizontal: 16, fontSize: 16, fontFamily: fonts.body, color: colors.ink }, style]}
         {...rest}
       />
-      {error ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.error, marginTop: 6 }}>{error}</Text>
-        : hint ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>{hint}</Text> : null}
+      {error ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.error, marginTop: 6 }}>{error}</Text> : null}
     </View>
   );
 }

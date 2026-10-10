@@ -13,6 +13,7 @@ import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { GROUP_MAX_MEMBERS, spotsLeft } from '@/lib/groups';
 import { useLoad } from '@/lib/useLoad';
+import { Info } from '@/components/Info';
 
 type Entry = Person & { role: string };
 
@@ -76,7 +77,7 @@ export default function ChannelSettings() {
             <Button label="Leave channel" variant="secondary" onPress={() => setConfirm('leave')} />
             {isAdmin ? <Button label="Delete channel" variant="secondary" onPress={() => setConfirm('delete')} /> : null}
           </View>
-          <Body style={{ fontSize: 13, marginTop: 12 }}>If you're the only admin and you leave, a random member takes over. Deleting is for admins and can't be undone.</Body>
+          <Info text={"If you're the only admin and you leave, a random member takes over. Deleting is for admins and can't be undone."} />
         </>) : null}
       </ScrollView>
 
@@ -91,7 +92,7 @@ export default function ChannelSettings() {
 
       <Sheet visible={adding} onClose={() => setAdding(false)} title="Add friends">
         <ScrollView keyboardShouldPersistTaps="handled">
-          <Body style={{ fontSize: 14, marginBottom: 4 }}>Friends you add join straight away. Only friends can be added.</Body>
+          <Info text={"Friends you add join straight away. Only friends can be added."} />
           <FriendPicker friends={data?.friends ?? []} exclude={inGroup} selected={picked} max={spotsLeft(inGroup.length, 0)} onToggle={(fid) => setPicked((p) => (p.includes(fid) ? p.filter((x) => x !== fid) : [...p, fid]))} />
         </ScrollView>
         {err ? <Notice tone="error">{err}</Notice> : null}

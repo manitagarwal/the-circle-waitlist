@@ -16,6 +16,7 @@ import { interestIndex, loadInterestGroups } from '@/lib/interests';
 import { useSignedUrl } from '@/lib/media';
 import { friendly } from '@/lib/messages';
 import { useLoad } from '@/lib/useLoad';
+import { Info } from '@/components/Info';
 
 export default function EventDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -97,7 +98,7 @@ export default function EventDetail() {
         {e.my_status === 'waitlist' && e.my_position ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.muted, textAlign: 'center' }}>You're number {e.my_position} on the waitlist. We'll tell you if a spot opens.</Text> : null}
         {cta === 'over' ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, textAlign: 'center' }}>This event has finished.</Text> : null}
       </View>
-      {cta === 'cancel' ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 12 }}>You can cancel any time before it starts. Cancelling in the last 3 hours counts against your reliability score.</Text> : null}
+      {cta === 'cancel' ? <Info text={"You can cancel any time before it starts. Cancelling in the last 3 hours counts against your reliability score."} /> : null}
       <Sheet visible={confirm} onClose={() => setConfirm(false)} title={cta === 'cancel' ? 'Cancel your spot?' : 'Leave the waitlist?'}>
         <Body style={{ marginBottom: 16 }}>{cta === 'cancel' ? (late ? 'The event is close, so cancelling now counts against your reliability score.' : 'Your spot goes to the next person on the waitlist.') : "You'll lose your place in the queue."}</Body>
         <View style={{ gap: 8 }}><Button label={cta === 'cancel' ? 'Cancel my spot' : 'Leave the waitlist'} loading={busy} onPress={() => act(() => api.cancelRsvp(id))} /><Button label="Keep it" variant="link" onPress={() => setConfirm(false)} /></View>

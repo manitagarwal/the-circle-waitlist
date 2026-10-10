@@ -34,15 +34,13 @@ export function ArchRings({ width: fixed, height: fixedH }: { width?: number; he
   );
 }
 
-/** A member's photo (or avatar) in the signature arch frame. */
-export function ArchPhoto({ uri, avatarId, maxWidth }: { uri?: string | null; avatarId?: number | null; maxWidth?: number }) {
-  const [w, setW] = React.useState(0);
+/** A member's photo (or avatar) in a circle. */
+export function ArchPhoto({ uri, avatarId, size = 160 }: { uri?: string | null; avatarId?: number | null; size?: number }) {
   const xml = avatarId ? AVATAR_SVGS[avatarId] : undefined;
   return (
-    <View onLayout={(e) => setW(e.nativeEvent.layout.width)}
-      style={{ width: '100%', maxWidth, alignSelf: 'center', aspectRatio: 1.06, borderTopLeftRadius: 999, borderTopRightRadius: 999, overflow: 'hidden', backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'flex-end' }}>
-      {uri ? <Image source={{ uri }} style={{ width: '100%', height: '100%' }} accessibilityIgnoresInvertColors />
-        : xml && w ? <View style={{ position: 'absolute', bottom: w * 0.1 }}><SvgXml xml={xml} width={w * 0.8} height={w * 0.8} /></View> : null}
+    <View style={{ width: size, height: size, borderRadius: size / 2, alignSelf: 'center', overflow: 'hidden', backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+      {uri ? <Image source={{ uri }} style={{ width: size, height: size }} resizeMode="cover" accessibilityIgnoresInvertColors />
+        : xml ? <SvgXml xml={xml} width={size * 0.92} height={size * 0.92} /> : null}
     </View>
   );
 }

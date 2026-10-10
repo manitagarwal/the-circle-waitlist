@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
-import { Collapsible } from '@/components/Collapsible';
+import { Buckets } from '@/components/Buckets';
 import { ArchBadge, FilterBar, RingBadge, Row, Segmented, State, TabHeader } from '@/components/lists';
 import { Body, Button, Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
@@ -12,6 +12,7 @@ import { applyFilters, channelFit, channelSummary, filterOptions, FITS_ME, GENDE
 import { bucket, loadInterestGroups } from '@/lib/interests';
 import { endsIn, listStamp } from '@/lib/format';
 import { useLoad } from '@/lib/useLoad';
+import { Info } from '@/components/Info';
 
 type Seg = 'lobby' | 'public' | 'booking';
 /** A yellow ring means something was posted in the last day. */
@@ -57,16 +58,14 @@ export default function Channels() {
       {actionErr ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.error, marginVertical: 8 }}>{actionErr}</Text> : null}
 
       {data && seg === 'lobby' ? (<>
-        <Body style={{ fontSize: 14, marginBottom: 4 }}>One per activity, run by the team. Read-only, with polls you can vote in.</Body>
+        <Info text={"One per activity, run by the team. Read-only, with polls you can vote in."} />
         {lobby.length === 0 ? <State empty="No Lobbies yet. Pick interests in Settings and they appear here." /> : null}
-        {lobbyShown.map((b) => (
-          <Collapsible key={b.group.id} title={b.group.name} count={b.items.length}>
-            {b.items.map((c) => (
+        <Buckets buckets={lobbyShown} render={(items) => (<>
+            {items.map((c) => (
               <Row key={c.id} left={<RingBadge name={c.name} activity={c.interest_name} unread={isFresh(data.previews[c.id]?.last_at)} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
             ))}
-          </Collapsible>
-        ))}
-        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, textAlign: 'center', marginTop: 20 }}>Want another? Add an interest in Settings.</Text>
+        </>)} />
+        <Info text={"Want another? Add an interest in Settings."} />
       </>) : null}
 
       {data && seg === 'public' ? (<>
@@ -79,9 +78,8 @@ export default function Channels() {
         ]} />
         {publicAll.length === 0 ? <State empty="No public channels yet. Start the first one with the plus button." /> : null}
         {publicAll.length > 0 && publicShown.length === 0 ? <State empty="Nothing matches those filters." /> : null}
-        {publicShown.map((b) => (
-          <Collapsible key={b.group.id} title={b.group.name} count={b.items.length}>
-            {b.items.map((c) => {
+        <Buckets buckets={publicShown} render={(items) => (<>
+            {items.map((c) => {
               const why = c.is_member ? null : channelFit(c, data.me);
               return (
                 <Row key={c.id} left={<ArchBadge name={c.name} activity={c.interest_name} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
@@ -90,12 +88,11 @@ export default function Channels() {
                     : <Button label="Join" variant="secondary" loading={busy === c.id} onPress={() => act(c.id, () => api.joinChannel(c.id))} style={{ height: 40, paddingHorizontal: 16 }} />} />
               );
             })}
-          </Collapsible>
-        ))}
+        </>)} />
       </>) : null}
 
       {data && seg === 'booking' ? (<>
-        <Body style={{ fontSize: 14, marginBottom: 4 }}>The chats for bookings you host or have joined.</Body>
+        <Info text={"The chats for bookings you host or have joined."} />
         {mine.length === 0 ? <State empty="Nothing here yet. When you join or host a booking, its chat shows up here." /> : null}
         {mine.map((c) => {
           const ends = endsIn(data.expiry[c.id] ?? null);

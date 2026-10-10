@@ -13,6 +13,7 @@ import { clampDuration, type Clock12, DURATION_STEP, durationLabel, istToIso, MI
 import { clock } from '@/lib/format';
 import { friendly } from '@/lib/messages';
 import { useLoad } from '@/lib/useLoad';
+import { Info } from '@/components/Info';
 
 const AGES: { label: string; min: number | null; max: number | null }[] = [
   { label: 'Any age', min: null, max: null }, { label: '18 to 25', min: 18, max: 25 }, { label: '25 to 35', min: 25, max: 35 },
@@ -119,7 +120,7 @@ export default function NewBooking() {
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
           <View style={{ flex: 1, paddingRight: 12 }}>
             <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.ink }}>Reliable members only</Text>
-            <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted }}>Hides your booking from members with a low reliability score.</Text>
+            <Info text={"Hides your booking from members with a low reliability score."} />
           </View>
           <Switch accessibilityLabel="Reliable members only" value={reliable} onValueChange={setReliable} trackColor={{ true: colors.ink, false: colors.lineStrong }} thumbColor="#ffffff" />
         </View>

@@ -9,6 +9,7 @@ import { colors, fonts } from '@/theme';
 import type { FoundPerson } from '@/lib/api';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
+import { Info } from '@/components/Info';
 
 /** Find members by name. With a channel it picks people to invite; without, it opens profiles and chats. */
 export default function People() {
@@ -79,7 +80,7 @@ export default function People() {
               onPress={inviting ? (inside ? undefined : () => toggle(p.id)) : () => r.push({ pathname: '/member/[id]', params: { id: p.id } })} />
           );
         })}
-        {!inviting ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 16 }}>Open a profile to add them as a friend. Strangers get one message until they accept.</Text> : null}
+        {!inviting ? <Info text={"Open a profile to add them as a friend. Strangers get one message until they accept."} /> : null}
         {done ? <Notice tone="plain">{done}</Notice> : null}
         {err ? <Notice tone="error">{err}</Notice> : null}
       </ScrollView>

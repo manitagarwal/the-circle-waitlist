@@ -5,6 +5,7 @@ import { activityIcon } from '@/lib/activityIcons';
 import { colors, fonts, radius } from '@/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from './ui';
+import { Info } from './Info';
 import { ChipRow } from './ChipRow';
 import { FadeUp, useReduceMotion } from './motion';
 
@@ -46,9 +47,10 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
   );
 }
 
-export const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <View style={{ marginTop: 36, marginBottom: 10, borderTopWidth: 1, borderTopColor: colors.line, paddingTop: 16 }}>
+export const SectionLabel = ({ children, info }: { children: React.ReactNode; info?: string }) => (
+  <View style={{ marginTop: 36, marginBottom: 10, borderTopWidth: 1, borderTopColor: colors.line, paddingTop: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
     <Text accessibilityRole="header" style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 2, textTransform: 'uppercase', color: colors.goldText }}>{children}</Text>
+    {info ? <Info text={info} title={typeof children === 'string' ? children : undefined} size={20} style={{ marginTop: 0 }} /> : null}
   </View>
 );
 
