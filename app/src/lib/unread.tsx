@@ -29,11 +29,12 @@ export function UnreadProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!memberId) return;
     load();
+    api.noteSignIn().catch(() => {});
     const ch = supabase.channel(`unread:${memberId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `member_id=eq.${memberId}` }, load)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, load)
       .subscribe();
-    const app = AppState.addEventListener('change', (st) => { if (st === 'active') load(); });
+    const app = AppState.addEventListener('change', (st) => { if (st === 'active') { load(); api.noteSignIn().catch(() => {}); } });
     return () => { supabase.removeChannel(ch); app.remove(); };
   }, [memberId, load]);
   const value = useMemo<Unread>(() => ({

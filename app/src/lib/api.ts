@@ -210,6 +210,8 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       return { min: rows?.[0]?.min_hours ?? 6, max: rows?.[0]?.max_hours ?? 24 };
     },
     myScore: () => rpc<number>('my_score'),
+    scoreRules: () => rpc<Record<string, unknown>>('score_rules'),
+    noteSignIn: () => rpc<void>('note_sign_in'),
     profile: async (id: string) => {
       const { data, error } = await sb.from('member_profiles').select('*').eq('id', id).maybeSingle();
       if (error) throw error;

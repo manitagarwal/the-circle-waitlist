@@ -72,7 +72,7 @@ DM tabs are derived: Friends = accepted friendship, Strangers = otherwise. The o
 | `reports` | id, reporter_id, reported_id, category, reason, context (booking/channel/message ids), is_safety, status (open/upheld_minor/upheld_severe/dismissed), reviewed_by, created_at, resolved_at | Safety reports go to a separate queue (`is_safety`) |
 | `moderation_actions` | id, member_id, action (warning/suspension/ban), reason, starts_at, ends_at, report_id, by_admin | Drives `members.state` |
 
-Score is a function `member_score(member_id)`, not a stored number. It applies the weights, the 30/90-day recency multipliers and the new-member default (8.0 when the member has fewer than 5 actions, or when P+N = 0).
+Score is a function `compute_member_score(member_id)`, not a stored number. See `docs/reliability.md` for the formula (migration 038a).
 
 ## 8. Functions (where the rules live)
 

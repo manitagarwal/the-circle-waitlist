@@ -41,7 +41,7 @@ const ERRORS = {
   not_allowed: "You don't have permission to do that.", title_invalid: 'The title needs 3 to 120 characters.', time_invalid: 'The end has to be after the start.',
   capacity_invalid: 'Capacity must be at least 1.', price_invalid: 'The price cannot be negative.', age_invalid: 'Ages run from 18 up, and the oldest must not be below the youngest.',
   min_score_invalid: 'The reliability score is between 0 and 10.', capacity_below_going: 'More people have already reserved than that capacity.',
-  event_locked: 'A cancelled or completed event cannot be edited.', status_invalid: 'That change is not allowed for this event.', ticket_not_found: 'No ticket with that code for this event.',
+  event_locked: 'A cancelled or completed event cannot be edited.', status_invalid: 'That change is not allowed for this event.', ticket_not_found: 'No ticket with that code for this event.', booking_not_started: 'That booking has not started yet.',
   ticket_not_valid: 'That ticket is not valid (cancelled or on the waitlist).', not_joined: 'That member has not reserved a spot.', conflict_of_interest: 'You cannot act on your own case.',
   already_resolved: 'That report was already resolved.', interest_exists: 'That activity already exists.', message_invalid: 'Title up to 80 characters, message up to 500 (2000 for a lobby message).', image_invalid: 'That image could not be used.', channel_not_found: 'No lobby found to post in.',
 };
@@ -483,7 +483,11 @@ async function sentList(main, bar) {
 /* ---------- bookings (read only) ---------- */
 renderers.bookings = async (main) => {
   const list = await rows(sb.from('bookings').select('id,title,kind,status,starts_at,area,headcount_min,headcount_max,host_id').order('starts_at', { ascending: false }).limit(200));
-  put(main, header('Bookings', 'Member-hosted plans, most recent first. Read only.'), list.length ? table(['Title', 'Kind', 'Status', 'When', 'Area', 'Size'], list.map((b) => tr([b.title, b.kind, badge(b.status, b.status === 'open' ? 'ok' : null), fmtDate(b.starts_at), b.area, b.headcount_min + '–' + b.headcount_max]))) : h('p', { class: 'muted' }, 'No bookings.'));
+  const noShow = (b) => h('button', { class: 'small danger', on: { click: async () => {
+    if (!(await confirmBox('Record a host no-show?', 'The host of "' + b.title + '" did not turn up. This costs them a large part of their reliability score and cannot be undone.', 'Record', true))) return;
+    if (await act(async () => { const { error } = await sb.rpc('admin_record_host_no_show', { p_booking: b.id }); if (error) throw error; }, 'Recorded')) refresh();
+  } } }, 'Host did not show');
+  put(main, header('Bookings', 'Member-hosted plans, most recent first. If a host did not show up, record it here.'), list.length ? table(['Title', 'Kind', 'Status', 'When', 'Area', 'Size', ''], list.map((b) => tr([b.title, b.kind, badge(b.status, b.status === 'open' ? 'ok' : null), fmtDate(b.starts_at), b.area, b.headcount_min + '–' + b.headcount_max, b.kind === 'member' && b.status !== 'cancelled' && new Date(b.starts_at) < new Date() ? noShow(b) : '']))) : h('p', { class: 'muted' }, 'No bookings.'));
 };
 
 /* ---------- settings: rules, activities, suggestions, blocked words ---------- */

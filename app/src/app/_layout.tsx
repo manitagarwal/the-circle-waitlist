@@ -73,6 +73,7 @@ function Routes() {
         <Stack.Screen name="friends" />
         <Stack.Screen name="people" />
         <Stack.Screen name="messages" />
+        <Stack.Screen name="reliability" />
         <Stack.Screen name="activity" />
         <Stack.Screen name="event/[id]" />
         <Stack.Screen name="booking/[id]" />

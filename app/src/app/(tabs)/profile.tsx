@@ -3,6 +3,7 @@ import { Pressable, Share, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import { ArchPhoto } from '@/components/Arch';
+import { Icon } from '@/components/Icon';
 import { FadeUp, GrowBar } from '@/components/motion';
 import { SectionLabel, State, TabHeader } from '@/components/lists';
 import { Button, Screen } from '@/components/ui';
@@ -62,11 +63,15 @@ export default function Profile() {
         </View>
 
         {data!.score != null ? (<>
-          <SectionLabel info="Only you can see this. It goes up when you show up, and down when you cancel late or don't show.">Your reliability</SectionLabel>
-          <View style={{ padding: 14, backgroundColor: colors.surface, borderRadius: radius.card }}>
+          <SectionLabel info="Only you can see this.">Your reliability</SectionLabel>
+          <Pressable accessibilityRole="button" accessibilityLabel="Your reliability. How it works" onPress={() => r.push('/reliability')} style={{ padding: 16, backgroundColor: colors.surface, borderRadius: radius.card }}>
             <Text style={{ fontFamily: fonts.display, fontSize: 35, color: colors.ink }}>{Number(data!.score).toFixed(1)} <Text style={{ fontSize: 19, color: colors.muted, letterSpacing: 0 }}>/ 10</Text></Text>
             <View style={{ marginTop: 8 }}><GrowBar pct={Number(data!.score) * 10} color={colors.gold} track={colors.lineStrong} /></View>
-          </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
+              <Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink }}>How it works</Text>
+              <Icon name="chevron" size={18} color={colors.faint} />
+            </View>
+          </Pressable>
         </>) : null}
 
         {data!.code ? (<>
