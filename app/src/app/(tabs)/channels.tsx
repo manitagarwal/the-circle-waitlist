@@ -111,7 +111,7 @@ export default function Channels() {
       </>) : null}
 
       <Sheet visible={browse} onClose={() => setBrowse(false)} title="Lobbies">
-        <ScrollView style={{ flexGrow: 0, flexShrink: 1 }} contentContainerStyle={{ paddingBottom: 12 }}>
+        <ScrollView style={{ flexGrow: 0, flexShrink: 1 }} contentContainerStyle={{ paddingBottom: 12 }} showsVerticalScrollIndicator nestedScrollEnabled>
           {data ? bucket(data.groups, data.channels.filter((c) => c.kind === 'lobby'), (c) => c.interest_id).map((b) => (
             <View key={b.group.id}>
               <SectionLabel>{b.group.name}</SectionLabel>
