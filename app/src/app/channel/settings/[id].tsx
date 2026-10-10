@@ -66,7 +66,7 @@ export default function ChannelSettings() {
             <Row key={e.id} left={<PersonAvatar person={e} />} title={e.id === member?.id ? 'You' : e.full_name ?? e.username} subtitle={`@${e.username}`}
               meta={e.role === 'admin' ? 'ADMIN' : null} tag={e.role === 'admin' ? 'admin' : null}
               right={isAdmin && e.id !== member?.id ? <View style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="dots" /></View> : undefined}
-              onPress={isAdmin && e.id !== member?.id ? () => setTarget(e) : undefined} />
+              onPress={e.id === member?.id ? undefined : isAdmin ? () => setTarget(e) : () => r.push({ pathname: '/member/[id]', params: { id: e.id } })} />
           ))}
           <Body style={{ fontSize: 13, marginTop: 8 }}>{isAdmin ? 'Tap a member to make them an admin or remove them. ' : ''}Everyone in the channel can see this list.</Body>
 
@@ -81,6 +81,7 @@ export default function ChannelSettings() {
 
       <Sheet visible={!!target} onClose={() => setTarget(null)} title={target ? `@${target.username}` : ''}>
         {target ? (<View style={{ gap: 8 }}>
+          <Button label="View profile" variant="secondary" onPress={() => { const t = target; setTarget(null); r.push({ pathname: '/member/[id]', params: { id: t.id } }); }} />
           <Button label={target.role === 'admin' ? 'Remove as admin' : 'Make admin'} variant="secondary" loading={busy} onPress={() => run(() => api.setChannelAdmin(id, target.id, target.role !== 'admin'))} />
           <Button label="Remove from channel" variant="secondary" loading={busy} onPress={() => run(() => api.removeChannelMember(id, target.id))} />
           <Button label="Cancel" variant="link" onPress={() => setTarget(null)} />

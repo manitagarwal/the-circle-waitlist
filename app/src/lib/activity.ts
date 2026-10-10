@@ -3,7 +3,7 @@ import { clock } from './format.ts';
 
 export type ActivityView = {
   title: string; body: string | null; from?: string; actions?: 'friend'; fromId?: string;
-  go?: { to: 'channels' | 'bookings' | 'messages' | 'booking' | 'events'; id?: string; tab?: string };
+  go?: { to: 'channels' | 'bookings' | 'messages' | 'booking' | 'events' | 'member'; id?: string; tab?: string };
 };
 
 const MODERATION: Record<string, string> = {
@@ -21,7 +21,7 @@ export function describe(n: NotificationRow): ActivityView {
     case 'friend_request':
       return p.via === 'dm'
         ? { title: `${p.from_username} sent you a message.`, body: null, go: { to: 'messages' } }
-        : { title: `${p.from_username} wants to be friends.`, body: p.message || null, actions: 'friend', fromId: p.from_id };
+        : { title: `${p.from_username} wants to be friends.`, body: p.message || null, actions: 'friend', fromId: p.from_id, go: { to: 'member', id: p.from_id } };
     case 'booking_join':
       return { title: `${p.member_username} joined your booking ${p.title}.`, body: null, go: { to: 'booking', id: p.booking_id } };
     case 'booking_reminder':

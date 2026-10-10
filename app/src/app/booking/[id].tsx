@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Bar } from '@/components/Bar';
 import { PersonAvatar } from '@/components/Avatar';
@@ -60,7 +60,7 @@ export default function BookingDetail() {
       <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}  ·  {b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
       <Text style={{ fontFamily: fonts.title, fontSize: 28, lineHeight: 34, color: colors.ink, marginTop: 6 }}>{b.title}</Text>
       <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 6 }}>
-        Hosted by <Text style={{ fontFamily: fonts.bodySemi, color: colors.ink }}>{b.host_username}</Text>{host ? `. ${host.bookings_hosted} ${host.bookings_hosted === 1 ? 'booking' : 'bookings'} hosted. Member since ${month(host.member_since)}.` : ''}
+        Hosted by <Text accessibilityRole="link" onPress={() => r.push({ pathname: '/member/[id]', params: { id: b.host_id } })} style={{ fontFamily: fonts.bodySemi, color: colors.ink, textDecorationLine: 'underline' }}>{b.host_username}</Text>{host ? `. ${host.bookings_hosted} ${host.bookings_hosted === 1 ? 'booking' : 'bookings'} hosted. Member since ${month(host.member_since)}.` : ''}
       </Text>
       {b.status === 'cancelled' ? <Notice tone="error">This booking was cancelled by the host.</Notice> : null}
 
@@ -72,9 +72,10 @@ export default function BookingDetail() {
       <SectionLabel>Who's in</SectionLabel>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
         {roster.map((p) => (
-          <View key={p.member_id} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 12, backgroundColor: colors.card, borderRadius: 24, borderWidth: 1, borderColor: colors.line }}>
+          <Pressable key={p.member_id} accessibilityRole="button" accessibilityLabel={`View ${p.username}'s profile`} onPress={() => r.push({ pathname: '/member/[id]', params: { id: p.member_id } })}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 12, backgroundColor: colors.card, borderRadius: 24, borderWidth: 1, borderColor: colors.line }}>
             <PersonAvatar person={p} size={36} /><Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink }}>{p.username}</Text>
-          </View>
+          </Pressable>
         ))}
         {Array.from({ length: menWanted }, (_, i) => <Text key={`m${i}`} style={{ fontFamily: fonts.body, fontSize: 14, color: colors.faint, paddingVertical: 8, paddingHorizontal: 12, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.lineStrong, borderRadius: 24 }}>Man open</Text>)}
         {Array.from({ length: womenWanted }, (_, i) => <Text key={`f${i}`} style={{ fontFamily: fonts.body, fontSize: 14, color: colors.faint, paddingVertical: 8, paddingHorizontal: 12, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.lineStrong, borderRadius: 24 }}>Woman open</Text>)}
