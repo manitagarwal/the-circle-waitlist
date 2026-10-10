@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { BookingRow } from './bookings';
+import type { Privacy } from './privacy.ts';
 import { applicationCode, normalizeEmail } from './validators.ts';
 
 export type Dupes = { phone?: boolean; personal_email?: boolean; work_email?: boolean };
@@ -32,7 +33,7 @@ export type NotificationRow = { id: string; type: string; payload: Record<string
 export type RosterEntry = { member_id: string; username: string; avatar_id: number | null; photo_path: string | null; status: string; is_host: boolean };
 export type Profile = {
   id: string; username: string; full_name: string | null; avatar_id: number | null; photo_path: string | null; bio: string | null; age: number | null;
-  gender: string | null; area: string | null; field_of_work: string | null; member_since: string; interests: string[] | null; bookings_hosted: number;
+  gender: string | null; area: string | null; field_of_work: string | null; member_since: string | null; interests: string[] | null; bookings_hosted: number | null;
 };
 export type BookingInput = {
   interestId: number; title: string; description: string | null; venue: string; area: string; address: string; startsAt: string; endsAt: string;
@@ -218,6 +219,8 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       const rows = await rpc<{ min_hours: number; max_hours: number }[]>('booking_window', { p_interest: interest }).catch(() => []);
       return { min: rows?.[0]?.min_hours ?? 6, max: rows?.[0]?.max_hours ?? 24 };
     },
+    myPrivacy: async () => ((await rpc<Privacy | null>('my_privacy')) ?? {}) as Privacy,
+    setPrivacy: (p: Privacy) => rpc<Privacy>('set_privacy', { p }),
     myScore: () => rpc<number>('my_score'),
     scoreRules: () => rpc<Record<string, unknown>>('score_rules'),
     noteSignIn: () => rpc<void>('note_sign_in'),

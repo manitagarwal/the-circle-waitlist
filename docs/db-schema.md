@@ -120,3 +120,8 @@ Security definer. Caller must be in the public channel; invitee must be an activ
 
 ## Categories and booking rules (migrations 040a to 040f)
 `interest_groups.bookings_allowed` (false for Career & tech and Clubs). `group_rules(group_id, key, value)` holds category-level rules; `rule_int/rule_num(key, interest)` resolve activity rule, then category rule, then global. Keys: `booking.max_people`, `booking.window_min_hours`, `booking.window_max_hours`, `booking.close_hours`, `booking.max_duration_minutes`. `bookings.close_hours` is when joining stops (hours before start, host may only make it earlier). `bookings_overview` exposes it. `complete_profile` no longer removes Lobbies when interests change.
+
+## Migration 041a: privacy
+- `members.privacy jsonb` (field -> bool, missing = visible).
+- `member_profiles` view masks hidden fields as null.
+- Functions: `my_privacy()`, `set_privacy(field, shown)`.

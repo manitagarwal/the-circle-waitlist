@@ -309,3 +309,9 @@ Lobbies are the member's own choice: picking an interest adds its Lobby, but cha
 
 ## Home (the opening tab)
 Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-of-day greeting; Coming up (your next bookings and events as colour cards, or a prompt to find a booking); Your lobbies (with unread counts); Starting soon (open bookings, those in your interests first, skipping full, closed and your own); one upcoming event you have not joined; Pick up where you left off (up to three chats with unread messages). There are no people suggestions. Pull to refresh; it reloads each time you return to it. Logic lives in `app/src/lib/home.ts` (tested).
+
+## Profile and privacy
+- Profile page: photo with tone ring, name, tag chips (age, area, work), bio, Edit profile, "What others see" link, stats (Hosted, Friends, Channels), member since, reliability card, activities chips with Change activities, referral code.
+- Privacy: 7 switches (`lib/privacy.ts` PRIVACY_FIELDS), all visible by default. Members can hide any of them in Settings > What others see.
+- Always visible: photo, name, username. Reliability score is never shown to others (only used for booking filters).
+- Hidden fields are masked on the server in the `member_profiles` view, so the app receives null; screens show nothing for null fields.

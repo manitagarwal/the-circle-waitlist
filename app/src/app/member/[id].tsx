@@ -51,13 +51,26 @@ export default function MemberProfile() {
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }}>
         <State loading={loading} error={error} onRetry={reload} empty={data && !p ? "That profile isn't available." : null} />
         {p ? (<>
-          <FadeUp distance={40}><View style={{ marginTop: 4 }}><ArchPhoto uri={photo} avatarId={p.avatar_id} size={180} /></View></FadeUp>
-          <FadeUp delay={350}>
-            <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 37, lineHeight: 41, color: colors.ink, marginTop: 16 }}>{p.full_name ?? p.username}</Text>
-            <Text style={{ fontFamily: fonts.body, fontSize: 15, color: colors.muted, marginTop: 4 }}>{['@' + p.username, p.age, p.area, p.field_of_work].filter(Boolean).join(' · ')}</Text>
+          <FadeUp distance={30}>
+            <View style={{ alignItems: 'center', marginTop: 4 }}>
+              <View style={{ padding: 6, borderRadius: 100, backgroundColor: toneFor(p.interests?.[0], isDark) ?? colors.plate }}><ArchPhoto uri={photo} avatarId={p.avatar_id} size={180} /></View>
+            </View>
           </FadeUp>
-          {p.bio ? <FadeUp delay={450}><Text style={{ fontFamily: fonts.body, fontSize: 16.5, lineHeight: 24, color: colors.ink, marginTop: 12 }}>{p.bio}</Text></FadeUp> : null}
-          <FadeUp delay={550}><Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 12 }}>{p.bookings_hosted} {p.bookings_hosted === 1 ? 'booking' : 'bookings'} hosted · Member since {month(p.member_since)}</Text></FadeUp>
+          <FadeUp delay={250}>
+            <View style={{ alignItems: 'center', marginTop: 16 }}>
+              <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 36, lineHeight: 42, color: colors.ink, textAlign: 'center' }}>{p.full_name ?? p.username}</Text>
+              <Text style={{ fontFamily: fonts.body, fontSize: 15, color: colors.muted, marginTop: 2 }}>@{p.username}</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 12 }}>
+                {[p.age != null ? `${p.age}` : null, p.area, p.field_of_work].filter((x): x is string => !!x).map((t) => <Text key={t} style={{ fontFamily: fonts.bodyMedium, fontSize: 13.5, color: colors.ink, borderWidth: 1, borderColor: colors.line, borderRadius: 16, paddingVertical: 5, paddingHorizontal: 12, overflow: 'hidden' }}>{t}</Text>)}
+              </View>
+              {p.bio ? <Text style={{ fontFamily: fonts.body, fontSize: 16, lineHeight: 23, color: colors.ink, marginTop: 14, textAlign: 'center' }}>{p.bio}</Text> : null}
+            </View>
+          </FadeUp>
+          {p.bookings_hosted != null || p.member_since ? (
+            <View style={{ flexDirection: 'row', marginTop: 20, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line }}>
+              {p.bookings_hosted != null ? <View style={{ flex: 1, alignItems: 'center', paddingVertical: 14 }}><Text style={{ fontFamily: fonts.display, fontSize: 30, color: colors.ink }}>{p.bookings_hosted}</Text><Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.4, textTransform: 'uppercase', color: colors.muted }}>Hosted</Text></View> : null}
+              {p.member_since ? <View style={{ flex: 1, alignItems: 'center', paddingVertical: 14 }}><Text style={{ fontFamily: fonts.display, fontSize: 24, lineHeight: 36, color: colors.ink }}>{month(p.member_since)}</Text><Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.4, textTransform: 'uppercase', color: colors.muted }}>Member since</Text></View> : null}
+            </View>) : null}
           {err ? <Notice tone="error">{err}</Notice> : null}
 
           {p.interests?.length ? (<><SectionLabel>Into</SectionLabel>
