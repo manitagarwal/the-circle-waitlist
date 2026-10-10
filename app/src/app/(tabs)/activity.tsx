@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { RemoteImage } from '@/components/RemoteImage';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, Button } from '@/components/ui';
@@ -45,6 +46,7 @@ export default function Activity() {
               {v.from ? <Text style={{ fontFamily: fonts.bodySemi, fontSize: 12, color: colors.goldText, marginBottom: 2 }}>{v.from}</Text> : null}
               <Text style={{ fontFamily: n.is_unread ? fonts.bodySemi : fonts.body, fontSize: 15, lineHeight: 21, color: colors.ink }}>{v.title}</Text>
               {v.body ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{v.body}</Text> : null}
+              {v.image ? <RemoteImage path={v.image} height={170} label="Picture in the announcement" /> : null}
               {v.actions === 'friend' && v.fromId ? (
                 <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
                   <Button label="Accept" loading={busy === n.id} onPress={() => run(n.id, async () => { await api.respondFriend(v.fromId!, true); await api.markRead(n.id); })} style={{ flex: 1, height: 44 }} />

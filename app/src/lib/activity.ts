@@ -2,7 +2,7 @@ import type { NotificationRow } from './api';
 import { clock } from './format.ts';
 
 export type ActivityView = {
-  title: string; body: string | null; from?: string; actions?: 'friend'; fromId?: string;
+  title: string; body: string | null; from?: string; image?: string | null; actions?: 'friend'; fromId?: string;
   go?: { to: 'channels' | 'bookings' | 'messages' | 'booking' | 'events' | 'member'; id?: string; tab?: string };
 };
 
@@ -37,7 +37,7 @@ export function describe(n: NotificationRow): ActivityView {
     case 'channel_invite':
       return { title: `You've been invited to ${p.channel_name}.`, body: "It's in Messages, under Groups.", go: { to: 'channels' } };
     case 'broadcast':
-      return { title: p.title ?? 'Announcement', body: p.body ?? null, from: 'The Semi Circle' };
+      return { title: p.title ?? 'Announcement', body: p.body ?? null, from: 'The Semi Circle', image: p.image_path ?? null };
     case 'moderation_notice':
       return { title: MODERATION[p.action] ?? 'A message from the team.', body: null, from: 'The Semi Circle' };
     default:

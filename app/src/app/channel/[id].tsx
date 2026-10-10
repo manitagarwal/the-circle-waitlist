@@ -3,6 +3,7 @@ import { FlatList, KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextI
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Bar } from '@/components/Bar';
+import { RemoteImage } from '@/components/RemoteImage';
 import { Icon } from '@/components/Icon';
 import { LetterBadge, State } from '@/components/lists';
 import { Button } from '@/components/ui';
@@ -117,7 +118,8 @@ export default function Chat() {
           {!mine ? <Text accessibilityRole="link" onPress={() => !isLobby && r.push({ pathname: '/member/[id]', params: { id: m.sender_id } })} style={{ fontFamily: fonts.bodySemi, fontSize: 12, color: colors.goldText, marginBottom: 2, marginLeft: 4 }}>{who}</Text> : null}
           <View style={{ backgroundColor: mine ? colors.goldTint : colors.card, borderWidth: 1, borderColor: mine ? colors.goldBorder : colors.line, paddingVertical: 8, paddingHorizontal: 12,
             borderRadius: radius.bubble, borderBottomRightRadius: mine ? 3 : radius.bubble, borderTopLeftRadius: mine ? radius.bubble : 3 }}>
-            <Text style={{ fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.ink }}>{m.body}</Text>
+            {m.image_path ? <View style={{ width: 240, maxWidth: '100%' }}><RemoteImage path={m.image_path} height={160} label="Picture from the team" /></View> : null}
+            <Text style={{ fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.ink, marginTop: m.image_path ? 8 : 0 }}>{m.body}</Text>
             {m.edited_at ? <Text style={{ fontFamily: fonts.body, fontSize: 11, color: colors.faint, marginTop: 2 }}>edited</Text> : null}
           </View>
         </Pressable>

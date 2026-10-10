@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
+import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -11,8 +12,22 @@ import { colors } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
+// a phone alert that arrives while the app is open still shows as a banner
+try {
+  Notifications.setNotificationHandler({ handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }) });
+} catch { /* notifications are not available here (for example the web preview) */ }
+
 function Routes() {
   const { gate, recovery, paused, ackPaused } = useAuth();
+  const router = useRouter();
+  // tapping a phone alert opens Activity, where every notification lives
+  useEffect(() => {
+    if (gate !== 'app') return;
+    try {
+      const sub = Notifications.addNotificationResponseReceivedListener(() => router.push('/activity'));
+      return () => sub.remove();
+    } catch { return; }
+  }, [gate, router]);
   const normal = !recovery;
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.ground }, animation: 'fade' }}>

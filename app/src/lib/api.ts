@@ -19,7 +19,7 @@ export type ChannelRow = {
 };
 export type ChannelPreview = { channel_id: string; body: string; last_at: string; sender_username: string | null; from_me: boolean };
 export type ChannelInvite = { id: string; channel_id: string; channel_name: string; inviter_username: string; created_at: string };
-export type Message = { id: string; channel_id: string; sender_id: string; body: string; created_at: string; edited_at: string | null };
+export type Message = { id: string; channel_id: string; sender_id: string; body: string; created_at: string; edited_at: string | null; image_path?: string | null };
 export type PollOption = { id: string; label: string; votes: number };
 export type Poll = { id: string; channel_id: string; question: string; created_at: string; closes_at: string | null; closed_at: string | null; is_open: boolean; total_votes: number; my_option_id: string | null; options: PollOption[] };
 export type Person = { id: string; username: string; full_name: string | null; avatar_id: number | null; photo_path: string | null };
@@ -220,7 +220,7 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     },
     // ---- messages and polls
     messages: async (channel: string, limit = 60) => {
-      const { data, error } = await sb.from('messages').select('id, channel_id, sender_id, body, created_at, edited_at')
+      const { data, error } = await sb.from('messages').select('id, channel_id, sender_id, body, created_at, edited_at, image_path')
         .eq('channel_id', channel).order('created_at', { ascending: false }).limit(limit);
       if (error) throw error;
       return data as Message[]; // newest first
