@@ -8,7 +8,7 @@ test('every activity with clipart has a colour', () => {
 });
 test('groups have distinct colours and a group name works too', () => {
   assert.equal(new Set(GROUPS.map((g) => g.tone.light)).size, GROUPS.length);
-  assert.equal(toneFor('Chess'), toneFor('Intellectual & hobby'));
+  assert.equal(toneFor('Chess'), toneFor('Games & watch parties'));
   assert.notEqual(toneFor('Chess', true), toneFor('Chess'));
   assert.equal(toneFor('Nope'), null);
 });

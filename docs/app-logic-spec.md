@@ -280,3 +280,29 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - Each of the seven activity groups has a soft colour (`app/src/lib/tones.ts`, pastel in light mode, deep in dark mode). It tints the circle behind an activity's clipart, event covers without a photo, booking cards, interest chips and the group dots in the filter rail. Everything else stays ivory and charcoal.
 - The welcome screen shows three nested half-discs in those colours.
 - Pictures: events use the cover photo an admin uploads (shown full width); members' photos stay circles.
+
+## Activities, categories and booking limits (current)
+Eight categories, 52 activities. Names must match `app/src/lib/tones.ts` and `activityIcons.ts` (a test checks every activity has a clipart and a colour).
+- **Sports** (bookings): Badminton, Cricket, Football/Futsal, Pickleball & Padel, Tennis & Squash, Basketball, Table Tennis, Volleyball.
+- **Outdoors & travel** (bookings): Treks & Hikes, Road Trips, Weekend Getaways.
+- **Food, drinks & nightlife** (bookings): Cafe Hopping, Street Food Walks, Breakfast & Brunch, Lunch & Dinner, Cooking & Baking, Pub & Bar Nights, Clubbing.
+- **Music & performance** (bookings): Open Mic, Karaoke, Dance, Stand-up Comedy, Theatre & Shows, Concert & Gig.
+- **Games & watch parties** (bookings): Board Games, Card Games, Chess, Video Gaming, Quizzing & Trivia, Escape Rooms, Match Watch Parties.
+- **Career & tech** (no bookings): Startups & Networking, Coding & Tech Meetups, Investing & Finance, Public Speaking & Debate, Design & Product.
+- **Culture, learning & causes** (bookings): Photography, Art & Sketching, Film & Cinema Club, Podcasting & Content Creation, Museums & Galleries, Volunteering & Clean-up Drives, Pet Lovers, Language Learning, Writing & Poetry.
+- **Clubs** (no bookings, channels only): Gym, Running, Cycling, Swimming, Yoga & Pilates, Meditation, Book Club. Clubs are built by members through channels.
+
+Booking limits per category (editable in the portal, Settings > Categories; an activity can override in Rules):
+
+| Category | People | Post at least ahead | Post at most ahead | Joining closes | Longest |
+|---|---|---|---|---|---|
+| Sports | 6 (Volleyball, Basketball 20; Football/Futsal, Cricket 30) | 6 h | 2 days | 2 h before | 2 h |
+| Outdoors & travel | 30 | 1 week | 30 days | 3 days before | 48 h |
+| Food, drinks & nightlife | 20 | 8 h | 3 days | 4 h before | 4 h |
+| Music & performance | 20 | 8 h | 3 days | 4 h before | 4 h |
+| Games & watch parties | 6 (Board Games, Escape Rooms 8; Quizzing & Trivia 20; Match Watch Parties 30) | 6 h | 2 days | 2 h before | 5 h |
+| Culture, learning & causes | 20 | 8 h | 3 days | 4 h before | 6 h |
+
+A host may close joining earlier than the default, never later. The database enforces all of it (`create_booking`, `join_booking`, `set_booking_close_hours`); `booking_limits(activity)` tells the app what to offer. Hosts can also set a minimum reliability (5+ to 9+), and members can filter bookings by it.
+
+Lobbies are the member's own choice: picking an interest adds its Lobby, but changing interests never removes one. Any Lobby can be joined or left from "Browse all lobbies". Interests (3 to 5) remain a profile tag and the starting set of Lobbies. Members whose old activities were retired see a prompt to choose at least 3.

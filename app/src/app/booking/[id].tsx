@@ -7,7 +7,7 @@ import { SectionLabel, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api } from '@/lib/auth';
-import { ageRange, bookingDay, freeLeaveUntil, joinCheck, spots, startsIn, timeRange } from '@/lib/bookings';
+import { ageRange, bookingDay, freeLeaveUntil, joinCheck, joinClosesAt, spots, startsIn, timeRange } from '@/lib/bookings';
 import { clock } from '@/lib/format';
 import { friendly } from '@/lib/messages';
 import { interestIndex, loadInterestGroups } from '@/lib/interests';
@@ -66,6 +66,7 @@ export default function BookingDetail() {
 
       <View style={{ marginTop: 16 }}>
         <Line k={`${bookingDay(b.starts_at)}, ${timeRange(b.starts_at, b.ends_at)}`} v={startsIn(b.starts_at)} />
+        {b.close_hours != null ? <Line k="Joining closes" v={`${bookingDay(joinClosesAt(b.starts_at, b.close_hours).toISOString())}, ${clock(joinClosesAt(b.starts_at, b.close_hours))}`} /> : null}
         <Line k={[b.venue_name, b.area].filter(Boolean).join(', ') || 'Location'} v={joined && b.address_outer ? b.address_outer : "Exact location appears once you've joined."} />
       </View>
 

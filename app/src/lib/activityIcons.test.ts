@@ -3,13 +3,14 @@ import assert from 'node:assert/strict';
 import { ACTIVITY_ICON_NAMES, activityIcon } from './activityIcons.ts';
 
 // every activity that exists in the database has its own illustration
-const ACTIVITIES = ['Badminton', 'Bar Hopping', 'Basketball', 'Board Games', 'Bowling', 'Cafe Hopping', 'Chess', 'Clubbing', 'Coding/Tech Meetups', 'Cricket', 'Cycling', 'Dance', 'Drums', 'Escape Rooms',
-  'Film/Cinema Club', 'Football', 'Golf', 'Guitar', 'Gym', 'Investing/Stocks', 'Journaling', 'Karaoke', 'Language Learning', 'Meditation', 'Pet Lovers', 'Photography', 'Piano', 'Pilates', 'Podcasting', 'Poker',
-  'Public Speaking/Debate', 'Quizzing', 'Reading/Book Club', 'Running', 'Running Clubs', 'Singing', 'Spa/Self-care', 'Squash', 'Stand-up/Open Mic', 'Swimming', 'Table Tennis', 'Tennis', 'Theatre/Acting',
-  'Travel Meetups', 'Trivia Nights', 'Video Gaming', 'Volleyball', 'Volunteering', 'Weekend Getaways', 'Writing', 'Yoga'];
+import { GROUPS } from './tones.ts';
 
-test('all 51 activities have a clipart', () => {
-  assert.equal(ACTIVITIES.length, 51);
+// every activity that exists in the database has its own illustration
+const ACTIVITIES = GROUPS.flatMap((g) => g.activities);
+
+test('all 52 activities have a clipart', () => {
+  assert.equal(ACTIVITIES.length, 52);
+  assert.equal(ACTIVITY_ICON_NAMES.length, 52);
   for (const a of ACTIVITIES) assert.ok(activityIcon(a), `missing: ${a}`);
   assert.equal(new Set(ACTIVITY_ICON_NAMES).size, ACTIVITY_ICON_NAMES.length);
 });

@@ -9,7 +9,8 @@ import { DatePickerSheet, TimePickerSheet } from '@/components/Pickers';
 import { Body, Button, Notice, Stepper, TextField } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api } from '@/lib/auth';
-import { SCORE_STEPS, scoreLabel } from '@/lib/bookings';
+import { closeLabel, SCORE_STEPS, scoreLabel } from '@/lib/bookings';
+import type { BookingLimits } from '@/lib/api';
 import { clampDuration, type Clock12, DURATION_STEP, durationLabel, istToIso, MIN_DURATION, startError, todayIST, type YMD, ymdLabel, clockLabel } from '@/lib/schedule';
 import { clock } from '@/lib/format';
 import { friendly } from '@/lib/messages';
@@ -33,6 +34,8 @@ export default function NewBooking() {
   const [pickTime, setPickTime] = useState(false);
   const [dur, setDur] = useState(60);
   const [maxDur, setMaxDur] = useState(360);
+  const [limits, setLimits] = useState<BookingLimits | null>(null);
+  const [closeH, setCloseH] = useState<number | null>(null);
   const [win, setWin] = useState({ min: 6, max: 24 });
   const [venue, setVenue] = useState('');
   const [area, setArea] = useState('');
@@ -58,6 +61,7 @@ export default function NewBooking() {
     setInterest(a); setPick(false);
     void api.bookingMaxDuration(a.id).then((m) => { setMaxDur(m); setDur((d) => clampDuration(d, m)); });
     void api.bookingWindow(a.id).then(setWin);
+    void api.bookingLimits(a.id).then((l) => { setLimits(l); setCloseH(l.close_hours); setPeople((p) => Math.min(p, l.max_people)); setMen(0); setWomen(0); });
   };
   const headcount = mixOn ? men + women : people;
   const ready = !!interest && title.trim().length >= 3 && !!start && !startErr && venue.trim() && area.trim() && address.trim() && headcount >= 2;
@@ -71,6 +75,7 @@ export default function NewBooking() {
         startsAt: start, endsAt: end, headcountMax: headcount, maleSlots: mixOn ? men : null, femaleSlots: mixOn ? women : null,
         minScore, ageMin: AGES[age].min, ageMax: AGES[age].max,
       });
+      if (limits && closeH != null && closeH > limits.close_hours) await api.setBookingCloseHours(id, closeH).catch(() => {});
       r.replace({ pathname: '/booking/[id]', params: { id } });
     } catch (e) { setErr(friendly(e)); } finally { setBusy(false); }
   };
@@ -109,14 +114,18 @@ export default function NewBooking() {
         <TextField label="Area" value={area} onChangeText={setArea} placeholder="For example: Sector 43, Gurgaon" hint="Everyone sees the venue and area." />
         <TextField label="Exact address" value={address} onChangeText={setAddress} hint="Only people who join see this." />
 
-        {label('People')}
-        {mixOn ? <Body style={{ fontSize: 14 }}>{men + women} in total, including you.</Body> : <Stepper label="People, including you" value={people} min={2} max={30} onChange={setPeople} />}
+        {label(limits ? `People, up to ${limits.max_people} for ${interest?.name ?? 'this activity'}` : 'People')}
+        {mixOn ? <Body style={{ fontSize: 14 }}>{men + women} in total, including you.</Body> : <Stepper label="People, including you" value={people} min={2} max={limits?.max_people ?? 30} onChange={setPeople} />}
         {label('Age range')}
         <ChipRow>{AGES.map((a, i) => <Chip key={a.label} label={a.label} on={age === i} onPress={() => setAge(i)} />)}</ChipRow>
         {label('Gender mix')}
         <View style={{ flexDirection: 'row' }}><Chip label="Anyone" on={!mixOn} onPress={() => setMixOn(false)} /><Chip label="Set the mix" on={mixOn} onPress={() => setMixOn(true)} /></View>
-        {mixOn ? <><Stepper label="Men, including you if you are one" value={men} min={0} max={15} onChange={setMen} /><Stepper label="Women, including you if you are one" value={women} min={0} max={15} onChange={setWomen} /></> : null}
+        {mixOn ? <><Stepper label="Men, including you if you are one" value={men} min={0} max={Math.max(0, (limits?.max_people ?? 30) - women)} onChange={setMen} /><Stepper label="Women, including you if you are one" value={women} min={0} max={Math.max(0, (limits?.max_people ?? 30) - men)} onChange={setWomen} /></> : null}
 
+        {limits ? (<>
+          {label('Joining closes')}
+          <ChipRow>{[limits.close_hours, ...[3, 4, 6, 12, 24, 48, 72, 168].filter((h) => h > limits.close_hours)].map((h) => <Chip key={h} label={closeLabel(h, h === limits.close_hours)} on={closeH === h} onPress={() => setCloseH(h)} />)}</ChipRow>
+        </>) : null}
         {label('Minimum reliability')}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <View style={{ flex: 1 }}><ChipRow>
@@ -134,7 +143,7 @@ export default function NewBooking() {
 
       <DatePickerSheet visible={pickDate} value={date} onClose={() => setPickDate(false)} onPick={setDate} />
       <TimePickerSheet key={String(pickTime)} visible={pickTime} value={clockVal} onClose={() => setPickTime(false)} onPick={setClockVal} />
-      <ActivityPicker visible={pick} onClose={() => setPick(false)} selectedId={interest?.id} onPick={chooseActivity} />
+      <ActivityPicker bookableOnly visible={pick} onClose={() => setPick(false)} selectedId={interest?.id} onPick={chooseActivity} />
     </View>
   );
 }

@@ -12,6 +12,7 @@ export type Application = {
   queue_position: number | null; referral_code: string;
 };
 
+export type BookingLimits = { allowed: boolean; max_people: number; min_hours: number; max_hours: number; close_hours: number; max_minutes: number };
 export type Ticket = { id: string; name: string; price_inr: number; left: number | null };
 export type ChannelRow = {
   id: string; kind: 'lobby' | 'public' | 'private' | 'booking' | 'dm'; name: string; photo_path: string | null;
@@ -75,13 +76,17 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     const { data: u } = await sb.auth.getUser();
     const uid = u.user?.id;
     if (!uid) throw new Error('not_signed_in');
-    const [m, mi] = await Promise.all([
+    const [m, mi, active] = await Promise.all([
       sb.from('members').select('avatar_id, photo_path, bio, dob, gender, address_text, lat, lng, area, field_of_work').eq('id', uid).single(),
       sb.from('member_interests').select('interest_id').eq('member_id', uid),
+      sb.from('interests').select('id').eq('is_active', true),
     ]);
     if (m.error) throw m.error;
     if (mi.error) throw mi.error;
-    return { row: m.data as OwnRow, interestIds: (mi.data as { interest_id: number }[]).map((x) => x.interest_id) };
+    if (active.error) throw active.error;
+    // activities that have since been retired are left out, so saving the profile never trips on them
+    const live = new Set((active.data as { id: number }[]).map((x) => x.id));
+    return { row: m.data as OwnRow, interestIds: (mi.data as { interest_id: number }[]).map((x) => x.interest_id).filter((id) => live.has(id)) };
   };
   return {
     checkDuplicates: (p: { phone?: string; personalEmail?: string; workEmail?: string }) =>
@@ -112,15 +117,16 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     activate: (username: string) => rpc<{ member_id: string; username: string }>('activate_membership', { p_username: username }),
     interestGroups: async () => {
       const [g, i] = await Promise.all([
-        sb.from('interest_groups').select('id, name, sort').order('sort'),
+        sb.from('interest_groups').select('id, name, sort, bookings_allowed').order('sort'),
         sb.from('interests').select('id, name, group_id').eq('is_active', true).order('name'),
       ]);
       if (g.error) throw g.error;
       if (i.error) throw i.error;
-      return (g.data as { id: number; name: string; sort: number }[]).map((grp) => ({
+      return (g.data as { id: number; name: string; sort: number; bookings_allowed: boolean }[]).map((grp) => ({
         ...grp, interests: (i.data as { id: number; name: string; group_id: number }[]).filter((x) => x.group_id === grp.id),
       }));
     },
+    myInterestCount: async () => (await ownRow()).interestIds.length,
     uploadProfilePhoto: async (uid: string, bytes: ArrayBuffer) => {
       const path = `${uid}/${Date.now()}.jpg`;
       const { error } = await sb.storage.from('profile-photos').upload(path, bytes, { contentType: 'image/jpeg', upsert: false });
@@ -197,6 +203,8 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       p_lat: null, p_lng: null, p_starts_at: b.startsAt, p_ends_at: b.endsAt, p_headcount_min: null, p_headcount_max: b.headcountMax,
       p_male_slots: b.maleSlots, p_female_slots: b.femaleSlots, p_min_score: b.minScore, p_age_min: b.ageMin, p_age_max: b.ageMax, p_as_admin: false,
     }),
+    bookingLimits: (interest: number) => rpc<BookingLimits>('booking_limits', { p_interest: interest }),
+    setBookingCloseHours: (booking: string, hours: number) => rpc<void>('set_booking_close_hours', { p_booking: booking, p_hours: hours }),
     markAttendance: (booking: string, member: string, attended: boolean) => rpc<void>('mark_attendance', { p_booking: booking, p_member: member, p_attended: attended }),
     keepBookingChat: (booking: string) => rpc<void>('continue_booking_channel', { p_booking: booking }),
     /** Age, gender and city of the signed-in member, for "does this fit me?" hints. */
