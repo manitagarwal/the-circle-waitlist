@@ -42,7 +42,7 @@ export function DatePickerSheet({ visible, value, onClose, onPick }: { visible: 
               <Pressable key={di} accessibilityRole="button" accessibilityLabel={`${day} ${monthName(view.m)} ${view.y}`} accessibilityState={{ selected: on, disabled: past }} disabled={past}
                 onPress={() => { onPick(cell); onClose(); }}
                 style={{ flex: 1, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 22, backgroundColor: on ? colors.ink : 'transparent', borderWidth: isToday && !on ? 1.5 : 0, borderColor: colors.ink }}>
-                <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.body, fontSize: 15, color: past ? colors.lineStrong : on ? '#ffffff' : colors.ink }}>{day}</Text>
+                <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.body, fontSize: 15, color: past ? colors.lineStrong : on ? colors.inkOn : colors.ink }}>{day}</Text>
               </Pressable>
             );
           })}
@@ -60,7 +60,7 @@ export function TimePickerSheet({ visible, value, onClose, onPick }: { visible: 
   const btn = (label: string, on: boolean, onPress: () => void, w?: number) => (
     <Pressable key={label} accessibilityRole="radio" accessibilityState={{ selected: on }} onPress={onPress}
       style={{ width: w, flex: w ? undefined : 1, minHeight: 48, margin: 4, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? colors.ink : colors.surface }}>
-      <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.bodyMedium, fontSize: 16, color: on ? '#ffffff' : colors.ink }}>{label}</Text>
+      <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.bodyMedium, fontSize: 16, color: on ? colors.inkOn : colors.ink }}>{label}</Text>
     </Pressable>
   );
   const label = (t: string) => <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted, marginTop: 14, marginLeft: 4 }}>{t}</Text>;

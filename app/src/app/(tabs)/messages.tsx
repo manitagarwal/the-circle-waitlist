@@ -34,7 +34,7 @@ export default function Messages() {
         <Pressable accessibilityRole="button" accessibilityLabel="Find people" onPress={() => r.push('/people')} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="search" /></Pressable>) : seg === 'groups' ? (
         <Pressable accessibilityRole="button" accessibilityLabel="New group" onPress={() => r.push('/group/new')} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name="plus" color="#ffffff" strokeWidth={2.2} /></Pressable>) : undefined} />
+          <Icon name="plus" color={colors.inkOn} strokeWidth={2.2} /></Pressable>) : undefined} />
       <Segmented value={seg} onChange={setSeg} options={[{ value: 'friends', label: 'Friends' }, { value: 'groups', label: 'Groups' }, { value: 'strangers', label: 'Strangers' }]} />
       <State loading={loading} error={error} onRetry={reload}
         empty={data && seg !== 'groups' && dmRows.length === 0 ? (seg === 'friends' ? 'No conversations with friends yet.' : 'No messages from strangers.') : data && seg === 'groups' && data.groups.length === 0 ? 'No groups yet. Start one with the plus button and add your friends.' : null} />

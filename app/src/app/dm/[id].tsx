@@ -86,7 +86,7 @@ export default function DmThread() {
                 {!older || !sameDay(m.created_at, older.created_at) ? <Text style={{ alignSelf: 'center', fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.faint, marginVertical: 12 }}>{dayLabel(m.created_at)}</Text> : null}
                 <View style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%', marginVertical: 3, backgroundColor: mine ? colors.ink : colors.surface,
                   paddingVertical: 10, paddingHorizontal: 14, borderRadius: radius.bubble, borderBottomRightRadius: mine ? 6 : radius.bubble, borderBottomLeftRadius: mine ? radius.bubble : 6 }}>
-                  <Text style={{ fontFamily: fonts.body, fontSize: 15.5, lineHeight: 21, color: mine ? '#ffffff' : colors.ink }}>{m.body}</Text>
+                  <Text style={{ fontFamily: fonts.body, fontSize: 15.5, lineHeight: 21, color: mine ? colors.inkOn : colors.ink }}>{m.body}</Text>
                 </View>
               </View>
             );
@@ -102,7 +102,7 @@ export default function DmThread() {
             <TextInput accessibilityLabel="Message" value={text} onChangeText={setText} placeholder="Message" placeholderTextColor={colors.faint} multiline maxLength={2000}
               style={{ flex: 1, minHeight: 48, maxHeight: 120, borderRadius: 24, backgroundColor: colors.surface, paddingHorizontal: 18, paddingVertical: 13, fontSize: 16, fontFamily: fonts.body, color: colors.ink }} />
             <Pressable accessibilityRole="button" accessibilityLabel="Send" disabled={!text.trim() || sending} onPress={send}
-              style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', opacity: !text.trim() || sending ? 0.35 : 1 }}><Icon name="send" color="#ffffff" size={20} /></Pressable>
+              style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', opacity: !text.trim() || sending ? 0.35 : 1 }}><Icon name="send" color={colors.inkOn} size={20} /></Pressable>
           </View>)}
       </>)}
 

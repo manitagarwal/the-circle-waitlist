@@ -121,8 +121,8 @@ export default function Chat() {
           <View style={{ backgroundColor: mine ? colors.ink : colors.surface, paddingVertical: 10, paddingHorizontal: 14,
             borderRadius: radius.bubble, borderBottomRightRadius: mine ? 6 : radius.bubble, borderBottomLeftRadius: mine ? radius.bubble : 6 }}>
             {m.image_path ? <View style={{ width: 240, maxWidth: '100%' }}><RemoteImage path={m.image_path} height={160} label="Picture from the team" /></View> : null}
-            <Text style={{ fontFamily: fonts.body, fontSize: 15.5, lineHeight: 21, color: mine ? '#ffffff' : colors.ink, marginTop: m.image_path ? 8 : 0 }}>{m.body}</Text>
-            {m.edited_at ? <Text style={{ fontFamily: fonts.body, fontSize: 11, color: mine ? '#cfc8bb' : colors.faint, marginTop: 2 }}>edited</Text> : null}
+            <Text style={{ fontFamily: fonts.body, fontSize: 15.5, lineHeight: 21, color: mine ? colors.inkOn : colors.ink, marginTop: m.image_path ? 8 : 0 }}>{m.body}</Text>
+            {m.edited_at ? <Text style={{ fontFamily: fonts.body, fontSize: 11, color: mine ? colors.line : colors.faint, marginTop: 2 }}>edited</Text> : null}
           </View>
         </Pressable>
       </View>
@@ -159,7 +159,7 @@ export default function Chat() {
               style={{ flex: 1, minHeight: 48, maxHeight: 120, borderRadius: 24, backgroundColor: colors.surface, paddingHorizontal: 18, paddingTop: 13, paddingBottom: 13, fontSize: 16, fontFamily: fonts.body, color: colors.ink }} />
             <Pressable accessibilityRole="button" accessibilityLabel="Send" disabled={!text.trim() || sending} onPress={send}
               style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', opacity: !text.trim() || sending ? 0.35 : 1 }}>
-              <Icon name="send" color="#ffffff" size={20} />
+              <Icon name="send" color={colors.inkOn} size={20} />
             </Pressable>
           </View>
         </View>

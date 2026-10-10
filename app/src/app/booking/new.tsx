@@ -122,7 +122,7 @@ export default function NewBooking() {
             <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.ink }}>Reliable members only</Text>
             <Info text={"Hides your booking from members with a low reliability score."} />
           </View>
-          <Switch accessibilityLabel="Reliable members only" value={reliable} onValueChange={setReliable} trackColor={{ true: colors.ink, false: colors.lineStrong }} thumbColor="#ffffff" />
+          <Switch accessibilityLabel="Reliable members only" value={reliable} onValueChange={setReliable} trackColor={{ true: colors.ink, false: colors.lineStrong }} thumbColor={colors.ground} />
         </View>
         <TextField label="Anything else? (optional)" value={desc} onChangeText={setDesc} multiline maxLength={500} style={{ height: 88, paddingTop: 12, textAlignVertical: 'top' }} />
 

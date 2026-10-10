@@ -51,7 +51,7 @@ export default function NotificationsStep() {
           <View key={sw.key} style={{ flexDirection: 'row', alignItems: 'center', padding: 14, borderTopWidth: i ? 1 : 0, borderTopColor: colors.line }}>
             <Text style={{ flex: 1, fontFamily: fonts.body, fontSize: 15, color: colors.ink, paddingRight: 12 }}>{sw.label}</Text>
             <Switch accessibilityLabel={sw.label} value={on[sw.key]} onValueChange={(v) => setOn((o) => ({ ...o, [sw.key]: v }))}
-              trackColor={{ true: colors.ink, false: colors.lineStrong }} thumbColor="#ffffff" />
+              trackColor={{ true: colors.ink, false: colors.lineStrong }} thumbColor={colors.ground} />
           </View>
         ))}
       </View>

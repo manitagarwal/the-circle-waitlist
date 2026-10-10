@@ -15,19 +15,19 @@ export function Screen({ children, footer, scroll = true, onRefresh, refreshing 
 }) {
   const insets = useSafeAreaInsets();
   const inTabs = useSegments()[0] === '(tabs)'; // the fixed top bar already clears the status bar
-  const topPad = inTabs ? 8 : insets.top + 8;
+  const topPad = insets.top + (inTabs ? 4 : 8);
   const body = scroll ? (
-    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingTop: topPad }} keyboardShouldPersistTaps="handled"
+    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 22, paddingTop: topPad, paddingBottom: inTabs ? 130 : 32 }} keyboardShouldPersistTaps="handled"
       refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.ink} /> : undefined}>
       {children}
     </ScrollView>
   ) : (
-    <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: topPad }}>{children}</View>
+    <View style={{ flex: 1, paddingHorizontal: 22, paddingTop: topPad }}>{children}</View>
   );
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       {body}
-      {footer ? <View style={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 16, paddingTop: 12, backgroundColor: colors.ground, borderTopWidth: 1, borderTopColor: colors.line }}>{footer}</View> : null}
+      {footer ? <View style={{ paddingHorizontal: 22, paddingBottom: insets.bottom + 18, paddingTop: 14, backgroundColor: colors.ground }}>{footer}</View> : null}
     </KeyboardAvoidingView>
   );
 }
@@ -37,15 +37,15 @@ export const Body = ({ children, style }: { children: React.ReactNode; style?: o
 );
 /** The big headline. `italic` is kept for older callers and now means the same display size. */
 export const Title = ({ children }: { children: React.ReactNode; italic?: boolean }) => (
-  <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 37, lineHeight: 41, color: colors.ink }}>{children}</Text>
+  <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 40, lineHeight: 46, letterSpacing: -0.8, color: colors.ink }}>{children}</Text>
 );
 
 export function BackButton({ onPress }: { onPress?: () => void }) {
   const r = useRouter();
   return (
     <PressScale accessibilityLabel="Back" accessibilityRole="button" onPress={onPress ?? (() => (r.canGoBack() ? r.back() : r.replace('/')))}
-      style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
-      <Svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={colors.ink} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+      style={{ width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' }}>
+      <Svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={colors.ink} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
         <Path d="M15 5l-7 7 7 7" />
       </Svg>
     </PressScale>
@@ -60,7 +60,7 @@ function StepBar({ on, delay }: { on: boolean; delay: number }) {
     Animated.timing(v, { toValue: 1, duration: 700, delay, easing: Easing.bezier(0.3, 0.8, 0.3, 1), useNativeDriver: true }).start();
   }, [on, reduce, delay, v]);
   return (
-    <View style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.lineStrong, overflow: 'hidden' }}>
+    <View style={{ flex: 1, height: 2, backgroundColor: colors.line, overflow: 'hidden' }}>
       {on ? <Animated.View style={{ flex: 1, backgroundColor: colors.ink, transform: [{ scaleX: v }], transformOrigin: 'left' } as never} /> : null}
     </View>
   );
@@ -71,7 +71,8 @@ export function StepHeader({ step, of }: { step: number; of: number }) {
     <View>
       <View style={{ height: 56, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <BackButton />
-        <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.faint }}>Step {step} of {of}</Text>
+        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.6, textTransform: 'uppercase', color: colors.faint }}>Step {step} of {of}</Text>
+        <View style={{ width: 44 }} />
       </View>
       <View accessibilityLabel={`Step ${step} of ${of}`} style={{ flexDirection: 'row', gap: 6, marginTop: 4, marginBottom: 20 }}>
         {Array.from({ length: of }, (_, i) => <StepBar key={i} on={i < step} delay={i * 80} />)}
@@ -95,11 +96,10 @@ export function Button({ label, onPress, variant = 'primary', loading, disabled,
   label: string; onPress: () => void; variant?: 'primary' | 'secondary' | 'accent' | 'link'; loading?: boolean; disabled?: boolean; style?: ViewStyle;
 }) {
   const off = disabled || loading;
-  const base: ViewStyle = { height: variant === 'link' ? 48 : 54, borderRadius: 14, alignItems: 'center', justifyContent: 'center', opacity: off ? 0.35 : 1 };
-  const v: ViewStyle = variant === 'primary' ? { backgroundColor: colors.ink }
-    : variant === 'accent' ? { backgroundColor: colors.gold }
-    : variant === 'secondary' ? { backgroundColor: colors.ground, borderWidth: 1, borderColor: colors.lineStrong } : {};
-  const fg = variant === 'primary' ? '#ffffff' : colors.ink;
+  const base: ViewStyle = { height: variant === 'link' ? 48 : 54, borderRadius: 27, alignItems: 'center', justifyContent: 'center', opacity: off ? 0.35 : 1 };
+  const v: ViewStyle = variant === 'primary' || variant === 'accent' ? { backgroundColor: colors.ink }
+    : variant === 'secondary' ? { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.lineStrong } : {};
+  const fg = variant === 'primary' || variant === 'accent' ? colors.inkOn : colors.ink;
   return (
     <PressScale accessibilityRole="button" accessibilityState={{ disabled: !!off }} disabled={off} onPress={onPress} style={[base, v, style]}>
       {loading ? <ActivityIndicator color={fg} /> : (
@@ -111,7 +111,7 @@ export function Button({ label, onPress, variant = 'primary', loading, disabled,
 
 export function TextField({ label, error, hint, ok, style, ...rest }: TextInputProps & { label: string; error?: string | null; hint?: string; ok?: boolean }) {
   const [focus, setFocus] = React.useState(false);
-  const border = error ? colors.error : ok ? colors.sage : focus ? colors.ink : 'transparent';
+  const border = focus || error ? colors.ink : 'transparent';
   return (
     <View style={{ marginTop: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
@@ -119,9 +119,9 @@ export function TextField({ label, error, hint, ok, style, ...rest }: TextInputP
         {hint && !error ? <Info text={hint} title={label} size={18} style={{ marginTop: 0 }} /> : null}
       </View>
       <TextInput
-        accessibilityLabel={label} placeholderTextColor="#8f887c"
+        accessibilityLabel={label} placeholderTextColor={colors.faint}
         onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
-        style={[{ height: 56, borderRadius: radius.control, backgroundColor: focus || error || ok ? colors.ground : colors.surface, borderWidth: 1.5, borderColor: border, paddingHorizontal: 16, fontSize: 16, fontFamily: fonts.body, color: colors.ink }, style]}
+        style={[{ height: 56, borderRadius: radius.control, backgroundColor: focus || error ? colors.ground : colors.surface, borderWidth: 1, borderColor: border, paddingHorizontal: 16, fontSize: 16, fontFamily: fonts.body, color: colors.ink }, style]}
         {...rest}
       />
       {error ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.error, marginTop: 6 }}>{error}</Text> : null}

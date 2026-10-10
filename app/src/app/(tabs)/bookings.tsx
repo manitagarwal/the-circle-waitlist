@@ -55,7 +55,7 @@ export default function Bookings() {
     <Screen onRefresh={pull} refreshing={refreshing}>
       <TabHeader title="Bookings" right={
         <Pressable accessibilityRole="button" accessibilityLabel="Host a booking" onPress={() => r.push('/booking/new')} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name="plus" color="#ffffff" strokeWidth={2.2} /></Pressable>} />
+          <Icon name="plus" color={colors.inkOn} strokeWidth={2.2} /></Pressable>} />
       <Segmented value={seg} onChange={setSeg} options={[{ value: 'browse', label: 'Browse' }, { value: 'mine', label: 'Mine' }]} />
       <State loading={loading} error={error} onRetry={reload} />
 

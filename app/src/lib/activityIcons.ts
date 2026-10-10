@@ -1,6 +1,6 @@
 // One small illustration per activity: bold ink outlines with a neutral stone tint, no colour.
-const Y = '#e4dfd5';
-const K = '#1d1c1a';
+const Y = 'currentColor" fill-opacity=".14';
+const K = 'currentColor';
 const svg = (inner: string) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="${K}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
 
 const ICONS: Record<string, string> = {
@@ -54,7 +54,7 @@ const ICONS: Record<string, string> = {
   'Meditation': svg(`<path d="M24 38c-9 0-15-5-17-14 6 0 10 3 13 8 1-9 3-16 4-22 1 6 3 13 4 22 3-5 7-8 13-8-2 9-8 14-17 14z" fill="${Y}"/>`),
   // culture and going out
   'Film/Cinema Club': svg(`<rect x="6" y="19" width="36" height="21" rx="3" fill="${Y}"/><path d="M6 19l3-9 32-4 2 9M14 15l5 4M24 13l5 4M34 11l5 4"/>`),
-  'Photography': svg(`<rect x="6" y="14" width="36" height="25" rx="5" fill="${Y}"/><circle cx="24" cy="27" r="7" fill="#ffffff"/><circle cx="24" cy="27" r="2.5"/><path d="M16 14l3-6h10l3 6"/>`),
+  'Photography': svg(`<rect x="6" y="14" width="36" height="25" rx="5" fill="${Y}"/><circle cx="24" cy="27" r="7" fill="currentColor" fill-opacity=".04"/><circle cx="24" cy="27" r="2.5"/><path d="M16 14l3-6h10l3 6"/>`),
   'Travel Meetups': svg(`<circle cx="24" cy="24" r="17" fill="${Y}"/><path d="M7 24h34M24 7c-8 9-8 25 0 34M24 7c8 9 8 25 0 34"/>`),
   'Weekend Getaways': svg(`<rect x="8" y="16" width="32" height="24" rx="4" fill="${Y}"/><path d="M18 16v-5a2 2 0 012-2h8a2 2 0 012 2v5M8 26h32M20 26v4h8v-4"/>`),
   'Pet Lovers': svg(`<ellipse cx="24" cy="31" rx="9" ry="7" fill="${Y}"/><circle cx="12" cy="22" r="4"/><circle cx="19" cy="13" r="4"/><circle cx="29" cy="13" r="4"/><circle cx="36" cy="22" r="4"/>`),

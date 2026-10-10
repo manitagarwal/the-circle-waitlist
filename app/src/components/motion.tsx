@@ -18,7 +18,7 @@ export function FadeUp({ children, delay = 0, distance = 14, style }: { children
   const v = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (reduce) { v.setValue(1); return; }
-    Animated.timing(v, { toValue: 1, duration: 550, delay, easing: Easing.bezier(0.2, 0.7, 0.2, 1), useNativeDriver: true }).start();
+    Animated.timing(v, { toValue: 1, duration: 650, delay, easing: Easing.bezier(0.2, 0.8, 0.2, 1.1), useNativeDriver: true }).start();
   }, [reduce, delay, v]);
   return <Animated.View style={[style, { opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [distance, 0] }) }] }]}>{children}</Animated.View>;
 }
@@ -28,7 +28,7 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 /** A pressable that shrinks slightly while held. The style goes on the pressable itself, so flex and alignSelf behave as usual. */
 export function PressScale({ children, style, scaleTo = 0.97, ...rest }: Omit<PressableProps, 'style'> & { style?: StyleProp<ViewStyle>; scaleTo?: number; children?: React.ReactNode }) {
   const v = useRef(new Animated.Value(1)).current;
-  const to = (n: number) => Animated.spring(v, { toValue: n, speed: 40, bounciness: 0, useNativeDriver: true }).start();
+  const to = (n: number) => Animated.spring(v, { toValue: n, speed: 34, bounciness: n === 1 ? 14 : 0, useNativeDriver: true }).start();
   return (
     <AnimatedPressable {...rest} style={[style, { transform: [{ scale: v }] }]} onPressIn={(e: GestureResponderEvent) => { to(scaleTo); rest.onPressIn?.(e); }} onPressOut={(e: GestureResponderEvent) => { to(1); rest.onPressOut?.(e); }}>
       {children}

@@ -7,8 +7,8 @@ import { PressScale } from './motion';
 export function Pill({ label, on, onPress, role = 'radio', disabled }: { label: string; on: boolean; onPress: () => void; role?: 'radio' | 'checkbox' | 'button'; disabled?: boolean }) {
   return (
     <PressScale accessibilityRole={role} accessibilityState={role === 'checkbox' ? { checked: on, disabled } : { selected: on, disabled }} disabled={disabled} onPress={onPress}
-      style={{ minHeight: 44, paddingHorizontal: 16, justifyContent: 'center', borderRadius: 22, backgroundColor: on ? colors.ink : colors.surface, opacity: disabled ? 0.45 : 1 }}>
-      <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.bodyMedium, fontSize: 15, color: on ? '#ffffff' : colors.ink }}>{label}</Text>
+      style={{ minHeight: 44, paddingHorizontal: 16, justifyContent: 'center', borderRadius: 22, borderWidth: 1, borderColor: on ? colors.ink : colors.line, backgroundColor: on ? colors.ink : 'transparent', opacity: disabled ? 0.45 : 1 }}>
+      <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.bodyMedium, fontSize: 15, color: on ? colors.inkOn : colors.ink }}>{label}</Text>
     </PressScale>
   );
 }

@@ -12,7 +12,6 @@ import { applyFilters, channelFit, channelSummary, filterOptions, FITS_ME, GENDE
 import { bucket, loadInterestGroups } from '@/lib/interests';
 import { endsIn, listStamp } from '@/lib/format';
 import { useLoad } from '@/lib/useLoad';
-import { Info } from '@/components/Info';
 
 type Seg = 'lobby' | 'public' | 'booking';
 /** A yellow ring means something was posted in the last day. */
@@ -50,22 +49,20 @@ export default function Channels() {
 
   return (
     <Screen onRefresh={pull} refreshing={refreshing}>
-      <TabHeader title="Channels" right={
+      <TabHeader title="Channels" info="Lobbies are one per activity, run by the team, with polls you can vote in. Public channels are open to anyone who fits their rules. Booking chats belong to bookings you host or join. Want another Lobby? Add an interest in Settings." right={
         <Pressable accessibilityRole="button" accessibilityLabel="New channel" onPress={() => r.push('/channel/new')}
-          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}><Icon name="plus" color="#ffffff" strokeWidth={2.2} /></Pressable>} />
+          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}><Icon name="plus" color={colors.inkOn} strokeWidth={2.2} /></Pressable>} />
       <Segmented value={seg} onChange={setSeg} options={[{ value: 'lobby', label: 'Lobby' }, { value: 'public', label: 'Public' }, { value: 'booking', label: 'Booking' }]} />
       <State loading={loading} error={error} onRetry={reload} />
       {actionErr ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.error, marginVertical: 8 }}>{actionErr}</Text> : null}
 
       {data && seg === 'lobby' ? (<>
-        <Info text={"One per activity, run by the team. Read-only, with polls you can vote in."} />
         {lobby.length === 0 ? <State empty="No Lobbies yet. Pick interests in Settings and they appear here." /> : null}
         <Buckets buckets={lobbyShown} render={(items) => (<>
             {items.map((c) => (
               <Row key={c.id} left={<RingBadge name={c.name} activity={c.interest_name} unread={isFresh(data.previews[c.id]?.last_at)} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
             ))}
         </>)} />
-        <Info text={"Want another? Add an interest in Settings."} />
       </>) : null}
 
       {data && seg === 'public' ? (<>
@@ -92,7 +89,6 @@ export default function Channels() {
       </>) : null}
 
       {data && seg === 'booking' ? (<>
-        <Info text={"The chats for bookings you host or have joined."} />
         {mine.length === 0 ? <State empty="Nothing here yet. When you join or host a booking, its chat shows up here." /> : null}
         {mine.map((c) => {
           const ends = endsIn(data.expiry[c.id] ?? null);
