@@ -27,6 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [application, setApplication] = useState<Application | null>(null);
   const [hasPassword, setHasPassword] = useState(false);
   const [ready, setReady] = useState(false);
+  const [loadedFor, setLoadedFor] = useState<string | null>(null); // whose membership and application we have actually loaded
   const [recovery, setRecovery] = useState(false);
   const [ackPaused, setAckPaused] = useState(false);
   const sessionRef = useRef<Session | null>(null);
@@ -34,14 +35,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const sync = useCallback(async (s: Session | null) => {
     sessionRef.current = s;
     setSession(s);
-    if (!s) { setMember(null); setApplication(null); setHasPassword(false); return; }
+    if (!s) { setMember(null); setApplication(null); setHasPassword(false); setLoadedFor(null); return; }
     const m = await loadMember(s.user.id);
     // banned and deleted accounts keep their session so they can see why (and restore, if deleted)
     let a: Application | null = null;
     if (!m) { try { a = await api.myApplication(); } catch { a = null; } }
     let pw = false;
     try { pw = await api.hasPassword(); } catch { pw = false; }
-    setMember(m); setApplication(a); setHasPassword(pw);
+    if (sessionRef.current?.user.id !== s.user.id) return; // signed out or switched while we were loading
+    setMember(m); setApplication(a); setHasPassword(pw); setLoadedFor(s.user.id);
   }, []);
 
   useEffect(() => {
@@ -57,7 +59,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [sync]);
 
   const value = useMemo<Ctx>(() => {
-    const gate = computeGate({ ready, signedIn: !!session, member, applicationStatus: application?.status ?? null, hasPassword });
+    // signed in but not yet loaded means we do not know where this person stands: stay on the loading screen
+    const gate = computeGate({ ready: ready && (!session || loadedFor === session.user.id), signedIn: !!session, member, applicationStatus: application?.status ?? null, hasPassword });
     return {
       session, member, application, hasPassword, gate, recovery,
       paused: member?.state === 'suspended', ackPaused, acknowledgePause: () => setAckPaused(true),
@@ -66,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       refresh: () => sync(sessionRef.current),
       signOut: async () => { await supabase.auth.signOut(); },
     };
-  }, [ready, session, member, application, hasPassword, recovery, ackPaused, sync]);
+  }, [ready, session, loadedFor, member, application, hasPassword, recovery, ackPaused, sync]);
 
   return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
 }

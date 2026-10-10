@@ -533,6 +533,34 @@
   }
   .share-row a{color:var(--good); font-size:0.85rem; text-decoration:none; border-bottom:1px solid rgba(143,174,122,0.4);}
 
+
+  /* ---------- APPLY FLOW (mirrors the app) ---------- */
+  @media (max-width:520px){.progress{gap:14px;} .card{padding:32px 22px;}}
+  .authbar{display:flex; justify-content:flex-end; gap:14px; font-size:0.85rem; color:var(--ink-dim); margin:-18px 0 18px; min-height:20px; flex-wrap:wrap;}
+  .authbar .who{color:var(--ink-dimmer);}
+  .flow-title{font-family:var(--serif); font-style:italic; font-weight:400; font-size:1.7rem; margin:0 0 8px;}
+  .flow-body{color:var(--ink-dim); font-size:0.95rem; line-height:1.55; margin:0 0 22px;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{background:var(--bg-2); border:1px solid var(--panel-border); color:var(--ink); padding:11px 14px; font-size:0.92rem; border-radius:2px; min-height:44px;}
+  .chip[aria-checked="true"]{border-color:var(--accent); background:var(--accent-soft); font-weight:500;}
+  .field .ok-line{font-size:0.82rem; color:var(--good); margin-top:6px;}
+  .pw-checks{font-size:0.82rem; color:var(--ink-dimmer); margin:6px 0 18px; line-height:1.7;}
+  .pw-checks .on{color:var(--good);}
+  .notice{background:var(--accent-soft); border:1px solid rgba(182,147,94,0.3); padding:12px 14px; font-size:0.85rem; color:var(--ink-dim); border-radius:2px; margin:14px 0;}
+  .notice.error{border-color:rgba(201,123,106,0.5); color:var(--error); background:rgba(201,123,106,0.08);}
+  .notice strong{color:var(--accent); font-weight:500;}
+  .code-input{font-family:var(--serif); font-size:1.4rem; letter-spacing:0.4em; text-align:center;}
+  .vouch-item{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 14px; background:var(--bg-2); border:1px solid var(--panel-border); border-radius:2px; margin-bottom:8px;}
+  .vouch-item .sub{font-size:0.82rem; color:var(--ink-dim);}
+  .qpos{font-family:var(--serif); font-size:3rem; color:var(--accent); margin:0; line-height:1;}
+  .qlabel{font-size:0.7rem; letter-spacing:0.14em; color:var(--ink-dimmer); margin:6px 0 26px;}
+  .center{text-align:center;}
+  .ref-box{margin-top:28px; padding:18px; border:1px solid var(--panel-border); background:var(--bg-2); border-radius:2px; text-align:left;}
+  .ref-box .code{font-family:var(--serif); font-size:1.7rem; letter-spacing:0.18em; color:var(--accent); margin:6px 0 12px; word-break:break-all;}
+  .ref-box .acts{display:flex; gap:10px;}
+  .ref-box .acts button{flex:1;}
+  .linklike{background:none; border:none; color:var(--accent); font-size:0.85rem; padding:6px 0; text-decoration:underline; text-decoration-color:rgba(182,147,94,0.4);}
+
   .step-panel{display:none;}
   .step-panel.active{display:block;}
 
@@ -634,123 +662,25 @@
   </div>
 </section>
 
-<!-- ================= FORM ================= -->
+<!-- ================= FORM (same five steps as the app) ================= -->
 <section class="apply wrap" id="apply">
   <div class="apply-head">
     <h2>Request an invitation</h2>
-    <p>Four short steps. Reviewed by people, not a model.</p>
+    <p>Five short steps. Read by people, not a model.</p>
     <p class="hint" id="declinedStat" style="margin-top:10px;"></p>
   </div>
-
   <div class="card">
-    <div class="progress">
+    <div class="authbar" id="authBar"></div>
+
+    <div class="progress" id="progress">
       <div class="progress-item active" data-progress="1"><span class="n">01</span><span class="l">Details</span></div>
-      <div class="progress-item" data-progress="2"><span class="n">02</span><span class="l">Verify</span></div>
-      <div class="progress-item" data-progress="3"><span class="n">03</span><span class="l">Referral</span></div>
-      <div class="progress-item" data-progress="4"><span class="n">04</span><span class="l">Review</span></div>
+      <div class="progress-item" data-progress="2"><span class="n">02</span><span class="l">Login</span></div>
+      <div class="progress-item" data-progress="3"><span class="n">03</span><span class="l">Work email</span></div>
+      <div class="progress-item" data-progress="4"><span class="n">04</span><span class="l">Vouch</span></div>
+      <div class="progress-item" data-progress="5"><span class="n">05</span><span class="l">Review</span></div>
     </div>
 
-    <form id="applyForm" novalidate>
-
-      <!-- STEP 1: DETAILS -->
-      <div class="step-panel active" data-step="1">
-        <div class="field" data-field="fullName">
-          <label for="fullName">Full name</label>
-          <input type="text" id="fullName" autocomplete="name">
-          <div class="err">We'll need a name. Preferably yours.</div>
-        </div>
-
-        <div class="row2">
-          <div class="field" data-field="phone">
-            <label for="phone">Phone number</label>
-            <input type="tel" id="phone" placeholder="90000 00000" autocomplete="tel">
-            <div class="err">That's not a phone number. Nice try though.</div>
-          </div>
-          <div class="field" data-field="city">
-            <label for="city">City of residence</label>
-            <input type="text" id="city" autocomplete="address-level2">
-            <div class="hint">So we can reach you.</div>
-            <div class="err">Left this blank. Bold move.</div>
-          </div>
-        </div>
-
-        <div class="field" data-field="personalEmail">
-          <label for="personalEmail">Personal email</label>
-          <input type="email" id="personalEmail" autocomplete="email">
-          <div class="err">That email doesn't look real. Try again.</div>
-        </div>
-
-        <div class="field" data-field="linkedin">
-          <label for="linkedin">LinkedIn URL</label>
-          <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourname">
-          <div class="err">Needs to actually be a LinkedIn URL. We checked.</div>
-        </div>
-
-        <div class="nav-row">
-          <span></span>
-          <button type="button" class="btn" data-next="2">Continue</button>
-        </div>
-      </div>
-
-      <!-- STEP 2: WORK EMAIL VERIFICATION -->
-      <div class="step-panel" data-step="2">
-        <div class="field" data-field="workEmail">
-          <label for="workEmail">Work email</label>
-          <div class="inline-btn-field">
-            <input type="email" id="workEmail" autocomplete="email" placeholder="you@company.com">
-            <button type="button" class="btn-ghost" id="sendCodeBtn">Send code</button>
-          </div>
-          <div class="hint">Use your work or business email. We verify every member this way, and personal inboxes like Gmail don't pass.</div>
-          <div class="err">That looks like a personal inbox. Use your work or business email.</div>
-        </div>
-
-        <div class="otp-note" id="otpNote"></div>
-
-        <div class="field" data-field="otp" id="otpField" style="display:none;">
-          <label for="otpInput">Verification code</label>
-          <div class="inline-btn-field">
-            <input type="text" id="otpInput" maxlength="6" inputmode="numeric" placeholder="6-digit code">
-            <button type="button" class="btn-ghost" id="verifyCodeBtn">Verify</button>
-          </div>
-          <div class="err">Not quite. Check your inbox and try that code again.</div>
-          <div class="verified-badge" id="verifiedBadge" style="display:none;">✓ Work email verified</div>
-        </div>
-
-        <div class="nav-row">
-          <button type="button" class="btn-ghost" data-back="1">Back</button>
-          <button type="button" class="btn" data-next="3" id="toStep3Btn" disabled>Continue</button>
-        </div>
-      </div>
-
-      <!-- STEP 3: REFERRALS -->
-      <div class="step-panel" data-step="3">
-        <p class="hint" style="margin-bottom:18px;">Know someone who belongs here? Vouching for them fast-tracks your own application. Vouching for someone who embarrasses us fast-tracks nothing. Entirely optional.</p>
-
-        <div id="refRows"></div>
-
-        <div class="ref-actions">
-          <button type="button" class="btn-text" id="addRefRow">+ Add someone manually</button>
-          <button type="button" class="btn-text" id="importContactsBtn">Import from contacts</button>
-        </div>
-        <div class="contact-picker-note" id="contactPickerNote"></div>
-
-        <div class="nav-row">
-          <button type="button" class="btn-ghost" data-back="2">Back</button>
-          <button type="button" class="btn" data-next="4">Continue</button>
-        </div>
-      </div>
-
-      <!-- STEP 4: REVIEW -->
-      <div class="step-panel" data-step="4">
-        <div class="review-list" id="reviewList"></div>
-        <div id="submitErr" style="display:none; margin-bottom:16px; color:var(--error); font-size:0.88rem;"></div>
-        <div class="nav-row">
-          <button type="button" class="btn-ghost" data-back="3">Back</button>
-          <button type="submit" class="btn">Submit application</button>
-        </div>
-      </div>
-
-    </form>
+    <div id="panel"></div>
   </div>
 </section>
 
@@ -773,30 +703,6 @@
   </div>
 </section>
 
-<!-- ================= CONFIRMATION ================= -->
-<section class="confirm wrap" id="confirmSection">
-  <div class="card">
-    <p class="queue-num" id="queueNum">-</p>
-    <div class="wax-seal">SC</div>
-    <h2>You're on the list.</h2>
-    <p>We review applications by hand. If it's a fit, you'll be let in: download The Semi Circle app and log in with your work email. Refreshing this page won't make it happen faster - we checked.</p>
-
-    <div class="app-id-box">
-      <div class="label">Your application ID - save this to check your status later</div>
-      <div class="code" id="appIdCode">-</div>
-    </div>
-
-    <div class="link-box">
-      <input type="text" id="referralLink" readonly>
-      <button type="button" class="btn-ghost" id="copyLinkBtn">Copy</button>
-    </div>
-
-    <button type="button" class="btn btn-block" id="shareAllBtn">Share on WhatsApp</button>
-
-    <div class="share-list" id="shareList"></div>
-  </div>
-</section>
-
 <footer>
   <div class="foot-brand">
     <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M4,20 A16,16 0 0 1 36,20 L4,20 Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
@@ -813,19 +719,6 @@
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const urlParams = new URLSearchParams(window.location.search);
-
-  const state = {
-    fullName:'', phone:'', personalEmail:'', city:'', linkedin:'',
-    workEmail:'', workVerified:false,
-    referrals: [], // {name, email, phone}
-    referredByCode: urlParams.get('ref') || null
-  };
-
-  const PERSONAL_DOMAINS = ['gmail.com','yahoo.com','hotmail.com','outlook.com','icloud.com','protonmail.com','aol.com','live.com'];
-
-  document.getElementById('heroApplyBtn').addEventListener('click', () => {
-    document.getElementById('apply').scrollIntoView({behavior:'smooth', block:'start'});
-  });
 
   // ---- real declined-applications stat (no fabricated numbers) ----
   (async function initDeclinedStat(){
@@ -929,397 +822,467 @@
     });
   }
 
-  // ---- live membership card preview ----
-  const mcName = document.getElementById('mcName');
-  const mcCity = document.getElementById('mcCity');
-  const mcHandle = document.getElementById('mcHandle');
+  // =====================================================================
+  // Request an invitation: the same five steps, rules and wording as the app.
+  // Account first: the personal email is the login (code, then password); the work email
+  // is only proof (checked through a throwaway client and never becomes a login).
+  // =====================================================================
+  const PERSONAL_DOMAINS = ['gmail.com','googlemail.com','yahoo.com','yahoo.in','yahoo.co.in','ymail.com','hotmail.com','outlook.com','live.com','msn.com','icloud.com','me.com','rediffmail.com','aol.com','proton.me','protonmail.com','gmx.com','zoho.com'];
+  const CITIES = ['Delhi','Gurgaon','Noida','Greater Noida','Faridabad','Ghaziabad','Other'];
+  const SITE = 'https://thesemicircle.in';
 
-  function extractLinkedInHandle(url){
-    const m = url.match(/linkedin\.com\/in\/([^\/\?]+)/i);
-    return m ? `linkedin.com/in/${m[1]}` : 'linkedin.com/in/-';
+  const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+  const normEmail = (v) => v.trim().toLowerCase();
+  const isPersonalEmail = (v) => PERSONAL_DOMAINS.includes(normEmail(v).split('@')[1] || '');
+  function normPhone(v){
+    let d = v.replace(/[\s\-().]/g, '');
+    if(d.startsWith('+')) d = d.slice(1);
+    if(d.length === 12 && d.startsWith('91')) d = d.slice(2);
+    else if(d.length === 11 && d.startsWith('0')) d = d.slice(1);
+    return /^[6-9]\d{9}$/.test(d) ? d : null;
+  }
+  const isLinkedIn = (v) => /linkedin\.com\/.+/i.test(v.trim());
+  const linkedInHandle = (v) => (v.match(/linkedin\.com\/in\/([^/?\s]+)/i) || [])[1] || null;
+  const isOtp = (v) => /^\d{6}$/.test(v);
+  const appCode = (v) => v.toUpperCase().replace(/[^A-F0-9]/g, '').slice(0, 8);
+  const pwChecks = (p) => ({ length: p.length >= 8, mixed: /[0-9]/.test(p) || /[^A-Za-z0-9]/.test(p) });
+
+  // brand-voice errors, same as the app
+  function friendly(err){
+    const raw = (err && err.message) || '';
+    const wait = raw.match(/after (\d+) seconds/i);
+    if(wait) return `Please wait ${wait[1]} seconds before asking for another code.`;
+    if(/rate limit|too many|over_email_send_rate_limit/i.test(raw)) return "We've sent a lot of codes just now. Wait a few minutes and try again.";
+    if(/invalid login|invalid credentials/i.test(raw)) return "That email and password don't match.";
+    if(/token has expired|invalid.*(token|otp)|otp/i.test(raw)) return 'That code is wrong or has already been used. Use the newest code in your inbox.';
+    if(/signups not allowed|user not found/i.test(raw)) return "We couldn't find an account with that email.";
+    if(/network|fetch/i.test(raw)) return "Can't reach the server. Check your connection.";
+    return raw ? `Something went wrong. Try again. (${raw.slice(0,140)})` : 'Something went wrong. Try again.';
+  }
+  const pwError = (e) => /weak|pwned|leak|common/i.test(e.message || '') ? 'That password has appeared in a data leak. Pick another.'
+    : /different from the old/i.test(e.message || '') ? 'Pick a password you have not used before.' : friendly(e);
+
+  // the throwaway client for the work email: no stored session, never replaces the personal login
+  const mem = {};
+  const sbWork = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: {
+    storageKey: 'sb-work-verify', persistSession: false, autoRefreshToken: false, detectSessionInUrl: false,
+    storage: { getItem: (k) => mem[k] ?? null, setItem: (k, v) => { mem[k] = v; }, removeItem: (k) => { delete mem[k]; } } } });
+
+  // ---- tiny DOM builder: text only, so nothing a person types is ever parsed as HTML ----
+  function h(tag, attrs, ...kids){
+    const el = document.createElement(tag);
+    for(const [k, v] of Object.entries(attrs || {})){
+      if(v == null || v === false) continue;
+      if(k === 'class') el.className = v;
+      else if(k === 'on') for(const [ev, fn] of Object.entries(v)) el.addEventListener(ev, fn);
+      else if(v === true) el.setAttribute(k, '');
+      else el.setAttribute(k, v);
+    }
+    for(const kid of kids.flat(Infinity)){
+      if(kid == null || kid === false) continue;
+      el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+    }
+    return el;
   }
 
-  function wireCardPreview(){
-    const nameInput = document.getElementById('fullName');
-    const cityInput = document.getElementById('city');
-    const linkedinInput = document.getElementById('linkedin');
+  const refFromUrl = appCode(urlParams.get('ref') || '');
+  const state = {
+    step: 1, fullName: '', phone: '', city: '', cityOther: '', personalEmail: '', linkedin: '',
+    workEmail: '', personalVerified: false, passwordSet: false, workVerified: false,
+    referredByCode: refFromUrl, vouches: [], id: crypto.randomUUID()
+  };
+  const cityValue = () => state.city === 'Other' ? state.cityOther.trim() : state.city;
 
-    nameInput.addEventListener('input', () => {
-      mcName.textContent = nameInput.value.trim() || 'Your name here';
-    });
-    cityInput.addEventListener('input', () => {
-      mcCity.textContent = cityInput.value.trim() || 'City, unset';
-    });
-    linkedinInput.addEventListener('input', () => {
-      mcHandle.textContent = extractLinkedInHandle(linkedinInput.value.trim());
-    });
-  }
-  wireCardPreview();
+  const panel = document.getElementById('panel');
+  const progress = document.getElementById('progress');
+  const authBar = document.getElementById('authBar');
 
-  // ---- form helpers ----
-  const panels = document.querySelectorAll('.step-panel');
-  const progressItems = document.querySelectorAll('.progress-item');
-
-  function goToStep(n){
-    panels.forEach(p => p.classList.toggle('active', p.dataset.step === String(n)));
-    progressItems.forEach(p => p.classList.toggle('active', Number(p.dataset.progress) <= n));
+  function showStep(n){
+    state.step = n;
+    progress.style.display = '';
+    progress.querySelectorAll('.progress-item').forEach(p => p.classList.toggle('active', Number(p.dataset.progress) <= n));
+    steps[n]();
     document.getElementById('apply').scrollIntoView({behavior:'smooth', block:'start'});
   }
+  // replaceChildren would print a null as the word "null", so everything goes through put()
+  const put = (el, ...kids) => el.replaceChildren(...kids.flat(Infinity).filter(k => k != null && k !== false));
+  function showPlain(build){ progress.style.display = 'none'; put(panel, build()); }
 
-  const DEFAULT_ERRS = {};
-  function setError(fieldName, show, message){
-    const el = document.querySelector(`[data-field="${fieldName}"]`);
-    if(!el) return;
-    const errEl = el.querySelector('.err');
-    if(errEl){
-      if(!(fieldName in DEFAULT_ERRS)) DEFAULT_ERRS[fieldName] = errEl.textContent;
-      errEl.textContent = message || DEFAULT_ERRS[fieldName];
-    }
-    el.classList.toggle('invalid', show);
-    if(show){
-      el.classList.remove('shake');
-      void el.offsetWidth; // force reflow so animation restarts
-      el.classList.add('shake');
-    }
+  // field helper: label + input + message line
+  function field(id, label, input, hint, err, ok){
+    return h('div', {class: 'field' + (err ? ' invalid' : '')}, h('label', {for: id}, label), input,
+      err ? h('div', {class: 'err', role: 'alert'}, err) : (ok ? h('div', {class: 'ok-line'}, ok) : (hint ? h('div', {class: 'hint'}, hint) : null)));
   }
+  const input = (id, props) => h('input', {id, ...props});
+  const navRow = (back, next) => h('div', {class: 'nav-row'}, back || h('span'), next);
+  const btn = (label, cls, fn, extra) => h('button', {type: 'button', class: cls, on: {click: fn}, ...(extra || {})}, label);
+  const backBtn = (to) => btn('Back', 'btn-ghost', () => showStep(to));
 
-  function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
-  function isPersonalDomain(email){
-    const domain = email.split('@')[1]?.toLowerCase() || '';
-    return PERSONAL_DOMAINS.includes(domain);
-  }
-  function isValidLinkedIn(v){ return /linkedin\.com\/.+/i.test(v); }
-  function isValidPhone(v){ return /^[+\d][\d\s-]{6,}$/.test(v); }
-
-  // ---- duplicate check (phone / personal email / work email already in DB) ----
-  const DUP_MSGS = {
-    phone: 'This phone number has already applied.',
-    personal_email: 'This personal email has already applied.',
-    work_email: 'This work email has already applied.'
-  };
-  const DUP_FIELD = { phone:'phone', personal_email:'personalEmail', work_email:'workEmail' };
-
-  // returns {phone, personal_email, work_email} booleans, or null if the check itself failed
-  async function checkDuplicates({phone, personalEmail, workEmail}){
+  // ---- the numbers the old form also fed ----
+  async function checkDuplicates(p){
     const { data, error } = await sb.rpc('check_applicant_duplicates', {
-      p_phone: phone || null,
-      p_personal_email: personalEmail || null,
-      p_work_email: workEmail || null
-    });
-    if(error || !data){ console.error('Duplicate check failed:', error); return null; }
+      p_phone: p.phone ? normPhone(p.phone) : null,
+      p_personal_email: p.personalEmail ? normEmail(p.personalEmail) : null,
+      p_work_email: p.workEmail ? normEmail(p.workEmail) : null });
+    if(error || !data) throw new Error('network');
     return data;
   }
 
-  // ---- STEP 1 validation ----
-  document.querySelector('[data-next="2"]').addEventListener('click', async (ev) => {
-    const nextBtn = ev.currentTarget;
-    const fullName = document.getElementById('fullName').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const city = document.getElementById('city').value.trim();
-    const personalEmail = document.getElementById('personalEmail').value.trim();
-    const linkedin = document.getElementById('linkedin').value.trim();
-
-    let ok = true;
-    setError('fullName', !fullName); if(!fullName) ok=false;
-    setError('phone', !isValidPhone(phone)); if(!isValidPhone(phone)) ok=false;
-    setError('city', !city); if(!city) ok=false;
-    setError('personalEmail', !isValidEmail(personalEmail)); if(!isValidEmail(personalEmail)) ok=false;
-    setError('linkedin', !isValidLinkedIn(linkedin)); if(!isValidLinkedIn(linkedin)) ok=false;
-
-    if(!ok) return;
-
-    nextBtn.disabled = true;
-    const dups = await checkDuplicates({phone, personalEmail});
-    nextBtn.disabled = false;
-    if(!dups){
-      setError('personalEmail', true, "Couldn't check your details right now. Try again in a moment.");
-      return;
-    }
-    if(dups.phone){ setError('phone', true, DUP_MSGS.phone); ok = false; }
-    if(dups.personal_email){ setError('personalEmail', true, DUP_MSGS.personal_email); ok = false; }
-    if(!ok) return;
-
-    Object.assign(state, {fullName, phone, city, personalEmail, linkedin});
-    goToStep(2);
-  });
-
-  // ---- STEP 2: OTP flow (Supabase Auth) ----
-  const sendCodeBtn = document.getElementById('sendCodeBtn');
-  const otpNote = document.getElementById('otpNote');
-  const otpField = document.getElementById('otpField');
-  const toStep3Btn = document.getElementById('toStep3Btn');
-
-  sendCodeBtn.addEventListener('click', async () => {
-    const workEmail = document.getElementById('workEmail').value.trim();
-    const invalid = !isValidEmail(workEmail) || isPersonalDomain(workEmail);
-    setError('workEmail', invalid);
-    if(invalid) return;
-
-    sendCodeBtn.disabled = true;
-    sendCodeBtn.textContent = 'Checking…';
-    const dups = await checkDuplicates({workEmail});
-    if(!dups){
-      sendCodeBtn.disabled = false;
-      sendCodeBtn.textContent = 'Send code';
-      setError('workEmail', true, "Couldn't check your email right now. Try again in a moment.");
-      return;
-    }
-    if(dups.work_email){
-      sendCodeBtn.disabled = false;
-      sendCodeBtn.textContent = 'Send code';
-      setError('workEmail', true, DUP_MSGS.work_email);
-      return;
-    }
-    sendCodeBtn.textContent = 'Sending…';
-
-    const { error } = await sb.auth.signInWithOtp({
-      email: workEmail,
-      options: { shouldCreateUser: true }
-    });
-
-    sendCodeBtn.disabled = false;
-
-    if(error){
-      otpNote.style.display = 'block';
-      otpNote.innerHTML = `Couldn't send a code: ${error.message}. Check the address and try again.`;
-      sendCodeBtn.textContent = 'Send code';
-      return;
-    }
-
-    state.workEmail = workEmail;
-    otpNote.style.display = 'block';
-    otpNote.innerHTML = `We've sent a 6-digit code to <strong>${workEmail}</strong>. Check your inbox (and spam folder).`;
-    otpField.style.display = 'block';
-    sendCodeBtn.textContent = 'Resend code';
-  });
-
-  document.getElementById('verifyCodeBtn').addEventListener('click', async () => {
-    const verifyBtn = document.getElementById('verifyCodeBtn');
-    const entered = document.getElementById('otpInput').value.trim();
-
-    verifyBtn.disabled = true;
-    verifyBtn.textContent = 'Verifying…';
-
-    const { error } = await sb.auth.verifyOtp({
-      email: state.workEmail,
-      token: entered,
-      type: 'email'
-    });
-
-    verifyBtn.disabled = false;
-    verifyBtn.textContent = 'Verify';
-
-    setError('otp', !!error);
-    if(!error){
-      state.workVerified = true;
-      document.getElementById('verifiedBadge').style.display = 'inline-flex';
-      toStep3Btn.disabled = false;
-    }
-  });
-
-  document.querySelector('[data-next="3"]').addEventListener('click', () => goToStep(3));
-
-  // ---- STEP 3: referrals ----
-  const refRows = document.getElementById('refRows');
-  let refRowId = 0;
-
-  function addRefRow(prefill){
-    refRowId++;
-    const id = `ref-${refRowId}`;
-    const row = document.createElement('div');
-    row.className = 'ref-row';
-    row.dataset.id = id;
-    row.innerHTML = `
-      <input type="text" placeholder="Name" class="ref-name" value="${prefill?.name || ''}">
-      <input type="email" placeholder="Email" class="ref-email" value="${prefill?.email || ''}">
-      <input type="tel" placeholder="Phone" class="ref-phone" value="${prefill?.phone || ''}">
-      <button type="button" class="ref-remove" aria-label="Remove">✕</button>
-    `;
-    row.querySelector('.ref-remove').addEventListener('click', () => row.remove());
-    refRows.appendChild(row);
+  // ---- live membership card preview (unchanged look) ----
+  const mcName = document.getElementById('mcName'), mcCity = document.getElementById('mcCity'), mcHandle = document.getElementById('mcHandle');
+  function updateCard(){
+    mcName.textContent = state.fullName.trim() || 'Your name here';
+    mcCity.textContent = cityValue() || 'City, unset';
+    const hd = linkedInHandle(state.linkedin);
+    mcHandle.textContent = hd ? `linkedin.com/in/${hd}` : 'linkedin.com/in/-';
   }
 
-  document.getElementById('addRefRow').addEventListener('click', () => addRefRow());
-
-  const importBtn = document.getElementById('importContactsBtn');
-  const pickerNote = document.getElementById('contactPickerNote');
-  const contactPickerSupported = ('contacts' in navigator && 'ContactsManager' in window);
-
-  if(!contactPickerSupported){
-    pickerNote.textContent = 'Bulk contact import is available on supported Android browsers. On this device, add people manually above.';
-  }
-
-  importBtn.addEventListener('click', async () => {
-    if(!contactPickerSupported){
-      pickerNote.textContent = "Your browser doesn't support contact import yet - please add people manually above.";
-      return;
-    }
-    try{
-      const props = ['name','email','tel'];
-      const opts = {multiple:true};
-      const contacts = await navigator.contacts.select(props, opts);
-      contacts.forEach(c => {
-        addRefRow({
-          name: (c.name && c.name[0]) || '',
-          email: (c.email && c.email[0]) || '',
-          phone: (c.tel && c.tel[0]) || ''
-        });
+  // ---------------------------------------------------------------- step 1
+  const steps = {};
+  steps[1] = () => {
+    const e = {};
+    const draw = () => {
+      const fn = input('fullName', {type:'text', autocomplete:'name', value: state.fullName, on:{input: (ev) => { state.fullName = ev.target.value; updateCard(); }}});
+      const ph = input('phone', {type:'tel', autocomplete:'tel', placeholder:'90000 00000', value: state.phone, on:{input: (ev) => { state.phone = ev.target.value; }}});
+      const cityChips = h('div', {class:'chips', role:'radiogroup', 'aria-label':'City'}, CITIES.map(c => h('button', {type:'button', class:'chip', role:'radio', 'aria-checked': String(state.city === c), on:{click: () => { state.city = c; updateCard(); draw(); }}}, c)));
+      const other = state.city === 'Other' ? field('cityOther', 'Your city', input('cityOther', {type:'text', value: state.cityOther, on:{input: (ev) => { state.cityOther = ev.target.value; updateCard(); }}}), null, e.city) : null;
+      const em = input('personalEmail', {type:'email', autocomplete:'email', value: state.personalEmail, disabled: state.personalVerified, on:{input: (ev) => { state.personalEmail = ev.target.value; }}});
+      const li = input('linkedin', {type:'url', placeholder:'https://linkedin.com/in/yourname', value: state.linkedin, on:{input: (ev) => { state.linkedin = ev.target.value; updateCard(); }}});
+      const next = btn('Continue', 'btn', async (ev) => {
+        const b = ev.currentTarget;
+        Object.keys(e).forEach(k => delete e[k]);
+        if(state.fullName.trim().length < 2) e.fullName = 'Enter your full name.';
+        if(!normPhone(state.phone)) e.phone = 'Enter a 10-digit Indian mobile number.';
+        if(!state.city) e.cityPick = 'Pick your city.'; else if(!cityValue()) e.city = 'Type your city.';
+        if(!isEmail(state.personalEmail)) e.personalEmail = 'Enter a valid email address.';
+        if(!isLinkedIn(state.linkedin)) e.linkedin = 'Paste your LinkedIn profile link.';
+        if(Object.keys(e).length){ draw(); return; }
+        b.disabled = true;
+        try{
+          const d = await checkDuplicates({phone: state.phone, personalEmail: state.personalEmail});
+          if(d.phone) e.phone = 'This phone number has already applied.';
+          if(d.personal_email && !state.personalVerified) e.personalEmail = 'This email has already applied. Use "Log in" above, or choose "Forgot password" there.';
+        }catch{ e.fullName = "Can't reach the server. Check your connection."; }
+        b.disabled = false;
+        if(Object.keys(e).length){ draw(); return; }
+        showStep(2);
       });
-    }catch(err){
-      pickerNote.textContent = 'Contact import was cancelled or not permitted.';
+      put(panel, 
+        h('h3', {class:'flow-title'}, 'Request an invitation.'), h('p', {class:'flow-body'}, 'Five short steps. Read by people, not a model.'),
+        field('fullName', 'Full name', fn, null, e.fullName),
+        field('phone', 'Phone number', ph, null, e.phone),
+        h('div', {class:'field' + (e.cityPick ? ' invalid' : '')}, h('label', null, 'City'), cityChips,
+          h('div', {class: e.cityPick ? 'err' : 'hint'}, e.cityPick || "Delhi NCR only for now. Elsewhere? Pick Other and we'll tell you when we reach you.")),
+        other,
+        field('personalEmail', 'Personal email', em, "This is your login. We'll check it's yours in the next step.", e.personalEmail),
+        field('linkedin', 'LinkedIn URL', li, null, e.linkedin),
+        navRow(null, next));
+      if(e.cityPick) panel.querySelector('.invalid').classList.add('invalid');
+    };
+    draw();
+  };
+
+  // ---------------------------------------------------------------- step 2: login
+  let loginSentAt = 0;
+  steps[2] = () => {
+    let sent = false, busy = '', err = null, code = '';
+    const draw = () => {
+      const kids = [h('h3', {class:'flow-title'}, 'Your login.'),
+        h('p', {class:'flow-body'}, "Your personal email is how you'll log in. We'll send a code to check it's yours, then you'll set a password."),
+        field('pe', 'Personal email', input('pe', {type:'email', value: state.personalEmail, disabled: true}), null, null, state.personalVerified ? '✓ Verified' : null)];
+      if(!sent && !state.personalVerified){
+        kids.push(btn(busy === 'send' ? 'Sending…' : 'Send code', 'btn btn-block', sendCode, {disabled: busy === 'send'}));
+        if(err) kids.push(h('div', {class:'notice error', role:'alert'}, err));
+      }
+      if(sent && !state.personalVerified){
+        const ci = input('code', {type:'text', class:'code-input', inputmode:'numeric', maxlength:'6', autocomplete:'one-time-code', value: code, on:{input: (ev) => { code = ev.target.value.replace(/\D/g, '').slice(0, 6); ev.target.value = code; vb.disabled = !isOtp(code) || busy === 'verify'; }, keydown:(ev) => { if(ev.key === 'Enter'){ ev.preventDefault(); verify(); } }}});
+        const vb = btn(busy === 'verify' ? 'Verifying…' : 'Verify', 'btn', verify, {disabled: !isOtp(code) || busy === 'verify'});
+        kids.push(h('div', {class:'notice'}, "We've sent a 6-digit code to ", h('strong', null, state.personalEmail), '. Check your inbox and spam folder.'),
+          field('code', 'Verification code', ci, null, err),
+          h('div', {class:'nav-row', style:'margin-top:8px'}, vb, btn('Resend', 'btn-ghost', sendCode, {disabled: busy === 'send'})));
+      }
+      if(state.personalVerified && !state.passwordSet){
+        kids.push(h('div', {class:'notice'}, '✓ Email verified. Now create the password you\'ll use to log in.'), passwordForm('Save password', async () => { state.passwordSet = true; draw(); }));
+      }
+      if(state.personalVerified && state.passwordSet) kids.push(h('div', {class:'notice'}, '✓ Email verified. Password set.'));
+      kids.push(navRow(backBtn(1), btn('Continue', 'btn', () => showStep(3), {disabled: !(state.personalVerified && state.passwordSet)})));
+      put(panel, kids);
+      const c = document.getElementById('code'); if(c && sent && !state.personalVerified) c.focus();
+    };
+    async function sendCode(){
+      const wait = 60 - Math.floor((Date.now() - loginSentAt) / 1000);
+      if(sent && wait > 0){ err = `Please wait ${wait} seconds before asking for another code.`; draw(); return; }
+      err = null; busy = 'send'; draw();
+      const { error } = await sb.auth.signInWithOtp({ email: normEmail(state.personalEmail), options: { shouldCreateUser: true } });
+      busy = '';
+      if(error){ err = friendly(error); draw(); return; }
+      loginSentAt = Date.now(); sent = true; code = ''; draw();
     }
-  });
+    async function verify(){
+      if(busy) return; // a code works once: a second tap would burn it
+      err = null; busy = 'verify'; draw();
+      const { error } = await sb.auth.verifyOtp({ email: normEmail(state.personalEmail), token: code, type: 'email' });
+      busy = '';
+      if(error){ err = friendly(error); draw(); return; }
+      state.personalVerified = true; state.personalEmail = normEmail(state.personalEmail);
+      state.passwordSet = await hasPassword();
+      draw();
+      renderAuthBar();
+    }
+    draw();
+  };
 
-  document.querySelector('[data-next="4"]').addEventListener('click', () => {
-    state.referrals = Array.from(refRows.querySelectorAll('.ref-row')).map(row => ({
-      name: row.querySelector('.ref-name').value.trim(),
-      email: row.querySelector('.ref-email').value.trim(),
-      phone: row.querySelector('.ref-phone').value.trim()
-    })).filter(r => r.name || r.email || r.phone);
+  async function hasPassword(){ const { data } = await sb.rpc('has_password'); return data === true; }
 
-    buildReview();
-    goToStep(4);
-  });
-
-  function buildReview(){
-    const list = document.getElementById('reviewList');
-    const rows = [
-      ['Name', state.fullName],
-      ['Phone', state.phone],
-      ['Personal email', state.personalEmail],
-      ['Work email', `${state.workEmail} ${state.workVerified ? '(verified)' : ''}`],
-      ['LinkedIn', state.linkedin],
-      ['City', state.city],
-      ['Referrals', state.referrals.length ? `${state.referrals.length} added` : 'None']
-    ];
-    list.innerHTML = rows.map(([k,v]) => `
-      <div class="review-row"><span class="k">${k}</span><span class="v">${v}</span></div>
-    `).join('');
+  // password form shared by step 2 and "forgot password"
+  function passwordForm(label, onDone){
+    let pw = '', again = '', err = null, busy = false;
+    const wrap = h('div');
+    const draw = () => {
+      const c = pwChecks(pw), same = pw === again;
+      const p1 = input('pw1', {type:'password', autocomplete:'new-password', value: pw, on:{input:(ev) => { pw = ev.target.value; refresh(); }}});
+      const p2 = input('pw2', {type:'password', autocomplete:'new-password', value: again, on:{input:(ev) => { again = ev.target.value; refresh(); }, keydown:(ev) => { if(ev.key === 'Enter'){ ev.preventDefault(); save(); } }}});
+      const checks = h('div', {class:'pw-checks'}, h('div', {class: c.length ? 'on' : ''}, (c.length ? '✓' : '○') + '  At least 8 characters'), h('div', {class: c.mixed ? 'on' : ''}, (c.mixed ? '✓' : '○') + '  A number or symbol is a good idea'));
+      const sb2 = h('button', {type:'button', class:'btn btn-block', on:{click: save}, disabled: !c.length || !same || busy}, busy ? 'Saving…' : label);
+      put(wrap, field('pw1', 'Password', p1), checks, field('pw2', 'Confirm password', p2, null, again && !same ? "Those two don't match." : null), err ? h('div', {class:'notice error', role:'alert'}, err) : null, sb2);
+    };
+    // redraw the checks and button without losing focus in the inputs
+    function refresh(){
+      const c = pwChecks(pw), same = pw === again;
+      const rows = wrap.querySelectorAll('.pw-checks div');
+      rows[0].className = c.length ? 'on' : ''; rows[0].textContent = (c.length ? '✓' : '○') + '  At least 8 characters';
+      rows[1].className = c.mixed ? 'on' : ''; rows[1].textContent = (c.mixed ? '✓' : '○') + '  A number or symbol is a good idea';
+      wrap.querySelector('button.btn-block').disabled = !c.length || !same || busy;
+      const f2 = wrap.querySelectorAll('.field')[1]; f2.classList.toggle('invalid', !!again && !same);
+      let m = f2.querySelector('.err'); if(again && !same){ if(!m){ m = h('div', {class:'err', role:'alert'}); f2.append(m); } m.textContent = "Those two don't match."; } else if(m) m.remove();
+    }
+    async function save(){
+      const c = pwChecks(pw); if(busy || !c.length || pw !== again) return;
+      busy = true; err = null; draw();
+      const { error } = await sb.auth.updateUser({ password: pw });
+      busy = false;
+      if(error){ err = pwError(error); draw(); return; }
+      await onDone();
+    }
+    draw();
+    return wrap;
   }
 
-  document.querySelectorAll('[data-back]').forEach(btn => {
-    btn.addEventListener('click', () => goToStep(Number(btn.dataset.back)));
-  });
-
-  // ---- SUBMIT ----
-  document.getElementById('applyForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    const submitErr = document.getElementById('submitErr');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting…';
-    submitErr.style.display = 'none';
-
-    const applicantId = crypto.randomUUID();
-    const referralCode = applicantId.slice(0,8).toUpperCase(); // application ID / shareable referral code
-    const personalEmail = state.personalEmail.toLowerCase();
-    const workEmail = state.workEmail.toLowerCase();
-
-    // last-moment re-check, then resolve who referred this applicant (if anyone)
-    const dups = await checkDuplicates({phone: state.phone, personalEmail, workEmail});
-    const dupKey = dups && Object.keys(DUP_MSGS).find(k => dups[k]);
-    if(dupKey){
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit application';
-      submitErr.style.display = 'block';
-      submitErr.textContent = DUP_MSGS[dupKey];
-      return;
+  // ---------------------------------------------------------------- step 3: work email
+  steps[3] = () => {
+    let sent = false, busy = '', err = null, codeErr = null, code = '', sentAt = 0;
+    const draw = () => {
+      const we = input('workEmail', {type:'email', autocomplete:'email', placeholder:'you@company.com', value: state.workEmail, disabled: state.workVerified,
+        on:{input:(ev) => { state.workEmail = ev.target.value; state.workVerified = false; if(sent){ sent = false; draw(); } }}});
+      const kids = [h('h3', {class:'flow-title'}, "Let's make it official."),
+        h('p', {class:'flow-body'}, "Use your work or business email. We verify every member this way, and personal inboxes like Gmail don't pass. You won't log in with it."),
+        field('workEmail', 'Work email', we, null, err, state.workVerified ? '✓ Verified' : null)];
+      if(!sent && !state.workVerified) kids.push(btn(busy === 'send' ? 'Sending…' : 'Send code', 'btn btn-block', sendCode, {disabled: busy === 'send'}));
+      if(sent && !state.workVerified){
+        const ci = input('wcode', {type:'text', class:'code-input', inputmode:'numeric', maxlength:'6', autocomplete:'one-time-code', value: code, on:{input:(ev) => { code = ev.target.value.replace(/\D/g, '').slice(0, 6); ev.target.value = code; vb.disabled = !isOtp(code) || busy === 'verify'; }, keydown:(ev) => { if(ev.key === 'Enter'){ ev.preventDefault(); verify(); } }}});
+        const vb = btn(busy === 'verify' ? 'Verifying…' : 'Verify', 'btn', verify, {disabled: !isOtp(code) || busy === 'verify'});
+        kids.push(h('div', {class:'notice'}, "We've sent a 6-digit code to ", h('strong', null, state.workEmail), '. Check your inbox and spam folder.'),
+          field('wcode', 'Verification code', ci, null, codeErr),
+          h('div', {class:'nav-row', style:'margin-top:8px'}, vb, btn('Resend', 'btn-ghost', sendCode, {disabled: busy === 'send'})));
+      }
+      if(state.workVerified) kids.push(h('div', {class:'notice'}, '✓ Work email verified'));
+      kids.push(navRow(backBtn(2), btn('Continue', 'btn', () => showStep(4), {disabled: !state.workVerified})));
+      put(panel, kids);
+    };
+    async function sendCode(){
+      err = null;
+      const w = state.workEmail;
+      if(!isEmail(w)) { err = 'Enter a valid email address.'; draw(); return; }
+      if(isPersonalEmail(w)) { err = 'That looks like a personal inbox. Use your work or business email.'; draw(); return; }
+      if(normEmail(w) === normEmail(state.personalEmail)) { err = 'Your work email has to be different from your personal one.'; draw(); return; }
+      const wait = 60 - Math.floor((Date.now() - sentAt) / 1000);
+      if(sent && wait > 0){ codeErr = `Please wait ${wait} seconds before asking for another code.`; draw(); return; }
+      busy = 'send'; draw();
+      try{
+        const d = await checkDuplicates({workEmail: w});
+        if(d.work_email){ err = 'This work email has already applied. One application per person.'; busy = ''; draw(); return; }
+        const { error } = await sbWork.auth.signInWithOtp({ email: normEmail(w), options: { shouldCreateUser: true } });
+        if(error) throw error;
+        state.workEmail = normEmail(w); state.workVerified = false; sent = true; sentAt = Date.now(); code = ''; codeErr = null;
+      }catch(x){ err = friendly(x); }
+      busy = ''; draw();
     }
-
-    let referredById = null;
-    if(state.referredByCode){
-      const { data: refId } = await sb.rpc('resolve_referral_code', { p_code: state.referredByCode });
-      if(refId) referredById = refId;
+    async function verify(){
+      if(busy) return;
+      codeErr = null; busy = 'verify'; draw();
+      const { error } = await sbWork.auth.verifyOtp({ email: state.workEmail, token: code, type: 'email' });
+      busy = '';
+      if(error){ codeErr = friendly(error); draw(); return; }
+      await sbWork.auth.signOut({ scope: 'local' }); // discard that session; only the proof matters
+      state.workVerified = true; draw();
     }
+    draw();
+  };
 
-    const { error: insertErr } = await sb.from('applicants').insert({
-      id: applicantId,
-      full_name: state.fullName,
-      phone: state.phone,
-      personal_email: personalEmail,
-      work_email: workEmail,
-      work_email_verified: state.workVerified,
-      linkedin_url: state.linkedin,
-      city: state.city,
-      referred_by_id: referredById
-    });
+  // ---------------------------------------------------------------- step 4: vouch
+  steps[4] = () => {
+    let name = '', contact = '', err = null;
+    const draw = () => {
+      const refI = input('refCode', {type:'text', maxlength:'8', autocapitalize:'characters', value: state.referredByCode, class:'code-input', style:'letter-spacing:0.2em; font-size:1.1rem; text-align:left',
+        on:{input:(ev) => { state.referredByCode = appCode(ev.target.value); ev.target.value = state.referredByCode; }}});
+      const nm = input('vName', {type:'text', value: name, on:{input:(ev) => { name = ev.target.value; }}});
+      const ct = input('vContact', {type:'text', value: contact, on:{input:(ev) => { contact = ev.target.value; }}});
+      put(panel, 
+        h('h3', {class:'flow-title'}, 'Know someone who belongs?'),
+        h('p', {class:'flow-body'}, "Vouching fast-tracks your application. Vouching for someone who embarrasses us fast-tracks nothing. Entirely optional."),
+        field('refCode', 'Were you referred? Enter their code', refI, null, state.referredByCode && state.referredByCode.length !== 8 ? 'Codes are 8 characters.' : null),
+        h('p', {class:'flow-body', style:'margin:26px 0 10px; font-weight:500'}, "People you're vouching for"),
+        state.vouches.map((v, i) => h('div', {class:'vouch-item'}, h('div', null, h('div', null, v.name), h('div', {class:'sub'}, v.email || v.phone)), btn('Remove', 'linklike', () => { state.vouches.splice(i, 1); draw(); }))),
+        field('vName', 'Their name', nm), field('vContact', 'Their email or mobile', ct, null, err),
+        btn('Add', 'btn-ghost', () => {
+          const n = name.trim(); if(!n){ err = 'Add their name.'; draw(); return; }
+          const email = isEmail(contact) ? normEmail(contact) : null;
+          const phone = !email && normPhone(contact) ? normPhone(contact) : null;
+          if(!email && !phone){ err = 'Add a valid email or mobile number for them.'; draw(); return; }
+          state.vouches.push({ name: n, email, phone }); name = ''; contact = ''; err = null; draw();
+        }),
+        navRow(backBtn(3), btn('Continue', 'btn', () => showStep(5))));
+    };
+    draw();
+  };
 
-    if(insertErr){
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit application';
-      submitErr.style.display = 'block';
-      // 23505 = unique violation (race with another signup); message names the index
-      const m = insertErr.message || '';
-      submitErr.textContent = insertErr.code === '23505'
-        ? (/phone/.test(m) ? DUP_MSGS.phone : /personal_email/.test(m) ? DUP_MSGS.personal_email : DUP_MSGS.work_email)
-        : `Something went wrong: ${insertErr.message}`;
-      return;
+  // ---------------------------------------------------------------- step 5: review + submit
+  steps[5] = () => {
+    let busy = false, err = null;
+    const p = normPhone(state.phone) || state.phone;
+    const rowsData = [['Name', state.fullName.trim()], ['Phone', `${p.slice(0,5)} ${p.slice(5)}`], ['Login email', state.personalEmail], ['Work email', state.workEmail],
+      ['LinkedIn', linkedInHandle(state.linkedin) ? `linkedin.com/in/${linkedInHandle(state.linkedin)}` : state.linkedin], ['City', cityValue()]];
+    if(state.referredByCode) rowsData.push(['Referral code', state.referredByCode]);
+    if(state.vouches.length) rowsData.push(['Vouching for', `${state.vouches.length} ${state.vouches.length === 1 ? 'person' : 'people'}`]);
+    const draw = () => put(panel, 
+      h('h3', {class:'flow-title'}, 'Last look.'), h('p', {class:'flow-body'}, "Check it's all you. You can't edit after you submit."),
+      h('div', {class:'review-list'}, rowsData.map(([k, v]) => h('div', {class:'review-row'}, h('span', {class:'k'}, k), h('span', {class:'v'}, v)))),
+      h('p', {class:'flow-body'}, "We'll tell you if you're in by email or WhatsApp. Applications are reviewed by hand, which takes a little while."),
+      err ? h('div', {class:'notice error', role:'alert'}, err) : null,
+      navRow(backBtn(4), btn(busy ? 'Submitting…' : 'Submit application', 'btn', submit, {disabled: busy})));
+    async function submit(){
+      if(busy) return;
+      busy = true; err = null; draw();
+      try{
+        let referred = null;
+        if(state.referredByCode){ const { data } = await sb.rpc('resolve_referral_code', { p_code: appCode(state.referredByCode) }); referred = data || null; }
+        const { error } = await sb.from('applicants').insert({ id: state.id, full_name: state.fullName.trim(), phone: normPhone(state.phone), personal_email: normEmail(state.personalEmail),
+          work_email: normEmail(state.workEmail), linkedin_url: state.linkedin.trim(), city: cityValue(), referred_by_id: referred });
+        if(error) throw error;
+        if(state.vouches.length) await sb.from('referrals').insert(state.vouches.map(v => ({ applicant_id: state.id, name: v.name || null, email: v.email || null, phone: v.phone || null }))); // non-fatal
+        await route();
+        return;
+      }catch(x){
+        const m = (x && x.message) || '';
+        err = x && x.code === '23505' ? (/phone/.test(m) ? 'This phone number has already applied.' : /personal_email/.test(m) ? 'This personal email has already applied.' : 'This work email has already applied.') : friendly(x);
+      }
+      busy = false; draw();
     }
+    draw();
+  };
 
-    if(state.referrals.length){
-      const referralRows = state.referrals.map(r => ({
-        applicant_id: applicantId,
-        name: r.name || null,
-        email: r.email || null,
-        phone: r.phone || null
-      }));
-      const { error: refErr } = await sb.from('referrals').insert(referralRows);
-      if(refErr) console.error('Referral insert error (non-fatal):', refErr);
-    }
-
-    let queuePosition = '-';
-    const { data: countData, error: countErr } = await sb.rpc('get_applicant_count');
-    if(!countErr && typeof countData === 'number') queuePosition = 847 + countData;
-
-    const entry = {...state, referralCode, submittedAt: new Date().toISOString()};
-    showConfirmation(entry, queuePosition);
-  });
-
-  function showConfirmation(entry, queuePosition){
-    document.getElementById('apply').style.display = 'none';
-    const confirmSection = document.getElementById('confirmSection');
-    confirmSection.style.display = 'block';
-    confirmSection.scrollIntoView({behavior:'smooth', block:'start'});
-
-    document.getElementById('queueNum').textContent =
-      typeof queuePosition === 'number' ? `#${queuePosition}` : '-';
-
-    document.getElementById('appIdCode').textContent = entry.referralCode;
-
-    const referralUrl = `${window.location.origin}${window.location.pathname}?ref=${entry.referralCode}`;
-    document.getElementById('referralLink').value = referralUrl;
-
-    const shareMessage = `I've been let into The Semi Circle - a private community that's still by invitation only. I can vouch for you: ${referralUrl}`;
-
-    document.getElementById('shareAllBtn').addEventListener('click', () => {
-      window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
-    });
-
-    document.getElementById('copyLinkBtn').addEventListener('click', () => {
-      navigator.clipboard.writeText(referralUrl);
-      const btn = document.getElementById('copyLinkBtn');
-      const original = btn.textContent;
-      btn.textContent = 'Copied';
-      setTimeout(() => { btn.textContent = 'Choose wisely'; }, 1100);
-      setTimeout(() => { btn.textContent = original; }, 2400);
-    });
-
-    const shareList = document.getElementById('shareList');
-    if(entry.referrals && entry.referrals.length){
-      shareList.innerHTML = entry.referrals.map(r => {
-        const phoneDigits = (r.phone || '').replace(/[^\d+]/g,'');
-        const personalMsg = `Hey ${r.name || ''}, I think you'd be a fit for The Semi Circle - I've vouched for you already: ${referralUrl}`;
-        const waLink = phoneDigits
-          ? `https://wa.me/${phoneDigits.replace('+','')}?text=${encodeURIComponent(personalMsg)}`
-          : `https://wa.me/?text=${encodeURIComponent(personalMsg)}`;
-        return `<div class="share-row"><span>${r.name || r.email || r.phone}</span><a href="${waLink}" target="_blank" rel="noopener">Send invite</a></div>`;
-      }).join('');
-    } else {
-      shareList.innerHTML = '';
-    }
+  // ---------------------------------------------------------------- after the form: status, log in, forgot password
+  function statusView(a, email){
+    const first = (a.full_name || '').trim().split(/\s+/)[0] || 'there';
+    const link = `${SITE}/?ref=${a.referral_code}`;
+    if(a.status === 'rejected') return [h('div', {class:'center'}, h('h3', {class:'flow-title'}, 'Not this time.'),
+      h('p', {class:'flow-body'}, `Thank you for applying, ${first}. We couldn't make room for this application. We read every one by hand, and it was not an easy call.`))];
+    if(a.status === 'accepted') return [h('div', {class:'center'}, h('h3', {class:'flow-title'}, `You're in, ${first}.`),
+      h('p', {class:'flow-body'}, `Your application was accepted. Open The Semi Circle app and log in with ${email}. You'll pick your username there.`))];
+    const copy = h('button', {type:'button', class:'btn-ghost', on:{click: async (ev) => { try{ await navigator.clipboard.writeText(link); ev.currentTarget.textContent = 'Copied'; }catch{} }}}, 'Copy link');
+    const share = h('button', {type:'button', class:'btn-ghost', on:{click: () => window.open(`https://wa.me/?text=${encodeURIComponent(`I've applied to The Semi Circle - a private community that's by invitation only. I can vouch for you: ${link}`)}`, '_blank', 'noopener')}}, 'Share on WhatsApp');
+    return [h('div', {class:'center'},
+      h('p', {class:'qpos'}, a.queue_position != null ? `#${a.queue_position}` : '·'), h('p', {class:'qlabel'}, 'YOUR PLACE IN THE QUEUE'),
+      h('h3', {class:'flow-title'}, 'Under review.'),
+      h('p', {class:'flow-body'}, `A person is reading your application, ${first}. When it's a fit, we'll email ${email} and the app will let you in. Refreshing won't make it faster. We checked.`),
+      btn('Check again', 'btn-ghost', () => route())),
+      h('div', {class:'ref-box'}, h('div', {class:'hint'}, 'Know someone who belongs? Share your code. Vouching fast-tracks them.'), h('div', {class:'code'}, a.referral_code), h('div', {class:'acts'}, copy, share))];
   }
 
-  addRefRow();
+  function loginView(msg){
+    let email = '', pw = '', err = msg || null, busy = false;
+    const draw = () => {
+      const e1 = input('lemail', {type:'email', autocomplete:'username', value: email, on:{input:(ev) => { email = ev.target.value; }}});
+      const p1 = input('lpw', {type:'password', autocomplete:'current-password', value: pw, on:{input:(ev) => { pw = ev.target.value; }, keydown:(ev) => { if(ev.key === 'Enter'){ ev.preventDefault(); go(); } }}});
+      showPlain(() => [h('h3', {class:'flow-title'}, 'Welcome back.'), h('p', {class:'flow-body'}, 'Log in with your personal email to see where your application stands.'),
+        field('lemail', 'Personal email', e1), field('lpw', 'Password', p1), err ? h('div', {class:'notice error', role:'alert'}, err) : null,
+        btn(busy ? 'Logging in…' : 'Log in', 'btn btn-block', go, {disabled: busy}),
+        h('div', {class:'nav-row'}, btn('Forgot, or haven\'t set a password?', 'linklike', () => forgotView()), btn('New here? Request an invitation', 'linklike', () => { showStep(state.step || 1); }))]);
+    };
+    async function go(){
+      if(busy) return; busy = true; err = null; draw();
+      const { error } = await sb.auth.signInWithPassword({ email: normEmail(email), password: pw });
+      busy = false;
+      if(error){ err = friendly(error); draw(); return; }
+      await route();
+    }
+    draw();
+  }
+
+  function forgotView(){
+    let email = '', code = '', sent = false, busy = '', err = null, verified = false, sentAt = 0;
+    const draw = () => {
+      const kids = [h('h3', {class:'flow-title'}, 'Set or reset your password.'), h('p', {class:'flow-body'}, "We'll email a 6-digit code to your personal email. Use the email you applied with.")];
+      const e1 = input('femail', {type:'email', value: email, disabled: sent, on:{input:(ev) => { email = ev.target.value; }}});
+      kids.push(field('femail', 'Personal email', e1));
+      if(!sent) kids.push(err ? h('div', {class:'notice error', role:'alert'}, err) : null, btn(busy === 'send' ? 'Sending…' : 'Send code', 'btn btn-block', sendCode, {disabled: busy === 'send'}));
+      if(sent && !verified){
+        const ci = input('fcode', {type:'text', class:'code-input', inputmode:'numeric', maxlength:'6', autocomplete:'one-time-code', value: code, on:{input:(ev) => { code = ev.target.value.replace(/\D/g, '').slice(0, 6); ev.target.value = code; vb.disabled = !isOtp(code) || busy === 'verify'; }, keydown:(ev) => { if(ev.key === 'Enter'){ ev.preventDefault(); verify(); } }}});
+        const vb = btn(busy === 'verify' ? 'Verifying…' : 'Verify', 'btn', verify, {disabled: !isOtp(code) || busy === 'verify'});
+        kids.push(h('div', {class:'notice'}, "We've sent a 6-digit code to ", h('strong', null, normEmail(email)), '.'), field('fcode', 'Verification code', ci, null, err),
+          h('div', {class:'nav-row', style:'margin-top:8px'}, vb, btn('Resend', 'btn-ghost', sendCode, {disabled: busy === 'send'})));
+      }
+      if(verified) kids.push(passwordForm('Save password and continue', async () => { await route(); }));
+      if(!verified) kids.push(h('div', {class:'nav-row'}, btn('Back to log in', 'linklike', () => loginView())));
+      showPlain(() => kids);
+    };
+    async function sendCode(){
+      const wait = 60 - Math.floor((Date.now() - sentAt) / 1000);
+      if(sent && wait > 0){ err = `Please wait ${wait} seconds before asking for another code.`; draw(); return; }
+      if(!isEmail(email)){ err = 'Enter a valid email address.'; draw(); return; }
+      err = null; busy = 'send'; draw();
+      const { error } = await sb.auth.signInWithOtp({ email: normEmail(email), options: { shouldCreateUser: false } });
+      busy = '';
+      if(error){ err = friendly(error); draw(); return; }
+      sent = true; sentAt = Date.now(); code = ''; draw();
+    }
+    async function verify(){
+      if(busy) return; err = null; busy = 'verify'; draw();
+      const { error } = await sb.auth.verifyOtp({ email: normEmail(email), token: code, type: 'email' });
+      busy = '';
+      if(error){ err = friendly(error); draw(); return; }
+      verified = true; draw();
+    }
+    draw();
+  }
+
+  function renderAuthBar(email){
+    authBar.replaceChildren();
+    if(email) authBar.append(h('span', {class:'who'}, email), btn('Log out', 'linklike', async () => { await sb.auth.signOut(); Object.assign(state, {step:1, personalVerified:false, passwordSet:false, workVerified:false, id: crypto.randomUUID()}); await route(); }));
+    else authBar.append(btn('Already applied? Log in', 'linklike', () => loginView()));
+  }
+
+  // Decide what to show: the form (not signed in, or signed in with no application yet), the status, or "open the app".
+  async function route(){
+    const { data: { session } } = await sb.auth.getSession();
+    renderAuthBar(session ? session.user.email : null);
+    if(!session){ showStep(state.step || 1); return; }
+    const memberRow = await sb.from('members').select('id').eq('id', session.user.id).maybeSingle();
+    if(memberRow.data){
+      showPlain(() => [h('div', {class:'center'}, h('h3', {class:'flow-title'}, "You're already a member."), h('p', {class:'flow-body'}, `Open The Semi Circle app and log in with ${session.user.email}.`))]);
+      return;
+    }
+    const { data: apps } = await sb.rpc('my_application');
+    if(apps && apps[0]){ showPlain(() => statusView(apps[0], session.user.email)); return; }
+    // signed in but nothing submitted yet: carry on with the form, with the login already done
+    state.personalVerified = true; state.personalEmail = session.user.email;
+    state.passwordSet = await hasPassword();
+    showStep(state.step > 1 ? state.step : 1);
+  }
+
+  document.getElementById('heroApplyBtn').addEventListener('click', () => document.getElementById('apply').scrollIntoView({behavior:'smooth', block:'start'}));
+  updateCard();
+  route();
 })();
 </script>
 
