@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { ChipRow } from '@/components/ChipRow';
 import { Icon } from '@/components/Icon';
 import { Buckets } from '@/components/Buckets';
-import { ArchBadge, FilterBar, LetterBadge, RingBadge, Row, SectionLabel, Segmented, Sheet, State, TabHeader } from '@/components/lists';
+import { ArchBadge, Chip, FilterBar, LetterBadge, RingBadge, Row, SectionLabel, Segmented, Sheet, State, TabHeader } from '@/components/lists';
 import { Body, Button, Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api } from '@/lib/auth';
@@ -23,6 +24,7 @@ export default function Channels() {
   const [filters, setFilters] = useState<Filters>({});
   const [busy, setBusy] = useState<string | null>(null);
   const [browse, setBrowse] = useState(false);
+  const [cat, setCat] = useState<number | null>(null);
   const [actionErr, setActionErr] = useState<string | null>(null);
 
   const { data, error, loading, refreshing, pull, reload } = useLoad(async () => {
@@ -41,6 +43,8 @@ export default function Channels() {
   const publicAll = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'public'), [data]);
   const publicShown = useMemo(() => (data ? bucket(data.groups, applyFilters(publicAll, filters, data.me).sort((a, b) => (a.interest_name ?? '').localeCompare(b.interest_name ?? '') || b.member_count - a.member_count), (c) => c.interest_id) : []), [data, publicAll, filters]);
   const lobbyShown = useMemo(() => (data ? bucket(data.groups, lobby, (c) => c.interest_id) : []), [data, lobby]);
+  const browseBuckets = useMemo(() => (data ? bucket(data.groups, data.channels.filter((c) => c.kind === 'lobby'), (c) => c.interest_id) : []), [data]);
+  const browseSel = browseBuckets.find((b) => b.group.id === cat) ?? browseBuckets[0];
   const mine = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'booking' && c.is_member)
     .sort((a, b) => (data!.previews[b.id]?.last_at ?? b.created_at).localeCompare(data!.previews[a.id]?.last_at ?? a.created_at)), [data]);
 
@@ -111,17 +115,15 @@ export default function Channels() {
       </>) : null}
 
       <Sheet visible={browse} onClose={() => setBrowse(false)} title="Lobbies">
-        <ScrollView style={{ flexGrow: 0, flexShrink: 1 }} contentContainerStyle={{ paddingBottom: 12 }} showsVerticalScrollIndicator nestedScrollEnabled>
-          {data ? bucket(data.groups, data.channels.filter((c) => c.kind === 'lobby'), (c) => c.interest_id).map((b) => (
-            <View key={b.group.id}>
-              <SectionLabel>{b.group.name}</SectionLabel>
-              {b.items.map((c) => (
-                <Row key={c.id} left={<LetterBadge name={c.name} activity={c.interest_name} size={44} />} title={c.name}
-                  right={<Button label={c.is_member ? 'Leave' : 'Join'} variant={c.is_member ? 'secondary' : 'primary'} loading={busy === c.id} onPress={() => act(c.id, () => (c.is_member ? api.leaveChannel(c.id) : api.joinChannel(c.id)))} style={{ height: 38, paddingHorizontal: 16 }} />} />
-              ))}
-            </View>
-          )) : null}
-        </ScrollView>
+        {browseBuckets.length ? (<>
+          <ChipRow>{browseBuckets.map((b) => <Chip key={b.group.id} label={b.group.name} on={b.group.id === browseSel?.group.id} onPress={() => setCat(b.group.id)} />)}</ChipRow>
+          <ScrollView style={{ flexGrow: 0, flexShrink: 1, marginTop: 8 }} contentContainerStyle={{ paddingBottom: 12 }} showsVerticalScrollIndicator nestedScrollEnabled>
+            {browseSel?.items.map((c) => (
+              <Row key={c.id} left={<LetterBadge name={c.name} activity={c.interest_name} size={44} />} title={c.name}
+                right={<Button label={c.is_member ? 'Leave' : 'Join'} variant={c.is_member ? 'secondary' : 'primary'} loading={busy === c.id} onPress={() => act(c.id, () => (c.is_member ? api.leaveChannel(c.id) : api.joinChannel(c.id)))} style={{ height: 38, paddingHorizontal: 16 }} />} />
+            ))}
+          </ScrollView>
+        </>) : null}
       </Sheet>
     </Screen>
   );
