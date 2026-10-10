@@ -62,7 +62,7 @@ export default function Channels() {
         {lobbyShown.map((b) => (
           <Collapsible key={b.group.id} title={b.group.name} count={b.items.length}>
             {b.items.map((c) => (
-              <Row key={c.id} left={<RingBadge name={c.name} unread={isFresh(data.previews[c.id]?.last_at)} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
+              <Row key={c.id} left={<RingBadge name={c.name} activity={c.interest_name} unread={isFresh(data.previews[c.id]?.last_at)} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
             ))}
           </Collapsible>
         ))}
@@ -84,7 +84,7 @@ export default function Channels() {
             {b.items.map((c) => {
               const why = c.is_member ? null : channelFit(c, data.me);
               return (
-                <Row key={c.id} left={<ArchBadge name={c.name} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
+                <Row key={c.id} left={<ArchBadge name={c.name} activity={c.interest_name} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
                   right={c.is_member ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.sage }}>Joined</Text>
                     : why ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.faint, maxWidth: 70, textAlign: 'center' }}>Not for you</Text>
                     : <Button label="Join" variant="secondary" loading={busy === c.id} onPress={() => act(c.id, () => api.joinChannel(c.id))} style={{ height: 40, paddingHorizontal: 16 }} />} />
@@ -100,7 +100,7 @@ export default function Channels() {
         {mine.map((c) => {
           const ends = endsIn(data.expiry[c.id] ?? null);
           return (
-            <Row key={c.id} left={<ArchBadge name={c.name} />} title={c.name} subtitle={preview(c.id) ?? 'Booking chat'}
+            <Row key={c.id} left={<ArchBadge name={c.name} activity={c.interest_name} />} title={c.name} subtitle={preview(c.id) ?? 'Booking chat'}
               meta={ends ? ends.toUpperCase() : data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} tag={ends} onPress={() => open(c.id)} />
           );
         })}

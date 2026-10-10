@@ -249,3 +249,9 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - Signature shape: the half-circle. Photos sit in arch frames, channel avatars are arch-topped or carry a half-ring (yellow when something was posted in the last day), the active tab has a yellow half-circle marker.
 - Motion: content fades up in sequence, the welcome rings draw themselves, the Lobby/Public/Booking switch slides, poll bars and the reliability bar fill, buttons shrink slightly when pressed. All of it is switched off when the phone has "reduce motion" on.
 - Shared pieces live in `src/theme.ts`, `src/components/ui.tsx`, `motion.tsx`, `Arch.tsx`, `Pill.tsx`, `lists.tsx`. The design canvas ("New look" page) is the reference.
+
+## Finding people and inviting them
+- Find people (Messages search button, Friends screen): search all active members by name or username (2+ letters; with fewer, your friends show). Tap a result to open the profile (add friend, message, block) or press Message. Blocked members never appear.
+- Inviting to a public channel: any member of the channel can invite any active member from channel settings, "Invite people". The invitee gets an Activity notification that opens the channel; they still join under the channel's own rules. Rules: one invite per person per channel per day, cap `channel.max_invites_per_day` (30) per member per day, no invites across a block.
+- Groups (private) are unchanged: admins add friends directly.
+- Every channel tied to an activity shows that activity's clipart (51 drawings, `activityIcons.ts`) instead of a letter; channels without an activity keep the letter.

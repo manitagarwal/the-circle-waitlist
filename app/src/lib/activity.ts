@@ -3,7 +3,7 @@ import { clock } from './format.ts';
 
 export type ActivityView = {
   title: string; body: string | null; from?: string; image?: string | null; actions?: 'friend'; fromId?: string;
-  go?: { to: 'channels' | 'bookings' | 'messages' | 'booking' | 'events' | 'member'; id?: string; tab?: string };
+  go?: { to: 'channels' | 'bookings' | 'messages' | 'channel' | 'booking' | 'events' | 'member'; id?: string; tab?: string };
 };
 
 const MODERATION: Record<string, string> = {
@@ -35,7 +35,9 @@ export function describe(n: NotificationRow): ActivityView {
     case 'group_added':
       return { title: `${p.by_username} added you to ${p.channel_name}.`, body: null, go: { to: 'messages', tab: 'groups' } };
     case 'channel_invite':
-      return { title: `You've been invited to ${p.channel_name}.`, body: "It's in Messages, under Groups.", go: { to: 'channels' } };
+      return p.inviter_username
+        ? { title: `${p.inviter_username} invited you to ${p.channel_name}.`, body: 'Tap to take a look and join.', go: { to: 'channel', id: p.channel_id } }
+        : { title: `You've been invited to ${p.channel_name}.`, body: "It's in Messages, under Groups.", go: { to: 'channels' } };
     case 'broadcast':
       return { title: p.title ?? 'Announcement', body: p.body ?? null, from: 'The Semi Circle', image: p.image_path ?? null };
     case 'moderation_notice':

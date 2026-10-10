@@ -130,7 +130,7 @@ export default function Chat() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <Bar title={channel?.name ?? 'Channel'} subtitle={subtitle} left={channel ? <ArchBadge name={channel.name} size={36} /> : undefined}
+      <Bar title={channel?.name ?? 'Channel'} subtitle={subtitle} left={channel ? <ArchBadge name={channel.name} activity={channel.interest_name} size={36} /> : undefined}
         onTitlePress={channel && channel.kind !== 'lobby' ? () => r.push({ pathname: '/channel/settings/[id]', params: { id } }) : undefined} />
       {loading || error || !channel ? <View style={{ paddingHorizontal: 20 }}><State loading={loading} error={error ?? (!loading && !channel ? "That channel isn't available." : null)} onRetry={reload} /></View> : (
         <FlatList inverted data={items} keyExtractor={(i) => (i.kind === 'msg' ? i.m.id : i.p.id)} renderItem={renderItem} style={{ flex: 1 }}

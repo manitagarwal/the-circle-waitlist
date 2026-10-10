@@ -33,3 +33,9 @@ test('an announcement can carry a picture, and a friend request opens the sender
   assert.deepEqual(f.go, { to: 'member', id: 'u1' });
   assert.equal(f.actions, 'friend');
 });
+
+test('a public channel invite names the inviter and opens the channel', () => {
+  const v = describe(n('channel_invite', { channel_name: 'Poker', channel_id: 'c1', inviter_username: 'asha' }));
+  assert.match(v.title, /asha invited you to Poker/);
+  assert.deepEqual(v.go, { to: 'channel', id: 'c1' });
+});

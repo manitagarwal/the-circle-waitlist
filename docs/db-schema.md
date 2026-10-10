@@ -111,3 +111,6 @@ Scheduled jobs (pg_cron): every 10 min complete finished bookings and delete exp
 - `notifications.send_push`, `notifications.pushed_at` (set once the alert has been sent or skipped). `messages.image_path` (lobby posts by admins). Table `announcements` (history of admin sends; admin read only). Private bucket `announcement-images` (admins write, active members read).
 - Admin functions: `admin_send_notification(title, body, image_path, interest_id, cities, send_push)`, `admin_post_lobby_message(body, channels, image_path)`, `admin_lobbies()`. `push_secret_ok(text)` (service role only) checks the vault secret `push_secret`.
 - Cron job `semicircle-push` (every minute) posts to the `push-dispatch` edge function with that secret, through `pg_net`.
+
+## invite_to_public_channel(p_channel, p_invitee)
+Security definer. Caller must be in the public channel; invitee must be an active, onboarded member, not already in it, not blocked either way. Inserts a `channel_invite` notification (payload: channel_id, channel_name, inviter_id, inviter_username). Idempotent per inviter/invitee/channel per day; rate rule `channel.max_invites_per_day` = 30.

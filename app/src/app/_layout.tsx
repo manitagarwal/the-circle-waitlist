@@ -70,6 +70,7 @@ function Routes() {
         <Stack.Screen name="dm/[id]" />
         <Stack.Screen name="member/[id]" />
         <Stack.Screen name="friends" />
+        <Stack.Screen name="people" />
         <Stack.Screen name="event/[id]" />
         <Stack.Screen name="booking/[id]" />
         <Stack.Screen name="booking/new" />

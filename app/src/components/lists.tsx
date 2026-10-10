@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Easing, Modal, Pressable, ScrollView, Text, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Path, SvgXml } from 'react-native-svg';
+import { activityIcon } from '@/lib/activityIcons';
 import { colors, fonts, radius } from '@/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from './ui';
@@ -50,32 +51,34 @@ export const SectionLabel = ({ children }: { children: React.ReactNode }) => (
 );
 
 /** A round badge with the first letter, used for channels. */
-export function LetterBadge({ name, size = 44 }: { name: string; size?: number }) {
+export function LetterBadge({ name, size = 44, activity }: { name: string; size?: number; activity?: string | null }) {
+  const icon = activityIcon(activity);
   return (
     <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontFamily: fonts.display, fontSize: size * 0.43, color: colors.ink }}>{(name[0] ?? '?').toUpperCase()}</Text>
+      {icon ? <SvgXml xml={icon} width={size * 0.64} height={size * 0.64} /> : <Text style={{ fontFamily: fonts.display, fontSize: size * 0.43, color: colors.ink }}>{(name[0] ?? '?').toUpperCase()}</Text>}
     </View>
   );
 }
 
 /** The signature shape: a half-circle top on a flat base. */
-export function ArchBadge({ name, size = 52 }: { name: string; size?: number }) {
+export function ArchBadge({ name, size = 52, activity }: { name: string; size?: number; activity?: string | null }) {
+  const icon = activityIcon(activity);
   return (
     <View style={{ width: size, height: size, borderTopLeftRadius: size / 2, borderTopRightRadius: size / 2, backgroundColor: colors.lineStrong, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontFamily: fonts.display, fontSize: size * 0.4, color: colors.ink }}>{(name[0] ?? '?').toUpperCase()}</Text>
+      {icon ? <SvgXml xml={icon} width={size * 0.62} height={size * 0.62} style={{ marginTop: size * 0.06 }} /> : <Text style={{ fontFamily: fonts.display, fontSize: size * 0.4, color: colors.ink }}>{(name[0] ?? '?').toUpperCase()}</Text>}
     </View>
   );
 }
 
 /** A letter avatar with a half-ring over the top: yellow when there is something new. */
-export function RingBadge({ name, unread, size = 56 }: { name: string; unread?: boolean; size?: number }) {
+export function RingBadge({ name, unread, size = 56, activity }: { name: string; unread?: boolean; size?: number; activity?: string | null }) {
   const r = size / 2 - 3;
   return (
     <View style={{ width: size, height: size }}>
       <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none" style={{ position: 'absolute' }}>
         <Path d={`M3 ${size / 2}A${r} ${r} 0 0 1 ${size - 3} ${size / 2}`} stroke={unread ? colors.gold : colors.lineStrong} strokeWidth={3.5} strokeLinecap="round" />
       </Svg>
-      <View style={{ position: 'absolute', left: 6, top: 6 }}><LetterBadge name={name} size={size - 12} /></View>
+      <View style={{ position: 'absolute', left: 6, top: 6 }}><LetterBadge name={name} size={size - 12} activity={activity} /></View>
     </View>
   );
 }

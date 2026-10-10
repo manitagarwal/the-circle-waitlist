@@ -61,6 +61,7 @@ export default function ChannelSettings() {
           </>) : <Text style={{ fontFamily: fonts.title, fontSize: 24, color: colors.ink }}>{data.channel.name}</Text>}
 
           <SectionLabel>{isGroup ? `Members, ${data.entries.length} of ${GROUP_MAX_MEMBERS}` : `Members, ${data.entries.length}`}</SectionLabel>
+          {data.channel.kind === 'public' ? <Button label="Invite people" variant="secondary" onPress={() => r.push({ pathname: '/people', params: { channel: id, name: data.channel!.name } })} style={{ marginBottom: 8 }} /> : null}
           {isAdmin && isGroup ? <Button label="Add friends" variant="secondary" onPress={() => { setPicked([]); setAdding(true); }} style={{ marginBottom: 8 }} /> : null}
           {data.entries.map((e) => (
             <Row key={e.id} left={<PersonAvatar person={e} />} title={e.id === member?.id ? 'You' : e.full_name ?? e.username} subtitle={`@${e.username}`}

@@ -63,6 +63,7 @@ const MAP: Record<string, string> = {
   profile_incomplete: 'Finish your profile first.',
   poll_closed: 'That poll has closed.',
   invite_not_found: 'That invitation is no longer there.',
+  invitee_invalid: "That person can't be invited.",
   cannot_invite: "You can't invite that person.",
   // friends, messages, reports
   accept_request_first: 'Accept their request before you reply.',

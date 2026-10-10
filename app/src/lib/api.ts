@@ -22,6 +22,9 @@ export type ChannelInvite = { id: string; channel_id: string; channel_name: stri
 export type Message = { id: string; channel_id: string; sender_id: string; body: string; created_at: string; edited_at: string | null; image_path?: string | null };
 export type PollOption = { id: string; label: string; votes: number };
 export type Poll = { id: string; channel_id: string; question: string; created_at: string; closes_at: string | null; closed_at: string | null; is_open: boolean; total_votes: number; my_option_id: string | null; options: PollOption[] };
+export type FoundPerson = Person & { area: string | null };
+/** Strips characters that would break a search filter. */
+export const cleanSearch = (q: string) => q.replace(/[^\p{L}\p{N} ._-]/gu, '').trim().slice(0, 40);
 export type Person = { id: string; username: string; full_name: string | null; avatar_id: number | null; photo_path: string | null };
 export type NotificationRow = { id: string; type: string; payload: Record<string, any>; read_at: string | null; is_unread: boolean; created_at: string };
 export type RosterEntry = { member_id: string; username: string; avatar_id: number | null; photo_path: string | null; status: string; is_host: boolean };
@@ -165,6 +168,7 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       if (error) throw error;
       return data as { member_id: string; role: string }[];
     },
+    inviteToPublicChannel: (channel: string, invitee: string) => rpc<void>('invite_to_public_channel', { p_channel: channel, p_invitee: invitee }),
     friends: (me: string) => rpc<Person[]>('member_friends', { p_member: me }),
     // ---- bookings
     bookingsUpcoming: async () => {
@@ -217,6 +221,14 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       const { data, error } = await sb.from('member_profiles').select('id, username, full_name, avatar_id, photo_path').in('id', ids);
       if (error) throw error;
       return data as Person[];
+    },
+    searchMembers: async (q: string, limit = 30) => {
+      const term = cleanSearch(q);
+      if (term.length < 2) return [] as FoundPerson[];
+      const { data, error } = await sb.from('member_profiles').select('id, username, full_name, avatar_id, photo_path, area')
+        .or(`username.ilike.%${term}%,full_name.ilike.%${term}%`).limit(limit);
+      if (error) throw error;
+      return data as FoundPerson[];
     },
     // ---- messages and polls
     messages: async (channel: string, limit = 60) => {

@@ -1,11 +1,11 @@
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Bar } from '@/components/Bar';
 import { PersonAvatar } from '@/components/Avatar';
 import { Icon } from '@/components/Icon';
 import { Row, State } from '@/components/lists';
-import { colors } from '@/theme';
+import { colors, fonts } from '@/theme';
 import { api, useAuth } from '@/lib/auth';
 import { useLoad } from '@/lib/useLoad';
 
@@ -15,7 +15,7 @@ export default function Friends() {
   const { data, error, loading, reload } = useLoad(() => api.friends(member!.id));
   return (
     <View style={{ flex: 1, backgroundColor: colors.ground }}>
-      <Bar title="Friends" />
+      <Bar title="Friends" right={<Text onPress={() => r.push('/people')} style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.ink, textDecorationLine: 'underline', padding: 10 }}>Find people</Text>} />
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }}>
         <State loading={loading} error={error} onRetry={reload} empty={data && data.length === 0 ? 'No friends yet. Open someone\'s profile and tap Add friend.' : null} />
         {(data ?? []).map((f) => (
