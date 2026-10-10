@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Easing, Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Animated, Easing, Modal, PanResponder, Pressable, ScrollView, Text, View } from 'react-native';
 import Svg, { Path, SvgXml } from 'react-native-svg';
 import { useRouter } from 'expo-router';
 import { Icon } from './Icon';
@@ -207,7 +207,52 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
   );
 }
 
-export type FilterDef = { key: string; label: string; options: string[] };
+export type FilterDef = { key: string; label: string; options: string[]; slider?: { min: number; max: number; step: number; format: (n: number) => string } };
+
+/** A draggable bar: tap or drag anywhere along it to pick a value. */
+export function RangeBar({ value, min, max, step, onChange }: { value: number; min: number; max: number; step: number; onChange: (n: number) => void }) {
+  const [w, setW] = useState(0);
+  const pick = (x: number) => {
+    if (w <= 0) return;
+    const raw = min + Math.min(1, Math.max(0, x / w)) * (max - min);
+    onChange(Math.round(raw / step) * step);
+  };
+  const pan = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => true, onMoveShouldSetPanResponder: () => true, onPanResponderTerminationRequest: () => false,
+    onPanResponderGrant: (e) => pickRef.current(e.nativeEvent.locationX),
+    onPanResponderMove: (e) => pickRef.current(e.nativeEvent.locationX),
+  })).current;
+  const pickRef = useRef(pick); pickRef.current = pick;
+  const pct = ((value - min) / (max - min)) * 100;
+  return (
+    <View accessibilityRole="adjustable" accessibilityValue={{ min, max, now: value }}
+      accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+      onAccessibilityAction={(e) => onChange(Math.min(max, Math.max(min, value + (e.nativeEvent.actionName === 'increment' ? step : -step))))}
+      onLayout={(e) => setW(e.nativeEvent.layout.width)} {...pan.panHandlers} style={{ height: 44, justifyContent: 'center' }}>
+      <View pointerEvents="none" style={{ height: 6, borderRadius: 3, backgroundColor: colors.line }}>
+        <View style={{ width: `${pct}%`, height: 6, borderRadius: 3, backgroundColor: colors.ink }} />
+      </View>
+      <View pointerEvents="none" style={{ position: 'absolute', left: `${pct}%`, marginLeft: -13, width: 26, height: 26, borderRadius: 13, backgroundColor: colors.ink, borderWidth: 3, borderColor: colors.ground }} />
+    </View>
+  );
+}
+
+function SliderPane({ def, current, onApply }: { def: FilterDef; current: string | undefined; onApply: (v: string) => void }) {
+  const s = def.slider!;
+  const start = current && !Number.isNaN(Number(current.replace('+', ''))) ? Number(current.replace('+', '')) : s.min;
+  const [n, setN] = useState(start);
+  return (
+    <View style={{ paddingVertical: 8 }}>
+      <Text style={{ fontFamily: fonts.display, fontSize: 40, color: colors.ink, textAlign: 'center' }}>{s.format(n)}</Text>
+      <RangeBar value={n} min={s.min} max={s.max} step={s.step} onChange={setN} />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={{ fontFamily: fonts.body, fontSize: 12, color: colors.faint }}>{s.min}</Text>
+        <Text style={{ fontFamily: fonts.body, fontSize: 12, color: colors.faint }}>{s.max}</Text>
+      </View>
+      <Button label={`Show ${s.format(n)}`} onPress={() => onApply(s.format(n))} style={{ marginTop: 12, marginBottom: 8 }} />
+    </View>
+  );
+}
 
 /** A row of filter chips; each opens a sheet to pick one option or "Any". */
 export function FilterBar({ defs, values, onChange }: { defs: FilterDef[]; values: Record<string, string | undefined>; onChange: (key: string, value: string | undefined) => void }) {
@@ -220,6 +265,7 @@ export function FilterBar({ defs, values, onChange }: { defs: FilterDef[]; value
       </View>
       <Sheet visible={!!def} onClose={() => setOpen(null)} title={def?.label}>
         <ScrollView style={{ flexGrow: 0, flexShrink: 1 }}>
+          {def?.slider ? <SliderPane def={def} current={values[open!]} onApply={(v) => { onChange(open!, v); setOpen(null); }} /> : null}
           <Row title="Any" onPress={() => { onChange(open!, undefined); setOpen(null); }} />
           {def?.options.map((o) => <Row key={o} title={o} onPress={() => { onChange(open!, o); setOpen(null); }} right={values[open!] === o ? <Text style={{ color: colors.sage, fontFamily: fonts.bodySemi }}>✓</Text> : undefined} />)}
           {def && def.options.length === 0 ? <State empty="No options yet." /> : null}

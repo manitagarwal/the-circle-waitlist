@@ -55,5 +55,7 @@ test('the reliability filter and the hosting steps agree', async () => {
   assert.equal(scoreMatches(7, scoreLabel(7)), true);
   assert.equal(scoreMatches(7, scoreLabel(8)), false);
   assert.equal(scoreMatches(null, scoreLabel(5)), false);
+  assert.equal(scoreMatches(8, scoreLabel(7.5)), true);
+  assert.equal(scoreMatches(7, scoreLabel(7.5)), false);
   assert.deepEqual([...SCORE_STEPS].map(scoreLabel), ['5+', '6+', '7+', '8+', '9+']);
 });
