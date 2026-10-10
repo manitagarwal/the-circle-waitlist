@@ -60,7 +60,7 @@ export default function Channels() {
         {lobby.length === 0 ? <State empty="No Lobbies yet. Pick interests in Settings and they appear here." /> : null}
         <Buckets buckets={lobbyShown} render={(items) => (<>
             {items.map((c) => (
-              <Row key={c.id} left={<RingBadge name={c.name} activity={c.interest_name} unread={!!unread.byChannel[c.id]} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
+              <Row key={c.id} unread={unread.byChannel[c.id]} left={<RingBadge name={c.name} activity={c.interest_name} unread={!!unread.byChannel[c.id]} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
             ))}
         </>)} />
       </>) : null}
@@ -79,8 +79,8 @@ export default function Channels() {
             {items.map((c) => {
               const why = c.is_member ? null : channelFit(c, data.me);
               return (
-                <Row key={c.id} left={<RingBadge name={c.name} activity={c.interest_name} unread={c.is_member && !!unread.byChannel[c.id]} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
-                  right={c.is_member ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.sage }}>Joined</Text>
+                <Row key={c.id} unread={c.is_member ? unread.byChannel[c.id] : undefined} left={<RingBadge name={c.name} activity={c.interest_name} unread={c.is_member && !!unread.byChannel[c.id]} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
+                  right={c.is_member ? (unread.byChannel[c.id] ? undefined : <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted }}>Joined</Text>)
                     : why ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.faint, maxWidth: 70, textAlign: 'center' }}>Not for you</Text>
                     : <Button label="Join" variant="secondary" loading={busy === c.id} onPress={() => act(c.id, () => api.joinChannel(c.id))} style={{ height: 40, paddingHorizontal: 16 }} />} />
               );
@@ -93,7 +93,7 @@ export default function Channels() {
         {mine.map((c) => {
           const ends = endsIn(data.expiry[c.id] ?? null);
           return (
-            <Row key={c.id} left={<RingBadge name={c.name} activity={c.interest_name} unread={!!unread.byChannel[c.id]} />} title={c.name} subtitle={preview(c.id) ?? 'Booking chat'}
+            <Row key={c.id} unread={unread.byChannel[c.id]} left={<RingBadge name={c.name} activity={c.interest_name} unread={!!unread.byChannel[c.id]} />} title={c.name} subtitle={preview(c.id) ?? 'Booking chat'}
               meta={ends ? ends.toUpperCase() : data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} tag={ends} onPress={() => open(c.id)} />
           );
         })}
