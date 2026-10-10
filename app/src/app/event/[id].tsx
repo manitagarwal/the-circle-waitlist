@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Bar } from '@/components/Bar';
-import { ArchRings } from '@/components/Arch';
+import { Cover } from '@/components/Cover';
 import { PersonAvatar } from '@/components/Avatar';
 import { SectionLabel, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice } from '@/components/ui';
@@ -47,9 +47,7 @@ export default function EventDetail() {
     const why = e.my_status ? null : eventFit(e, me);
     const late = new Date(e.starts_at).getTime() - Date.now() < 3 * 3600000;
     body = (<>
-      <View style={{ width: '100%', aspectRatio: 2, borderTopLeftRadius: 999, borderTopRightRadius: 999, overflow: 'hidden', backgroundColor: colors.gold, marginBottom: 16 }}>
-        {cover ? <Image source={{ uri: cover }} style={{ width: '100%', height: '100%' }} accessibilityIgnoresInvertColors /> : <ArchRings />}
-      </View>
+      <View style={{ marginBottom: 18 }}><Cover uri={cover} activity={e.interest_name} height={220} /></View>
       <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>{[group, e.interest_name].filter(Boolean).join(' · ').toUpperCase() || 'THE SEMI CIRCLE'}</Text>
       <Text style={{ fontFamily: fonts.display, fontSize: 37, lineHeight: 41, color: colors.ink, marginTop: 6 }}>{e.title}</Text>
       {e.status === 'cancelled' ? <Notice tone="error">This event was cancelled.</Notice> : null}

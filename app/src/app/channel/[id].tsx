@@ -6,7 +6,7 @@ import { Bar } from '@/components/Bar';
 import { RemoteImage } from '@/components/RemoteImage';
 import { Fill } from '@/components/motion';
 import { Icon } from '@/components/Icon';
-import { ArchBadge, State } from '@/components/lists';
+import { ArchBadge, DayDivider, State } from '@/components/lists';
 import { Button } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api, useAuth } from '@/lib/auth';
@@ -18,21 +18,23 @@ import { ReportSheet } from '@/components/ReportSheet';
 import { useLoad } from '@/lib/useLoad';
 import { supabase } from '@/lib/supabase';
 import { Info } from '@/components/Info';
+import { SvgXml } from 'react-native-svg';
+import { activityIcon } from '@/lib/activityIcons';
 
 type Item = { kind: 'msg'; at: string; m: Message } | { kind: 'poll'; at: string; p: Poll };
 
 function PollCard({ p, onVote, busy }: { p: Poll; onVote: (optionId: string) => void; busy: boolean }) {
   return (
-    <View style={{ backgroundColor: colors.surface, borderRadius: radius.card, padding: 16, marginVertical: 6 }}>
-      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>POLL</Text>
+    <View style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.card, padding: 18, marginVertical: 8 }}>
+      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.8, color: colors.faint }}>POLL</Text>
       <Text style={{ fontFamily: fonts.title, fontSize: 22, color: colors.ink, marginTop: 4, marginBottom: 10 }}>{p.question}</Text>
       {p.options.map((o) => {
         const mine = p.my_option_id === o.id;
         const share = pct(o.votes, p.total_votes);
         return (
           <Pressable key={o.id} accessibilityRole="button" accessibilityState={{ selected: mine, disabled: !p.is_open || busy }} disabled={!p.is_open || busy} onPress={() => onVote(o.id)}
-            style={{ minHeight: 48, marginBottom: 8, borderRadius: 14, backgroundColor: colors.ground, borderWidth: 1.5, borderColor: mine ? colors.ink : 'transparent', overflow: 'hidden', justifyContent: 'center' }}>
-            <Fill pct={share} color={mine ? colors.gold : colors.lineStrong} />
+            style={{ minHeight: 48, marginBottom: 8, borderRadius: 14, backgroundColor: colors.surface, borderWidth: 1, borderColor: mine ? colors.ink : 'transparent', overflow: 'hidden', justifyContent: 'center' }}>
+            <Fill pct={share} color={colors.lineStrong} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12 }}>
               <Text style={{ fontFamily: mine ? fonts.bodySemi : fonts.body, fontSize: 15, color: colors.ink }}>{o.label}</Text>
               <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.muted }}>{share}%</Text>
@@ -88,7 +90,7 @@ export default function Chat() {
   const channel = data?.channel;
   const isLobby = channel?.kind === 'lobby';
   const canPost = !!channel?.is_member && (!isLobby || member?.role === 'admin');
-  const subtitle = channel ? (channel.kind === 'booking' ? endsIn(data!.expiry) : `${channel.member_count} ${channel.member_count === 1 ? 'member' : 'members'}. Tap for settings.`) : null;
+  const subtitle = channel ? (channel.kind === 'booking' ? endsIn(data!.expiry) : `${channel.member_count} ${channel.member_count === 1 ? 'member' : 'members'}`) : null;
 
   const send = async () => {
     const body = text.trim();
@@ -108,7 +110,7 @@ export default function Chat() {
 
   const renderItem = useCallback(({ item, index }: { item: Item; index: number }) => {
     const older = items[index + 1];
-    const label = !older || !sameDay(item.at, older.at) ? <Text style={{ alignSelf: 'center', fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.faint, marginVertical: 12 }}>{dayLabel(item.at)}</Text> : null;
+    const label = !older || !sameDay(item.at, older.at) ? <DayDivider label={dayLabel(item.at)} /> : null;
     if (item.kind === 'poll') return <View>{label}<PollCard p={item.p} busy={voting} onVote={(o) => vote(item.p, o)} /></View>;
     const m = item.m;
     const mine = m.sender_id === member?.id;
@@ -117,7 +119,7 @@ export default function Chat() {
       <View>
         {label}
         <Pressable onLongPress={() => setMenu(m)} accessibilityHint="Hold for options" style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%', marginVertical: 3 }}>
-          {!mine ? <Text accessibilityRole="link" onPress={() => !isLobby && r.push({ pathname: '/member/[id]', params: { id: m.sender_id } })} style={{ fontFamily: fonts.bodySemi, fontSize: 12, color: colors.goldText, marginBottom: 2, marginLeft: 4 }}>{who}</Text> : null}
+          {!mine ? <Text accessibilityRole="link" onPress={() => !isLobby && r.push({ pathname: '/member/[id]', params: { id: m.sender_id } })} style={{ fontFamily: fonts.bodySemi, fontSize: 12, color: colors.muted, marginBottom: 2, marginLeft: 6 }}>{who}</Text> : null}
           <View style={{ backgroundColor: mine ? colors.ink : colors.surface, paddingVertical: 10, paddingHorizontal: 14,
             borderRadius: radius.bubble, borderBottomRightRadius: mine ? 6 : radius.bubble, borderBottomLeftRadius: mine ? radius.bubble : 6 }}>
             {m.image_path ? <View style={{ width: 240, maxWidth: '100%' }}><RemoteImage path={m.image_path} height={160} label="Picture from the team" /></View> : null}
@@ -133,6 +135,10 @@ export default function Chat() {
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <Bar title={channel?.name ?? 'Channel'} subtitle={subtitle} left={channel ? <ArchBadge name={channel.name} activity={channel.interest_name} size={36} /> : undefined}
         onTitlePress={channel && channel.kind !== 'lobby' ? () => r.push({ pathname: '/channel/settings/[id]', params: { id } }) : undefined} />
+      {channel && activityIcon(channel.interest_name) ? (
+        <View pointerEvents="none" style={{ position: 'absolute', right: -70, bottom: 110, opacity: 0.05 }}>
+          <SvgXml xml={activityIcon(channel.interest_name)!} width={330} height={330} color={colors.ink} />
+        </View>) : null}
       {loading || error || !channel ? <View style={{ paddingHorizontal: 20 }}><State loading={loading} error={error ?? (!loading && !channel ? "That channel isn't available." : null)} onRetry={reload} /></View> : (
         <FlatList inverted data={items} keyExtractor={(i) => (i.kind === 'msg' ? i.m.id : i.p.id)} renderItem={renderItem} style={{ flex: 1 }}
           contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 8 }}
@@ -147,7 +153,7 @@ export default function Chat() {
       ) : channel && !canPost ? (
         <Info text={"Only the team posts here. You can vote in polls and read everything."} style={{ alignSelf: "center", marginVertical: 16, marginBottom: insets.bottom + 16 }} />
       ) : channel ? (
-        <View style={{ paddingHorizontal: 12, paddingTop: 8, paddingBottom: insets.bottom + 8, borderTopWidth: 1, borderTopColor: colors.line, backgroundColor: colors.ground }}>
+        <View style={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: insets.bottom + 10, backgroundColor: colors.ground }}>
           {editing ? (
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 4, paddingBottom: 6 }}>
               <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.ink }}>Editing message</Text>
@@ -156,9 +162,9 @@ export default function Chat() {
           ) : null}
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
             <TextInput accessibilityLabel="Message" value={text} onChangeText={setText} placeholder="Message" placeholderTextColor={colors.faint} multiline maxLength={2000}
-              style={{ flex: 1, minHeight: 48, maxHeight: 120, borderRadius: 24, backgroundColor: colors.surface, paddingHorizontal: 18, paddingTop: 13, paddingBottom: 13, fontSize: 16, fontFamily: fonts.body, color: colors.ink }} />
+              style={{ flex: 1, minHeight: 50, maxHeight: 120, borderRadius: 25, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.ground, paddingHorizontal: 18, paddingTop: 14, paddingBottom: 14, fontSize: 16, fontFamily: fonts.body, color: colors.ink }} />
             <Pressable accessibilityRole="button" accessibilityLabel="Send" disabled={!text.trim() || sending} onPress={send}
-              style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', opacity: !text.trim() || sending ? 0.35 : 1 }}>
+              style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', opacity: !text.trim() || sending ? 0.35 : 1 }}>
               <Icon name="send" color={colors.inkOn} size={20} />
             </Pressable>
           </View>

@@ -40,7 +40,7 @@ export function ArchPhoto({ uri, avatarId, size = 160 }: { uri?: string | null; 
   return (
     <View style={{ width: size, height: size, borderRadius: size / 2, alignSelf: 'center', overflow: 'hidden', backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
       {uri ? <Image source={{ uri }} style={{ width: size, height: size }} resizeMode="cover" accessibilityIgnoresInvertColors />
-        : xml ? <SvgXml xml={xml} width={size * 0.92} height={size * 0.92} /> : null}
+        : xml ? <SvgXml xml={xml} width={size} height={size} color={colors.ink} /> : null}
     </View>
   );
 }

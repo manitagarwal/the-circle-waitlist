@@ -10,7 +10,7 @@ export function Avatar({ avatarId, uri, size = 64 }: { avatarId?: number | null;
   const round = { width: size, height: size, borderRadius: size / 2, overflow: 'hidden' as const, backgroundColor: colors.line };
   if (uri) return <Image source={{ uri }} style={round} accessibilityIgnoresInvertColors />;
   const xml = avatarId ? AVATAR_SVGS[avatarId] : undefined;
-  return <View style={round}>{xml ? <SvgXml xml={xml} width={size} height={size} /> : null}</View>;
+  return <View style={round}>{xml ? <SvgXml xml={xml} width={size} height={size} color={colors.ink} /> : null}</View>;
 }
 
 /** Avatar for a person row: loads the signed photo link when they have a photo. */

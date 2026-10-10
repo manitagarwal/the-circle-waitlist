@@ -190,3 +190,14 @@ export function FilterBar({ defs, values, onChange }: { defs: FilterDef[]; value
     </>
   );
 }
+
+/** A thin rule with the day in small capitals, between chat messages from different days. */
+export function DayDivider({ label }: { label: string }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 14 }}>
+      <View style={{ flex: 1, height: 1, backgroundColor: colors.line }} />
+      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.6, textTransform: 'uppercase', color: colors.faint }}>{label}</Text>
+      <View style={{ flex: 1, height: 1, backgroundColor: colors.line }} />
+    </View>
+  );
+}

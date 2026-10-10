@@ -2,7 +2,7 @@ import React from 'react';
 import { Linking, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button, Logo, Screen } from '@/components/ui';
-import { ArchRings } from '@/components/Arch';
+import { Arcs } from '@/components/Arch';
 import { FadeUp } from '@/components/motion';
 import { colors, fonts } from '@/theme';
 import { BUILD, SITE_URL } from '@/lib/config';
@@ -18,7 +18,7 @@ export default function Welcome() {
     <Screen scroll={false}>
       <View style={{ paddingHorizontal: 4 }}>
         <FadeUp><View style={{ marginTop: 8 }}><Logo size="md" /></View></FadeUp>
-        <FadeUp delay={120} distance={50}><View style={{ marginTop: 28, alignSelf: 'center' }}><ArchRings width={w} height={Math.round(w * 0.83)} /></View></FadeUp>
+        <FadeUp delay={120} distance={50}><View style={{ marginTop: 28, alignSelf: 'center' }}><Arcs width={w} color={colors.ink} stroke={1.4} delay={300} /></View></FadeUp>
         <FadeUp delay={550}>
           <View style={{ marginTop: 28 }}>
             <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 44, lineHeight: 46, color: colors.ink }}>Most people won't get in. That's the point.</Text>
