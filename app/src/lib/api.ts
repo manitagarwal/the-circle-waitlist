@@ -12,6 +12,7 @@ export type Application = {
   queue_position: number | null; referral_code: string;
 };
 
+export type Ticket = { id: string; name: string; price_inr: number; left: number | null };
 export type ChannelRow = {
   id: string; kind: 'lobby' | 'public' | 'private' | 'booking' | 'dm'; name: string; photo_path: string | null;
   interest_id: number | null; interest_name: string | null; created_by: string | null; created_at: string;
@@ -308,6 +309,8 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     myTicket: (id: string) => rpc<string | null>('my_ticket', { p_event: id }),
     rsvp: (id: string) => rpc<'going' | 'waitlist'>('rsvp_event', { p_event: id }),
     cancelRsvp: (id: string) => rpc<void>('cancel_rsvp', { p_event: id }),
+    eventTickets: (id: string) => rpc<Ticket[]>('event_ticket_types', { p_event: id }),
+    refundPreview: (id: string) => rpc<{ paid_inr: number; percent: number; refund_inr: number }>('my_refund_preview', { p_event: id }),
     // ---- activity
     notifications: async () => {
       const { data, error } = await sb.from('my_notifications').select('*').order('created_at', { ascending: false }).limit(60);
