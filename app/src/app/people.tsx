@@ -10,7 +10,6 @@ import { colors, fonts } from '@/theme';
 import type { FoundPerson } from '@/lib/api';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
-import { Info } from '@/components/Info';
 
 /** Find members by name. With a channel it picks people to invite; without, it opens profiles and chats. */
 export default function People() {
@@ -77,7 +76,7 @@ export default function People() {
         <Text style={{ fontFamily: fonts.bodySemi, fontSize: 12, letterSpacing: 1.4, textTransform: 'uppercase', color: colors.faint, marginTop: 20, marginBottom: 4 }}>
           {typed ? 'Results' : 'Your friends'}
         </Text>
-        <State loading={searching && typed && found.length === 0} empty={typed && !searching && list.length === 0 ? 'Nobody found. Try another spelling.' : !typed && list.length === 0 ? 'Type at least two letters to search everyone in the community.' : null} />
+        <State loading={searching && typed && found.length === 0} empty={typed && !searching && list.length === 0 ? 'Nobody found. Try another spelling.' : null} />
         {list.map((p) => {
           const inside = roster.includes(p.id);
           const on = picked.includes(p.id);
@@ -98,7 +97,6 @@ export default function People() {
               onPress={inviting ? (inside ? undefined : () => toggle(p.id)) : () => r.push({ pathname: '/member/[id]', params: { id: p.id } })} />
           );
         })}
-        {!inviting ? <Info text={"Open a profile to add them as a friend. Strangers get one message until they accept."} /> : null}
         {done ? <Notice tone="plain">{done}</Notice> : null}
         {err ? <Notice tone="error">{err}</Notice> : null}
       </ScrollView>

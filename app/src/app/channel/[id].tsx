@@ -17,7 +17,6 @@ import { dayLabel, endsIn, pct, sameDay } from '@/lib/format';
 import { ReportSheet } from '@/components/ReportSheet';
 import { useLoad } from '@/lib/useLoad';
 import { supabase } from '@/lib/supabase';
-import { Info } from '@/components/Info';
 import { SvgXml } from 'react-native-svg';
 import { activityIcon } from '@/lib/activityIcons';
 
@@ -151,7 +150,7 @@ export default function Chat() {
           {data?.why ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, textAlign: 'center', marginTop: 8 }}>{data.why}</Text> : null}
         </View>
       ) : channel && !canPost ? (
-        <Info text={"Only the team posts here. You can vote in polls and read everything."} style={{ alignSelf: "center", marginVertical: 16, marginBottom: insets.bottom + 16 }} />
+        <View style={{ height: insets.bottom + 16 }} />
       ) : channel ? (
         <View style={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: insets.bottom + 10, backgroundColor: colors.ground }}>
           {editing ? (
