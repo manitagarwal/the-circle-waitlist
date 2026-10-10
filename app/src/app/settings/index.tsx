@@ -11,6 +11,7 @@ import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { NOTIFICATION_SWITCHES } from '@/lib/profile';
 import { useLoad } from '@/lib/useLoad';
+import { Info } from '@/components/Info';
 
 const Chev = () => <Icon name="chevron" size={18} color={colors.faint} />;
 
@@ -44,16 +45,16 @@ export default function Settings() {
 
           <SectionLabel>Privacy</SectionLabel>
           <Row title="Blocked members" meta={String(data.blocked)} right={<Chev />} onPress={() => r.push('/settings/blocked')} />
-          <Body style={{ fontSize: 13, marginTop: 8 }}>Profiles aren't private here. Every member sees every profile. That's what keeps this room honest.</Body>
+          <Info text={"Profiles aren't private here. Every member sees every profile. That's what keeps this room honest."} />
 
           <SectionLabel>Notifications</SectionLabel>
           {NOTIFICATION_SWITCHES.map((sw) => (
             <View key={sw.key} style={{ flexDirection: 'row', alignItems: 'center', minHeight: 56, borderBottomWidth: 1, borderBottomColor: colors.line }}>
               <Text style={{ flex: 1, fontFamily: fonts.body, fontSize: 15, color: colors.ink, paddingRight: 12 }}>{sw.label}</Text>
-              <Switch accessibilityLabel={sw.label} value={isOn(sw.categories)} onValueChange={(v) => toggle(sw.categories, v)} trackColor={{ true: colors.gold, false: colors.line }} thumbColor="#ffffff" />
+              <Switch accessibilityLabel={sw.label} value={isOn(sw.categories)} onValueChange={(v) => toggle(sw.categories, v)} trackColor={{ true: colors.ink, false: colors.lineStrong }} thumbColor={colors.ground} />
             </View>))}
           {err ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.error, marginTop: 8 }}>{err}</Text> : null}
-          <Body style={{ fontSize: 13, marginTop: 8 }}>Notices about your account, like a warning, always come through.</Body>
+          <Info text={"Notices about your account, like a warning, always come through."} />
 
           <SectionLabel>More</SectionLabel>
           <Row title="Community guidelines" right={<Chev />} onPress={() => r.push('/settings/guidelines')} />

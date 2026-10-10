@@ -72,7 +72,7 @@ DM tabs are derived: Friends = accepted friendship, Strangers = otherwise. The o
 | `reports` | id, reporter_id, reported_id, category, reason, context (booking/channel/message ids), is_safety, status (open/upheld_minor/upheld_severe/dismissed), reviewed_by, created_at, resolved_at | Safety reports go to a separate queue (`is_safety`) |
 | `moderation_actions` | id, member_id, action (warning/suspension/ban), reason, starts_at, ends_at, report_id, by_admin | Drives `members.state` |
 
-Score is a function `member_score(member_id)`, not a stored number. It applies the weights, the 30/90-day recency multipliers and the new-member default (8.0 when the member has fewer than 5 actions, or when P+N = 0).
+Score is a function `compute_member_score(member_id)`, not a stored number. See `docs/reliability.md` for the formula (migration 038a).
 
 ## 8. Functions (where the rules live)
 
@@ -111,3 +111,9 @@ Scheduled jobs (pg_cron): every 10 min complete finished bookings and delete exp
 - `notifications.send_push`, `notifications.pushed_at` (set once the alert has been sent or skipped). `messages.image_path` (lobby posts by admins). Table `announcements` (history of admin sends; admin read only). Private bucket `announcement-images` (admins write, active members read).
 - Admin functions: `admin_send_notification(title, body, image_path, interest_id, cities, send_push)`, `admin_post_lobby_message(body, channels, image_path)`, `admin_lobbies()`. `push_secret_ok(text)` (service role only) checks the vault secret `push_secret`.
 - Cron job `semicircle-push` (every minute) posts to the `push-dispatch` edge function with that secret, through `pg_net`.
+
+## invite_to_public_channel(p_channel, p_invitee)
+Security definer. Caller must be in the public channel; invitee must be an active, onboarded member, not already in it, not blocked either way. Inserts a `channel_invite` notification (payload: channel_id, channel_name, inviter_id, inviter_username). Idempotent per inviter/invitee/channel per day; rate rule `channel.max_invites_per_day` = 30.
+
+## Unread messages (migration 037a)
+`channel_members.last_read_at` (default now) is when a member last opened a chat. `mark_channel_read(channel)` sets it to now for the caller. `my_unread()` returns, per channel the caller is in (any kind, including DMs), the count of messages from others newer than `last_read_at` (deleted and blocked senders excluded).

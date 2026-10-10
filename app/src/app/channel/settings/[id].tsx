@@ -13,6 +13,7 @@ import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { GROUP_MAX_MEMBERS, spotsLeft } from '@/lib/groups';
 import { useLoad } from '@/lib/useLoad';
+import { Info } from '@/components/Info';
 
 type Entry = Person & { role: string };
 
@@ -58,9 +59,10 @@ export default function ChannelSettings() {
             <TextField label="Channel name" value={name ?? data.channel.name} onChangeText={setName} maxLength={50} />
             {name !== null && name.trim() !== data.channel.name && name.trim().length >= 3 ? (
               <Button label="Save name" variant="secondary" loading={busy} onPress={() => run(() => api.renameChannel(id, name.trim()), () => { setName(null); void reload(); })} style={{ marginTop: 12 }} />) : null}
-          </>) : <Text style={{ fontFamily: fonts.title, fontSize: 24, color: colors.ink }}>{data.channel.name}</Text>}
+          </>) : <Text style={{ fontFamily: fonts.title, fontSize: 28, color: colors.ink }}>{data.channel.name}</Text>}
 
           <SectionLabel>{isGroup ? `Members, ${data.entries.length} of ${GROUP_MAX_MEMBERS}` : `Members, ${data.entries.length}`}</SectionLabel>
+          {data.channel.kind === 'public' ? <Button label="Invite people" variant="secondary" onPress={() => r.push({ pathname: '/people', params: { channel: id, name: data.channel!.name } })} style={{ marginBottom: 8 }} /> : null}
           {isAdmin && isGroup ? <Button label="Add friends" variant="secondary" onPress={() => { setPicked([]); setAdding(true); }} style={{ marginBottom: 8 }} /> : null}
           {data.entries.map((e) => (
             <Row key={e.id} left={<PersonAvatar person={e} />} title={e.id === member?.id ? 'You' : e.full_name ?? e.username} subtitle={`@${e.username}`}
@@ -75,7 +77,7 @@ export default function ChannelSettings() {
             <Button label="Leave channel" variant="secondary" onPress={() => setConfirm('leave')} />
             {isAdmin ? <Button label="Delete channel" variant="secondary" onPress={() => setConfirm('delete')} /> : null}
           </View>
-          <Body style={{ fontSize: 13, marginTop: 12 }}>If you're the only admin and you leave, a random member takes over. Deleting is for admins and can't be undone.</Body>
+          <Info text={"If you're the only admin and you leave, a random member takes over. Deleting is for admins and can't be undone."} />
         </>) : null}
       </ScrollView>
 
@@ -90,7 +92,7 @@ export default function ChannelSettings() {
 
       <Sheet visible={adding} onClose={() => setAdding(false)} title="Add friends">
         <ScrollView keyboardShouldPersistTaps="handled">
-          <Body style={{ fontSize: 14, marginBottom: 4 }}>Friends you add join straight away. Only friends can be added.</Body>
+          <Info text={"Friends you add join straight away. Only friends can be added."} />
           <FriendPicker friends={data?.friends ?? []} exclude={inGroup} selected={picked} max={spotsLeft(inGroup.length, 0)} onToggle={(fid) => setPicked((p) => (p.includes(fid) ? p.filter((x) => x !== fid) : [...p, fid]))} />
         </ScrollView>
         {err ? <Notice tone="error">{err}</Notice> : null}

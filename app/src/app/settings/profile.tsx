@@ -12,6 +12,7 @@ import { useSignedUrl } from '@/lib/media';
 import { friendly, usernameStatusText } from '@/lib/messages';
 import { pickPhoto } from '@/lib/photo';
 import { cleanUsername, usernameProblem } from '@/lib/validators';
+import { Info } from '@/components/Info';
 
 export default function EditProfile() {
   const r = useRouter();
@@ -95,7 +96,7 @@ export default function EditProfile() {
           {err ? <Notice tone="error">{err}</Notice> : null}
           {saved ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.sage, marginTop: 12 }}>Saved.</Text> : null}
           <Button label="Save" onPress={save} loading={busy === 'save'} disabled={!area.trim() || !field.trim() || (changed && avail !== 'ok')} style={{ marginTop: 20 }} />
-          <Body style={{ fontSize: 13, marginTop: 12 }}>Your name, work email and LinkedIn came with your application, so they can't be changed here.</Body>
+          <Info text={"Your name, work email and LinkedIn came with your application, so they can't be changed here."} />
         </>) : null}
         {!loaded && err ? <Notice tone="error">{err}</Notice> : null}
       </ScrollView>

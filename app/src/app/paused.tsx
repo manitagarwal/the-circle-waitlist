@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Guidelines } from '@/components/Guidelines';
 import { Sheet } from '@/components/lists';
-import { Body, Button, Logo, Screen, Title } from '@/components/ui';
+import { ArchEmblem } from '@/components/Arch';
+import { FadeUp } from '@/components/motion';
+import { Body, Button, Screen, Title } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { useAuth } from '@/lib/auth';
 
@@ -15,8 +17,8 @@ export default function Paused() {
   const until = day(member?.suspended_until ?? null);
   return (
     <Screen footer={<View style={{ gap: 4 }}><Button label="Go back to reading" onPress={acknowledgePause} /><Button label="Read the community guidelines" variant="link" onPress={() => setRules(true)} /></View>}>
-      <View style={{ marginTop: 24 }}><Logo size="md" /></View>
-      <View style={{ marginTop: 40 }}>
+      <View style={{ marginTop: 56, alignItems: 'flex-start' }}><FadeUp distance={40}><ArchEmblem kind="pause" /></FadeUp></View>
+      <View style={{ marginTop: 28 }}>
         <Title italic>Your account is paused.</Title>
         <Body style={{ marginTop: 10 }}>{until ? `It stays paused until ${until}.` : 'It stays paused for now.'}</Body>
         <Body style={{ marginTop: 10 }}>You can still read your channels, messages and bookings.</Body>

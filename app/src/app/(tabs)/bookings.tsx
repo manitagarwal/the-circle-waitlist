@@ -2,7 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
-import { Collapsible } from '@/components/Collapsible';
+import { Buckets } from '@/components/Buckets';
+import { LetterBadge } from '@/components/lists';
 import { FilterBar, Segmented, SectionLabel, State, TabHeader } from '@/components/lists';
 import { Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
@@ -15,20 +16,18 @@ function Card({ b, onPress, note, group }: { b: BookingRow; onPress: () => void;
   const sp = spots(b);
   const mix = genderWanted(b);
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: 14, marginBottom: 10 })}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}</Text>
-        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.faint }}>{b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
-      </View>
-      <Text style={{ fontFamily: fonts.titleMedium, fontSize: 19, color: colors.ink, marginTop: 4 }}>{b.title}</Text>
-      <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{timeRange(b.starts_at, b.ends_at)}</Text>
-      <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted }}>{[b.venue_name, b.area].filter(Boolean).join(', ')}</Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 10 }}>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink }}>{sp.count}</Text>
-          {mix ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted }}>{mix}</Text> : null}
+    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: colors.surface, borderRadius: radius.card, padding: 16, marginBottom: 12, flexDirection: 'row', gap: 14, alignItems: 'center' })}>
+      <LetterBadge name={b.title} activity={b.interest_name} size={56} />
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontFamily: fonts.title, fontSize: 21, color: colors.ink }}>{b.title}</Text>
+        <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{timeRange(b.starts_at, b.ends_at)}</Text>
+        <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted }}>{[b.venue_name, b.area].filter(Boolean).join(', ')}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 8 }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13.5, color: colors.ink }}>{sp.count}{mix ? `, ${mix}` : ''}</Text>
+          </View>
+          {note ? <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.ink }}>{note}</Text> : sp.left ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted }}>{sp.left}</Text> : null}
         </View>
-        {note ? <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.sage }}>{note}</Text> : sp.left ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.goldText }}>{sp.left}</Text> : null}
       </View>
     </Pressable>
   );
@@ -54,8 +53,8 @@ export default function Bookings() {
   return (
     <Screen onRefresh={pull} refreshing={refreshing}>
       <TabHeader title="Bookings" right={
-        <Pressable accessibilityRole="button" onPress={() => r.push('/booking/new')} style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 4 }}>
-          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.goldText }}>Host one</Text></Pressable>} />
+        <Pressable accessibilityRole="button" accessibilityLabel="Host a booking" onPress={() => r.push('/booking/new')} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="plus" color={colors.inkOn} strokeWidth={2.2} /></Pressable>} />
       <Segmented value={seg} onChange={setSeg} options={[{ value: 'browse', label: 'Browse' }, { value: 'mine', label: 'Mine' }]} />
       <State loading={loading} error={error} onRetry={reload} />
 
@@ -67,23 +66,20 @@ export default function Bookings() {
           { key: 'fit', label: 'Fits me', options: ['Only ones I can join'] },
         ]} />
         <State empty={shown.length === 0 && !loading ? (data.upcoming.length === 0 ? 'No bookings yet. Host the first one.' : 'Nothing matches those filters.') : null} />
-        {bucket(data.groups, shown, (b) => b.interest_id).map((bk) => (
-          <Collapsible key={bk.group.id} title={bk.group.name} count={bk.items.length}>
-            {groupByDay(bk.items).map((g) => (
+        <Buckets buckets={bucket(data.groups, shown, (b) => b.interest_id)} render={(items) => (<>
+            {groupByDay(items).map((g) => (
               <View key={g.day}>
                 <SectionLabel>{g.day}</SectionLabel>
                 {g.rows.map((b) => <Card key={b.id} b={b} onPress={() => open(b.id)} note={b.is_host ? 'Hosting' : b.my_status === 'joined' ? "You're in" : null} />)}
               </View>
             ))}
-          </Collapsible>
-        ))}
+        </>)} />
       </>) : null}
 
       {data && seg === 'mine' ? (<>
         <State empty={data.mine.length === 0 ? "You haven't joined or hosted anything yet." : null} />
-        {bucket(data.groups, data.mine, (b) => b.interest_id).map((bk) => (
-          <Collapsible key={bk.group.id} title={bk.group.name} count={bk.items.length}>
-            {bk.items.map((b) => {
+        <Buckets buckets={bucket(data.groups, data.mine, (b) => b.interest_id)} render={(items) => (<>
+            {items.map((b) => {
               const over = new Date(b.ends_at).getTime() < now;
               const needsMarking = b.is_host && over && b.status !== 'cancelled';
               return (
@@ -96,8 +92,7 @@ export default function Bookings() {
                 </View>
               );
             })}
-          </Collapsible>
-        ))}
+        </>)} />
       </>) : null}
     </Screen>
   );

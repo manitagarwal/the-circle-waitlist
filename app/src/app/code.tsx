@@ -6,6 +6,7 @@ import { colors, fonts } from '@/theme';
 import { isOtp } from '@/lib/validators';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
+import { Info } from '@/components/Info';
 
 /** Six-digit email code. mode: reset (the emailed code is only used to reset a password) */
 export default function Code() {
@@ -40,13 +41,13 @@ export default function Code() {
   };
 
   return (
-    <Screen footer={<Body style={{ textAlign: 'center', fontSize: 13, color: colors.faint }}>The code works once and expires in ten minutes.</Body>}>
+    <Screen footer={<Info text={"The code works once and expires in ten minutes."} />}>
       <BackButton />
       <Title>Check your inbox.</Title>
       <Body style={{ marginTop: 10 }}>Six digits, sent to {strong(String(email))}. Spam folder if it plays hard to get.</Body>
       <TextField label="Verification code" value={code} onChangeText={(v) => setCode(v.replace(/\D/g, '').slice(0, 6))}
         keyboardType="number-pad" maxLength={6} autoComplete="one-time-code" textContentType="oneTimeCode"
-        style={{ fontFamily: fonts.title, fontSize: 24, letterSpacing: 8 }} error={err} onSubmitEditing={verify} />
+        style={{ fontFamily: fonts.title, fontSize: 28, letterSpacing: 8 }} error={err} onSubmitEditing={verify} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
         <Text onPress={wait > 0 ? undefined : resend} accessibilityRole="button" style={{ fontFamily: fonts.body, fontSize: 14, color: wait > 0 ? colors.faint : colors.goldText, paddingVertical: 10 }}>
           {wait > 0 ? `Resend in 0:${String(wait).padStart(2, '0')}` : 'Resend code'}

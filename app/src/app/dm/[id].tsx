@@ -6,7 +6,9 @@ import { Bar } from '@/components/Bar';
 import { PersonAvatar } from '@/components/Avatar';
 import { Icon } from '@/components/Icon';
 import { ReportSheet } from '@/components/ReportSheet';
-import { Sheet, State } from '@/components/lists';
+import { Info } from '@/components/Info';
+import { useUnread } from '@/lib/unread';
+import { DayDivider, Sheet, State } from '@/components/lists';
 import { Button } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api, useAuth } from '@/lib/auth';
@@ -57,19 +59,23 @@ export default function DmThread() {
   const respond = async (accept: boolean) => { setBusy(true); try { await api.respondFriend(other, accept); await reload(); } catch (e) { setErr(friendly(e)); } finally { setBusy(false); } };
   const act = async (fn: () => Promise<unknown>, after?: () => void) => { setBusy(true); setMenu(false); try { await fn(); after ? after() : await reload(); } catch (e) { setErr(friendly(e)); } finally { setBusy(false); } };
 
+  const { refresh: refreshUnread } = useUnread();
   const msgs = data?.messages ?? [];
+  const dmChannel = data?.dm?.channel_id;
+  useEffect(() => {
+    if (dmChannel) api.markChannelRead(dmChannel).then(refreshUnread).catch(() => {});
+  }, [dmChannel, msgs.length]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <Bar title={name} subtitle={data?.rel?.status === 'accepted' ? 'Friends' : 'Not friends yet'} left={data?.person ? <PersonAvatar person={data.person} size={36} /> : undefined}
         onTitlePress={() => r.push({ pathname: '/member/[id]', params: { id: other } })}
-        right={<Pressable accessibilityRole="button" accessibilityLabel="More" onPress={() => setMenu(true)} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="dots" /></Pressable>} />
+        right={<Pressable accessibilityRole="button" accessibilityLabel="More" onPress={() => setMenu(true)} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', marginRight: 8 }}><Icon name="dots" /></Pressable>} />
       {loading || error ? <View style={{ paddingHorizontal: 20 }}><State loading={loading} error={error} onRetry={reload} /></View> : (<>
         {data?.rel?.status !== 'accepted' && mode !== 'accept' ? (
-          <View style={{ margin: 16, padding: 12, borderRadius: radius.control, backgroundColor: colors.goldTint, borderWidth: 1, borderColor: colors.goldBorder }}>
-            <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted }}>Your first message to a stranger also sends a friend request. You get one message until {name} accepts.</Text>
-          </View>) : null}
+          <Info text={`Your first message to a stranger also sends a friend request. You get one message until ${name} accepts.`} style={{ alignSelf: 'center', marginVertical: 6 }} />
+        ) : null}
         {mode === 'accept' ? (
-          <View style={{ margin: 16, padding: 14, borderRadius: radius.card, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.goldBorder }}>
+          <View style={{ margin: 16, padding: 16, borderRadius: radius.card, backgroundColor: colors.surface }}>
             <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.ink }}>{name} wants to be friends.</Text>
             {data?.rel?.message ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{data.rel.message}</Text> : null}
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
@@ -83,10 +89,10 @@ export default function DmThread() {
             const older = msgs[index + 1];
             return (
               <View>
-                {!older || !sameDay(m.created_at, older.created_at) ? <Text style={{ alignSelf: 'center', fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.faint, marginVertical: 12 }}>{dayLabel(m.created_at)}</Text> : null}
-                <View style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%', marginVertical: 3, backgroundColor: mine ? colors.goldTint : colors.card, borderWidth: 1, borderColor: mine ? colors.goldBorder : colors.line,
-                  paddingVertical: 8, paddingHorizontal: 12, borderRadius: radius.bubble, borderBottomRightRadius: mine ? 3 : radius.bubble, borderTopLeftRadius: mine ? radius.bubble : 3 }}>
-                  <Text style={{ fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.ink }}>{m.body}</Text>
+                {!older || !sameDay(m.created_at, older.created_at) ? <DayDivider label={dayLabel(m.created_at)} /> : null}
+                <View style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%', marginVertical: 3, backgroundColor: mine ? colors.ink : colors.surface,
+                  paddingVertical: 10, paddingHorizontal: 14, borderRadius: radius.bubble, borderBottomRightRadius: mine ? 6 : radius.bubble, borderBottomLeftRadius: mine ? radius.bubble : 6 }}>
+                  <Text style={{ fontFamily: fonts.body, fontSize: 15.5, lineHeight: 21, color: mine ? colors.inkOn : colors.ink }}>{m.body}</Text>
                 </View>
               </View>
             );
@@ -98,11 +104,11 @@ export default function DmThread() {
           <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, textAlign: 'center', padding: 16, paddingBottom: insets.bottom + 16 }}>
             {mode === 'declined' ? `${first} declined. You can try again later.` : mode === 'accept' ? `Accept ${first}'s request to reply.` : `You can message again once ${first} accepts.`}</Text>
         ) : (
-          <View style={{ paddingHorizontal: 12, paddingTop: 8, paddingBottom: insets.bottom + 8, borderTopWidth: 1, borderTopColor: colors.line, flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
+          <View style={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: insets.bottom + 10, flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
             <TextInput accessibilityLabel="Message" value={text} onChangeText={setText} placeholder="Message" placeholderTextColor={colors.faint} multiline maxLength={2000}
-              style={{ flex: 1, minHeight: 44, maxHeight: 120, borderRadius: 22, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card, paddingHorizontal: 16, paddingVertical: 11, fontSize: 16, fontFamily: fonts.body, color: colors.ink }} />
+              style={{ flex: 1, minHeight: 50, maxHeight: 120, borderRadius: 25, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.ground, paddingHorizontal: 18, paddingVertical: 14, fontSize: 16, fontFamily: fonts.body, color: colors.ink }} />
             <Pressable accessibilityRole="button" accessibilityLabel="Send" disabled={!text.trim() || sending} onPress={send}
-              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.gold, alignItems: 'center', justifyContent: 'center', opacity: !text.trim() || sending ? 0.5 : 1 }}><Icon name="send" color={colors.onGold} size={20} /></Pressable>
+              style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', opacity: !text.trim() || sending ? 0.35 : 1 }}><Icon name="send" color={colors.inkOn} size={20} /></Pressable>
           </View>)}
       </>)}
 

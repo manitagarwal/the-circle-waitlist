@@ -6,9 +6,11 @@ import { colors, fonts, radius } from '@/theme';
 import { CITIES } from '@/lib/config';
 import { isEmail, isLinkedIn } from '@/lib/validators';
 import { phoneError, validatePhone } from '@/lib/phone';
+import { Pill } from '@/components/Pill';
 import { PhoneField } from '@/components/PhoneField';
 import { api } from '@/lib/auth';
 import { cityValue, useApply } from './_layout';
+import { Info } from '@/components/Info';
 
 type Errs = Partial<Record<'fullName' | 'phone' | 'city' | 'personalEmail' | 'linkedin', string>>;
 
@@ -45,25 +47,23 @@ export default function Details() {
     <Screen footer={<Button label="Continue" onPress={next} loading={busy} />}>
       <StepHeader step={1} of={5} />
       <Title italic>Request an invitation.</Title>
-      <Body style={{ marginTop: 6, fontSize: 14 }}>Five short steps. Read by people, not a model.</Body>
+      <Info text={"Five short steps. Read by people, not a model."} />
       <TextField label="Full name" value={s.fullName} onChangeText={(v) => set({ fullName: v })} autoComplete="name" error={errs.fullName} />
       <PhoneField dial={s.dial} number={s.phone} onChange={(v) => set({ dial: v.dial, phone: v.number })} error={errs.phone} />
       <View style={{ marginTop: 16 }}>
-        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginBottom: 6 }}>City</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+          <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted }}>City</Text>
+          <Info text="Delhi NCR only for now. Elsewhere? Pick Other and we'll tell you when we reach you." title="City" size={18} style={{ marginTop: 0 }} />
+        </View>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           {CITIES.map((c) => {
             const on = s.city === c;
             return (
-              <Pressable key={c} accessibilityRole="radio" accessibilityState={{ selected: on }} onPress={() => set({ city: c })}
-                style={{ minHeight: 44, paddingHorizontal: 14, justifyContent: 'center', borderRadius: radius.control, borderWidth: 1, borderColor: on ? colors.goldText : colors.line, backgroundColor: on ? colors.goldTint : colors.card }}>
-                <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.body, fontSize: 14, color: colors.ink }}>{c}</Text>
-              </Pressable>
+              <Pill key={c} label={c} on={on} onPress={() => set({ city: c })} />
             );
           })}
         </View>
-        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: errs.city ? colors.error : colors.faint, marginTop: 6 }}>
-          {errs.city ?? 'Delhi NCR only for now. Elsewhere? Pick Other and we\'ll tell you when we reach you.'}
-        </Text>
+        {errs.city ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.error, marginTop: 6 }}>{errs.city}</Text> : null}
       </View>
       {s.city === 'Other' ? <TextField label="Your city" value={s.cityOther} onChangeText={(v) => set({ cityOther: v })} autoComplete="off" /> : null}
       <TextField label="Personal email" value={s.personalEmail} onChangeText={(v) => set({ personalEmail: v })} keyboardType="email-address" autoCapitalize="none" autoComplete="email"

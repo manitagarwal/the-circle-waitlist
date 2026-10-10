@@ -7,6 +7,7 @@ import { colors, fonts } from '@/theme';
 import { AVATAR_IDS } from '@/lib/avatars';
 import { pickPhoto } from '@/lib/photo';
 import { useSetup } from './_layout';
+import { Info } from '@/components/Info';
 
 export default function Photo() {
   const r = useRouter();
@@ -26,12 +27,12 @@ export default function Photo() {
     <Screen footer={<Button label="Continue" onPress={() => r.push('/setup/interests')} disabled={!s.photoUri && !s.avatarId} />}>
       <StepHeader step={1} of={4} />
       <Title italic>Show your face. Or pick one.</Title>
-      <Body style={{ marginTop: 6, fontSize: 14 }}>Every member's profile is visible to every other member. That's the point.</Body>
+      <Info text={"Every member's profile is visible to every other member. That's the point."} />
       <View style={{ alignItems: 'center', marginTop: 24 }}>
         <Avatar uri={s.photoUri} avatarId={s.avatarId} size={112} />
       </View>
       <Button label={s.photoUri ? 'Choose a different photo' : 'Upload a photo'} variant="secondary" onPress={pick} loading={busy} style={{ marginTop: 16 }} />
-      <Text style={{ textAlign: 'center', fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 8 }}>JPEG, PNG or WebP. Up to 5 MB.</Text>
+      <Info text={"JPEG, PNG or WebP. Up to 5 MB."} />
       {err ? <Notice tone="error">{err}</Notice> : null}
       <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted, marginTop: 24 }}>Or choose an avatar</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 12 }}>

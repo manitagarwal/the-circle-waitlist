@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { BackButton, Body, Button, Logo, Notice, Screen, TextField, Title } from '@/components/ui';
+import { BackButton, Body, Button, Notice, Screen, TextField, Title } from '@/components/ui';
+import { FadeUp } from '@/components/motion';
 import { colors, fonts } from '@/theme';
 import { isEmail, normalizeEmail } from '@/lib/validators';
 import { supabase } from '@/lib/supabase';
 import { friendly } from '@/lib/messages';
+import { Info } from '@/components/Info';
 
 export default function Login() {
   const r = useRouter();
@@ -23,22 +25,25 @@ export default function Login() {
     if (error) setErr(friendly(error)); // guard redirects on success
   };
   return (
-    <Screen>
+    <Screen footer={<View style={{ gap: 4 }}>
+      <Button label="Log in" onPress={login} loading={busy} />
+      <Text onPress={() => r.push('/apply')} accessibilityRole="link" style={{ textAlign: 'center', padding: 12, fontFamily: fonts.body, fontSize: 15, color: colors.muted }}>
+        New here? <Text style={{ fontFamily: fonts.bodySemi, color: colors.ink, textDecorationLine: 'underline' }}>Request an invitation</Text>
+      </Text>
+    </View>}>
       <BackButton />
-      <View style={{ marginTop: 24 }}><Logo size="md" /></View>
-      <View style={{ marginTop: 40 }}>
-        <Title>Welcome back.</Title>
-        <Body style={{ marginTop: 10 }}>Log in with the personal email you signed up with.</Body>
-      </View>
-      <TextField label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
-      <TextField label="Password" value={pw} onChangeText={setPw} secureTextEntry autoCapitalize="none" autoComplete="current-password" textContentType="password" onSubmitEditing={login} />
-      <Text onPress={() => r.push('/forgot-password')} accessibilityRole="link" style={{ alignSelf: 'flex-end', paddingVertical: 12, fontFamily: fonts.body, fontSize: 14, color: colors.goldText }}>Forgot, or haven't set a password?</Text>
-      {err ? <Notice tone="error">{err}</Notice> : null}
-      <Button label="Log in" onPress={login} loading={busy} style={{ marginTop: 12 }} />
-      <View style={{ marginTop: 'auto', paddingBottom: 24, alignItems: 'center' }}>
-        <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted }}>New here?</Text>
-        <Text onPress={() => r.push('/apply')} accessibilityRole="link" style={{ padding: 10, fontFamily: fonts.body, fontSize: 14, color: colors.goldText, textDecorationLine: 'underline' }}>Request an invitation</Text>
-      </View>
+      <FadeUp>
+        <View style={{ marginTop: 18 }}>
+          <Title>Welcome back.</Title>
+          <Info text={"Log in with your personal email and password."} />
+        </View>
+      </FadeUp>
+      <FadeUp delay={100}>
+        <TextField label="Personal email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" />
+        <TextField label="Password" value={pw} onChangeText={setPw} secureTextEntry autoCapitalize="none" autoComplete="current-password" textContentType="password" onSubmitEditing={login} />
+        <Text onPress={() => r.push('/forgot-password')} accessibilityRole="link" style={{ alignSelf: 'flex-start', paddingVertical: 14, fontFamily: fonts.bodySemi, fontSize: 15, color: colors.ink, textDecorationLine: 'underline' }}>Forgot, or haven't set a password?</Text>
+        {err ? <Notice tone="error">{err}</Notice> : null}
+      </FadeUp>
     </Screen>
   );
 }

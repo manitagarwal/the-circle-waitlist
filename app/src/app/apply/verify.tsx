@@ -7,6 +7,7 @@ import { isOtp, normalizeEmail } from '@/lib/validators';
 import { api } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { useApply } from './_layout';
+import { Info } from '@/components/Info';
 
 /** Step 2: prove the personal email (it becomes the login) and create the password. */
 export default function VerifyPersonal() {
@@ -36,7 +37,7 @@ export default function VerifyPersonal() {
     </View>}>
       <StepHeader step={2} of={5} />
       <Title italic>Your login.</Title>
-      <Body style={{ marginTop: 6, fontSize: 14 }}>Your personal email is how you'll log in. We'll send a code to check it's yours, then you'll set a password.</Body>
+      <Info text={"Your personal email is how you'll log in. We'll send a code to check it's yours, then you'll set a password."} />
       <TextField label="Personal email" value={s.personalEmail} editable={false} ok={s.personalVerified} />
       {!sent && !s.personalVerified ? <Button label="Send code" onPress={send} loading={busy === 'send'} style={{ marginTop: 16 }} /> : null}
       {err && !sent ? <Notice tone="error">{err}</Notice> : null}

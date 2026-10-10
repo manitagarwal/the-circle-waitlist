@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Pay | The Semi Circle</title>
+<link rel="icon" href="/favicon.svg">
+<style>
+:root{--g:#faf8f4;--ink:#1b1a18;--mut:#6b665e;--line:#e8e3d9}
+@media (prefers-color-scheme:dark){:root{--g:#141311;--ink:#f3efe6;--mut:#a8a296;--line:#2b2925}}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;background:var(--g);color:var(--ink);font:16px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;text-align:center}
+.mark{display:flex;align-items:center;gap:8px;font:500 17px Georgia,serif;margin-bottom:36px}
+h1{font:400 34px/1.1 Georgia,serif;margin:0 0 10px;letter-spacing:-.02em}
+p{margin:0;color:var(--mut)}
+.amt{font:400 44px Georgia,serif;margin:18px 0 6px}
+button{margin-top:28px;height:54px;padding:0 34px;border-radius:27px;border:0;background:var(--ink);color:var(--g);font:600 16px inherit;cursor:pointer}
+.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);margin-top:12px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="mark"><svg width="22" height="12" viewBox="0 0 22 12" aria-hidden="true"><path d="M1 12A10 10 0 0 1 21 12z" fill="currentColor"/></svg>The Semi Circle</div>
+<h1 id="title">Opening secure checkout</h1>
+<p id="sub">One moment.</p>
+<div class="amt hide" id="amt"></div>
+<button id="pay" class="hide" type="button">Pay now</button>
+<button id="back" class="ghost hide" type="button">Back to the app</button>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var back = q.get('return') || '';
+  var ok = /^(exp|exps|thesemicircle):\/\//.test(back);   // only ever hand the result back to the app
+  var $ = function (id) { return document.getElementById(id); };
+  function done(params) {
+    if (!ok) { $('title').textContent = params.status === 'paid' ? 'Payment received' : 'Payment not completed'; $('sub').textContent = 'You can close this page and go back to the app.'; return; }
+    var u = back + (back.indexOf('?') > -1 ? '&' : '?') + new URLSearchParams(params).toString();
+    location.href = u;
+  }
+  var order = q.get('order'), key = q.get('key'), amount = Number(q.get('amount'));
+  if (!order || !key || !amount) { $('title').textContent = 'This payment link is not valid'; $('sub').textContent = 'Go back to the app and try again.'; if (ok) { $('back').classList.remove('hide'); $('back').onclick = function () { done({ status: 'cancelled' }); }; } return; }
+  $('amt').textContent = '₹' + (amount / 100).toLocaleString('en-IN', { minimumFractionDigits: amount % 100 ? 2 : 0 });
+  $('amt').classList.remove('hide');
+  $('title').textContent = q.get('name') || 'Your ticket';
+  $('sub').textContent = q.get('desc') || '';
+  function open() {
+    var rz = new Razorpay({
+      key: key, order_id: order, amount: amount, currency: 'INR', name: 'The Semi Circle', description: q.get('desc') || q.get('name') || 'Event ticket',
+      prefill: { name: q.get('pn') || '', email: q.get('pe') || '', contact: q.get('pc') || '' },
+      theme: { color: '#1b1a18' },
+      handler: function (r) { done({ status: 'paid', order_id: r.razorpay_order_id, payment_id: r.razorpay_payment_id, signature: r.razorpay_signature }); },
+      modal: { ondismiss: function () { $('pay').classList.remove('hide'); if (ok) $('back').classList.remove('hide'); } }
+    });
+    rz.on('payment.failed', function (r) { done({ status: 'failed', reason: (r && r.error && r.error.description) || '' }); });
+    rz.open();
+  }
+  $('pay').onclick = open;
+  $('back').onclick = function () { done({ status: 'cancelled' }); };
+  window.addEventListener('load', open);
+})();
+</script>
+</body>
+</html>

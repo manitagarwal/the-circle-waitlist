@@ -10,6 +10,7 @@ import { api, useAuth } from '@/lib/auth';
 import { GROUP_MAX_MEMBERS, spotsLeft } from '@/lib/groups';
 import { friendly } from '@/lib/messages';
 import { useLoad } from '@/lib/useLoad';
+import { Info } from '@/components/Info';
 
 export default function NewGroup() {
   const r = useRouter();
@@ -32,7 +33,7 @@ export default function NewGroup() {
     <View style={{ flex: 1, backgroundColor: colors.ground }}>
       <Bar title="New group" />
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
-        <Body style={{ fontSize: 14 }}>A casual chat for you and your friends. Friends you add join straight away, and anyone can leave whenever they like.</Body>
+        <Info text={"A casual chat for you and your friends. Friends you add join straight away, and anyone can leave whenever they like."} />
         <TextField label="Group name" value={name} onChangeText={setName} maxLength={50} error={name && !nameOk ? 'Use 3 to 50 characters.' : null} />
         <State loading={loading} error={error} onRetry={reload} />
         {friends ? <FriendPicker friends={friends} selected={picked} max={spotsLeft(1, 0, GROUP_MAX_MEMBERS)} onToggle={(id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))} /> : null}

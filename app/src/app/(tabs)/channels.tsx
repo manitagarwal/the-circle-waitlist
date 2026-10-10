@@ -2,8 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
-import { Collapsible } from '@/components/Collapsible';
-import { FilterBar, LetterBadge, Row, Segmented, State, TabHeader } from '@/components/lists';
+import { Buckets } from '@/components/Buckets';
+import { ArchBadge, FilterBar, RingBadge, Row, Segmented, State, TabHeader } from '@/components/lists';
 import { Body, Button, Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api } from '@/lib/auth';
@@ -12,10 +12,12 @@ import { applyFilters, channelFit, channelSummary, filterOptions, FITS_ME, GENDE
 import { bucket, loadInterestGroups } from '@/lib/interests';
 import { endsIn, listStamp } from '@/lib/format';
 import { useLoad } from '@/lib/useLoad';
+import { useUnread } from '@/lib/unread';
 
 type Seg = 'lobby' | 'public' | 'booking';
 export default function Channels() {
   const r = useRouter();
+  const unread = useUnread();
   const [seg, setSeg] = useState<Seg>('lobby');
   const [filters, setFilters] = useState<Filters>({});
   const [busy, setBusy] = useState<string | null>(null);
@@ -49,22 +51,18 @@ export default function Channels() {
     <Screen onRefresh={pull} refreshing={refreshing}>
       <TabHeader title="Channels" right={
         <Pressable accessibilityRole="button" accessibilityLabel="New channel" onPress={() => r.push('/channel/new')}
-          style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="plus" color={colors.goldText} /></Pressable>} />
+          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}><Icon name="plus" color={colors.inkOn} strokeWidth={2.2} /></Pressable>} />
       <Segmented value={seg} onChange={setSeg} options={[{ value: 'lobby', label: 'Lobby' }, { value: 'public', label: 'Public' }, { value: 'booking', label: 'Booking' }]} />
       <State loading={loading} error={error} onRetry={reload} />
       {actionErr ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.error, marginVertical: 8 }}>{actionErr}</Text> : null}
 
       {data && seg === 'lobby' ? (<>
-        <Body style={{ fontSize: 14, marginBottom: 4 }}>One per activity, run by the team. Read-only, with polls you can vote in.</Body>
         {lobby.length === 0 ? <State empty="No Lobbies yet. Pick interests in Settings and they appear here." /> : null}
-        {lobbyShown.map((b) => (
-          <Collapsible key={b.group.id} title={b.group.name} count={b.items.length}>
-            {b.items.map((c) => (
-              <Row key={c.id} left={<LetterBadge name={c.name} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
+        <Buckets buckets={lobbyShown} render={(items) => (<>
+            {items.map((c) => (
+              <Row key={c.id} unread={unread.byChannel[c.id]} left={<RingBadge name={c.name} activity={c.interest_name} unread={!!unread.byChannel[c.id]} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
             ))}
-          </Collapsible>
-        ))}
-        <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, textAlign: 'center', marginTop: 20 }}>Want another? Add an interest in Settings.</Text>
+        </>)} />
       </>) : null}
 
       {data && seg === 'public' ? (<>
@@ -77,28 +75,25 @@ export default function Channels() {
         ]} />
         {publicAll.length === 0 ? <State empty="No public channels yet. Start the first one with the plus button." /> : null}
         {publicAll.length > 0 && publicShown.length === 0 ? <State empty="Nothing matches those filters." /> : null}
-        {publicShown.map((b) => (
-          <Collapsible key={b.group.id} title={b.group.name} count={b.items.length}>
-            {b.items.map((c) => {
+        <Buckets buckets={publicShown} render={(items) => (<>
+            {items.map((c) => {
               const why = c.is_member ? null : channelFit(c, data.me);
               return (
-                <Row key={c.id} left={<LetterBadge name={c.name} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
-                  right={c.is_member ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.sage }}>Joined</Text>
+                <Row key={c.id} unread={c.is_member ? unread.byChannel[c.id] : undefined} left={<RingBadge name={c.name} activity={c.interest_name} unread={c.is_member && !!unread.byChannel[c.id]} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
+                  right={c.is_member ? (unread.byChannel[c.id] ? undefined : <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted }}>Joined</Text>)
                     : why ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.faint, maxWidth: 70, textAlign: 'center' }}>Not for you</Text>
                     : <Button label="Join" variant="secondary" loading={busy === c.id} onPress={() => act(c.id, () => api.joinChannel(c.id))} style={{ height: 40, paddingHorizontal: 16 }} />} />
               );
             })}
-          </Collapsible>
-        ))}
+        </>)} />
       </>) : null}
 
       {data && seg === 'booking' ? (<>
-        <Body style={{ fontSize: 14, marginBottom: 4 }}>The chats for bookings you host or have joined.</Body>
         {mine.length === 0 ? <State empty="Nothing here yet. When you join or host a booking, its chat shows up here." /> : null}
         {mine.map((c) => {
           const ends = endsIn(data.expiry[c.id] ?? null);
           return (
-            <Row key={c.id} left={<LetterBadge name={c.name} />} title={c.name} subtitle={preview(c.id) ?? 'Booking chat'}
+            <Row key={c.id} unread={unread.byChannel[c.id]} left={<RingBadge name={c.name} activity={c.interest_name} unread={!!unread.byChannel[c.id]} />} title={c.name} subtitle={preview(c.id) ?? 'Booking chat'}
               meta={ends ? ends.toUpperCase() : data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} tag={ends} onPress={() => open(c.id)} />
           );
         })}

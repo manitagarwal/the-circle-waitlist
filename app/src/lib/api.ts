@@ -12,6 +12,7 @@ export type Application = {
   queue_position: number | null; referral_code: string;
 };
 
+export type Ticket = { id: string; name: string; price_inr: number; left: number | null };
 export type ChannelRow = {
   id: string; kind: 'lobby' | 'public' | 'private' | 'booking' | 'dm'; name: string; photo_path: string | null;
   interest_id: number | null; interest_name: string | null; created_by: string | null; created_at: string;
@@ -22,6 +23,9 @@ export type ChannelInvite = { id: string; channel_id: string; channel_name: stri
 export type Message = { id: string; channel_id: string; sender_id: string; body: string; created_at: string; edited_at: string | null; image_path?: string | null };
 export type PollOption = { id: string; label: string; votes: number };
 export type Poll = { id: string; channel_id: string; question: string; created_at: string; closes_at: string | null; closed_at: string | null; is_open: boolean; total_votes: number; my_option_id: string | null; options: PollOption[] };
+export type FoundPerson = Person & { area: string | null };
+/** Strips characters that would break a search filter. */
+export const cleanSearch = (q: string) => q.replace(/[^\p{L}\p{N} ._-]/gu, '').trim().slice(0, 40);
 export type Person = { id: string; username: string; full_name: string | null; avatar_id: number | null; photo_path: string | null };
 export type NotificationRow = { id: string; type: string; payload: Record<string, any>; read_at: string | null; is_unread: boolean; created_at: string };
 export type RosterEntry = { member_id: string; username: string; avatar_id: number | null; photo_path: string | null; status: string; is_host: boolean };
@@ -165,6 +169,7 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       if (error) throw error;
       return data as { member_id: string; role: string }[];
     },
+    inviteToPublicChannel: (channel: string, invitee: string) => rpc<void>('invite_to_public_channel', { p_channel: channel, p_invitee: invitee }),
     friends: (me: string) => rpc<Person[]>('member_friends', { p_member: me }),
     // ---- bookings
     bookingsUpcoming: async () => {
@@ -206,6 +211,8 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       return { min: rows?.[0]?.min_hours ?? 6, max: rows?.[0]?.max_hours ?? 24 };
     },
     myScore: () => rpc<number>('my_score'),
+    scoreRules: () => rpc<Record<string, unknown>>('score_rules'),
+    noteSignIn: () => rpc<void>('note_sign_in'),
     profile: async (id: string) => {
       const { data, error } = await sb.from('member_profiles').select('*').eq('id', id).maybeSingle();
       if (error) throw error;
@@ -217,6 +224,14 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       const { data, error } = await sb.from('member_profiles').select('id, username, full_name, avatar_id, photo_path').in('id', ids);
       if (error) throw error;
       return data as Person[];
+    },
+    searchMembers: async (q: string, limit = 30) => {
+      const term = cleanSearch(q);
+      if (term.length < 2) return [] as FoundPerson[];
+      const { data, error } = await sb.from('member_profiles').select('id, username, full_name, avatar_id, photo_path, area')
+        .or(`username.ilike.%${term}%,full_name.ilike.%${term}%`).limit(limit);
+      if (error) throw error;
+      return data as FoundPerson[];
     },
     // ---- messages and polls
     messages: async (channel: string, limit = 60) => {
@@ -294,6 +309,8 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     myTicket: (id: string) => rpc<string | null>('my_ticket', { p_event: id }),
     rsvp: (id: string) => rpc<'going' | 'waitlist'>('rsvp_event', { p_event: id }),
     cancelRsvp: (id: string) => rpc<void>('cancel_rsvp', { p_event: id }),
+    eventTickets: (id: string) => rpc<Ticket[]>('event_ticket_types', { p_event: id }),
+    refundPreview: (id: string) => rpc<{ paid_inr: number; percent: number; refund_inr: number }>('my_refund_preview', { p_event: id }),
     // ---- activity
     notifications: async () => {
       const { data, error } = await sb.from('my_notifications').select('*').order('created_at', { ascending: false }).limit(60);
@@ -301,6 +318,8 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       return data as NotificationRow[];
     },
     unreadCount: () => rpc<number>('unread_notification_count'),
+    unreadMessages: () => rpc<{ channel_id: string; kind: string; unread: number }[]>('my_unread'),
+    markChannelRead: (channel: string) => rpc<void>('mark_channel_read', { p_channel: channel }),
     markRead: (id: string) => rpc<void>('mark_notification_read', { p_id: id }),
     markAllRead: () => rpc<number>('mark_all_notifications_read'),
     respondFriend: (from: string, accept: boolean) => rpc<void>('respond_friend_request', { p_from: from, p_accept: accept }),

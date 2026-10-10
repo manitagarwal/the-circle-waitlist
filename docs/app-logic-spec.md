@@ -242,3 +242,36 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - Images go to a private storage bucket (`announcement-images`, max 5 MB, JPG/PNG/WebP) and are shown to members through short-lived links. On iPhone the image shows in the app and not in the alert; Android alerts can show it too.
 - Phone alerts are sent for every notification the app creates (friend requests, bookings, events, announcements, account notices), not only announcements. A database job runs every minute and calls the `push-dispatch` function, which claims each new notification once, skips members who switched that kind off (account notices always go through), sends through Expo, and removes phone tokens that no longer work. Notifications older than two hours are never pushed.
 - Tapping a phone alert opens Activity. Alerts that arrive while the app is open show as a banner.
+
+## Design (the new look)
+- White ground, near-black ink, soft grey surfaces for cards, fields and chips, and one yellow accent used sparingly (unread rings, the active-tab marker, the new-activity dot, highlights). Buttons are black pills.
+- Type: Bricolage Grotesque for headlines (bold, tight), Figtree for body text.
+- Signature shape: the half-circle. Photos sit in arch frames, channel avatars are arch-topped or carry a half-ring (yellow when something was posted in the last day), the active tab has a yellow half-circle marker.
+- Motion: content fades up in sequence, the welcome rings draw themselves, the Lobby/Public/Booking switch slides, poll bars and the reliability bar fill, buttons shrink slightly when pressed. All of it is switched off when the phone has "reduce motion" on.
+- Shared pieces live in `src/theme.ts`, `src/components/ui.tsx`, `motion.tsx`, `Arch.tsx`, `Pill.tsx`, `lists.tsx`. The design canvas ("New look" page) is the reference.
+
+## Finding people and inviting them
+- Find people (Messages search button, Friends screen): search all active members by name or username (2+ letters; with fewer, your friends show). Tap a result to open the profile (add friend, message, block) or press Message. Blocked members never appear.
+- Inviting to a public channel: any member of the channel can invite any active member from channel settings, "Invite people". The invitee gets an Activity notification that opens the channel; they still join under the channel's own rules. Rules: one invite per person per channel per day, cap `channel.max_invites_per_day` (30) per member per day, no invites across a block.
+- Groups (private) are unchanged: admins add friends directly.
+- Every channel tied to an activity shows that activity's clipart (51 drawings, `activityIcons.ts`) instead of a letter; channels without an activity keep the letter.
+
+## Design rules (current)
+- Quiet luxury: warm ivory ground (deep charcoal in dark mode, following the phone's setting when the app opens), charcoal ink, stone surfaces, no accent colour and never red (errors are bold ink).
+- Type: Fraunces for headings, Inter for text. Large headings with generous space.
+- Navigation: a floating dark pill at the bottom; the current tab opens to show its name. Header row on main screens: name, find people, messages, activity.
+- Tabs inside a screen are text with a sliding underline. Activity groups are a chip rail above one list.
+- Activity clipart is monochrome (currentColor), bold, on a stone circle; chat shows it faintly as a watermark; events without a picture get a stone cover with drawn rings and the clipart.
+- Avatars are twelve tonal figures. Photos are circles.
+- Explanations live behind a small "i" (`Info`), not on the screen.
+- Motion: springs on presses, tabs and the floating bar; items fade up; rings draw in; everything respects reduce-motion.
+
+## Unread
+- A dot on a channel, group or DM badge means it has messages you haven't opened; it goes away when you open the chat. Messages (DMs and groups) and Activity show a count on their header icons. Counts update live.
+- Messages and Activity open as their own screens with a back button; the bottom bar is hidden there, like Find people.
+
+## Event tickets and payments
+- Events can have several ticket types with their own prices and quantities, optional promo codes and per-event refund rules, all set in the portal. Free events work as before.
+- Buying: pick a ticket, optionally enter a promo code, pay in Razorpay's checkout (opens in the browser), come back with your ticket. A spot is held for 15 minutes while you pay. Paid events have no waitlist: sold out is sold out.
+- Cancelling a paid ticket returns money by the event's refund rules and counts like any cancel for reliability.
+- See `docs/payments.md`.

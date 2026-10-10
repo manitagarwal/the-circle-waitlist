@@ -8,6 +8,7 @@ import { colors } from '@/theme';
 import { api } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { useLoad } from '@/lib/useLoad';
+import { Info } from '@/components/Info';
 
 export default function Blocked() {
   const [busy, setBusy] = useState<string | null>(null);
@@ -18,7 +19,7 @@ export default function Blocked() {
     <View style={{ flex: 1, backgroundColor: colors.ground }}>
       <Bar title="Blocked members" />
       <ScrollView contentContainerStyle={{ padding: 20 }}>
-        <Body style={{ fontSize: 14 }}>Blocked members can't see your profile or message you, and you can't see theirs.</Body>
+        <Info text={"Blocked members can't see your profile or message you, and you can't see theirs."} />
         <State loading={loading} error={error} onRetry={reload} empty={data && data.length === 0 ? "You haven't blocked anyone." : null} />
         {err ? <Notice tone="error">{err}</Notice> : null}
         {data?.map((b) => <Row key={b.id} left={<PersonAvatar person={b} />} title={`@${b.username}`} right={<Button label="Unblock" variant="secondary" loading={busy === b.id} onPress={() => unblock(b.id)} style={{ height: 40, paddingHorizontal: 14 }} />} />)}

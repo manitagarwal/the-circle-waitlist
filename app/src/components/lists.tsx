@@ -1,79 +1,184 @@
-import React from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Animated, Easing, Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import Svg, { Path, SvgXml } from 'react-native-svg';
+import { useRouter } from 'expo-router';
+import { Icon } from './Icon';
+import { Info } from './Info';
+import { useUnread } from '@/lib/unread';
+import { activityIcon } from '@/lib/activityIcons';
 import { colors, fonts, radius } from '@/theme';
-import { Button } from './ui';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BackButton, Button } from './ui';
 import { ChipRow } from './ChipRow';
+import { FadeUp, PressScale, useReduceMotion } from './motion';
 
-export function TabHeader({ title, right }: { title: string; right?: React.ReactNode }) {
+/** A small round count for an icon: the number of unread things, or nothing when there are none. */
+export function CountBadge({ n }: { n: number }) {
+  if (!n) return null;
   return (
-    <View style={{ minHeight: 56, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-      <Text accessibilityRole="header" style={{ fontFamily: fonts.title, fontSize: 28, color: colors.ink }}>{title}</Text>
-      {right}
+    <View accessibilityLabel={`${n} unread`} style={{ position: 'absolute', top: -3, right: -3, minWidth: 20, height: 20, borderRadius: 10, paddingHorizontal: 5, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.ground, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 10.5, color: colors.inkOn }}>{n > 99 ? '99+' : n}</Text>
     </View>
   );
 }
 
-export function Segmented<T extends string>({ value, options, onChange }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void }) {
+/** The top of a main screen: the name and quick actions (find people, messages, activity), then a large heading. */
+export function TabHeader({ title, right, info }: { title: string; right?: React.ReactNode; info?: string }) {
+  const r = useRouter();
+  const unread = useUnread();
+  const round = { width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: colors.line, alignItems: 'center' as const, justifyContent: 'center' as const };
   return (
-    <View accessibilityRole="tablist" style={{ flexDirection: 'row', backgroundColor: colors.card, borderRadius: radius.control, borderWidth: 1, borderColor: colors.line, padding: 3, marginVertical: 8 }}>
-      {options.map((o) => {
+    <View>
+      <View style={{ height: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Svg width={22} height={12} viewBox="0 0 22 12"><Path d="M1 12A10 10 0 0 1 21 12z" fill={colors.ink} /></Svg>
+          <Text style={{ fontFamily: fonts.title, fontSize: 16, color: colors.ink }}>The Semi Circle</Text>
+        </View>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <PressScale accessibilityRole="button" accessibilityLabel="Find people" onPress={() => r.push('/people')} style={round}><Icon name="search" size={20} /></PressScale>
+          <PressScale accessibilityRole="button" accessibilityLabel={unread.messages ? `Messages, ${unread.messages} unread` : 'Messages'} onPress={() => r.push('/messages')} style={round}>
+            <Icon name="messages" size={20} /><CountBadge n={unread.messages} />
+          </PressScale>
+          <PressScale accessibilityRole="button" accessibilityLabel={unread.activity ? `Activity, ${unread.activity} unread` : 'Activity'} onPress={() => r.push('/activity')} style={round}>
+            <Icon name="activity" size={20} /><CountBadge n={unread.activity} />
+          </PressScale>
+        </View>
+      </View>
+      <View style={{ minHeight: 60, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 42, lineHeight: 48, letterSpacing: -1, color: colors.ink }}>{title}</Text>
+          {info ? <Info text={info} title={title} style={{ marginTop: 10 }} /> : null}
+        </View>
+        {right}
+      </View>
+    </View>
+  );
+}
+
+/** The top of a screen you open from a main one: a back button, then the heading. The bottom bar is hidden here. */
+export function PageHeader({ title, right, info }: { title: string; right?: React.ReactNode; info?: string }) {
+  return (
+    <View>
+      <View style={{ height: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <BackButton />
+        {right}
+      </View>
+      <View style={{ minHeight: 60, flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 10 }}>
+        <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 42, lineHeight: 48, letterSpacing: -1, color: colors.ink }}>{title}</Text>
+        {info ? <Info text={info} title={title} style={{ marginTop: 10 }} /> : null}
+      </View>
+    </View>
+  );
+}
+
+/** Text tabs with an underline that springs from one to the next. */
+export function Segmented<T extends string>({ value, options, onChange }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void }) {
+  const reduce = useReduceMotion();
+  const idx = Math.max(0, options.findIndex((o) => o.value === value));
+  const [lay, setLay] = useState<{ x: number; w: number }[]>([]);
+  const x = useRef(new Animated.Value(0)).current;
+  const w = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const t = lay[idx];
+    if (!t) return;
+    if (reduce) { x.setValue(t.x); w.setValue(t.w); return; }
+    Animated.parallel([
+      Animated.spring(x, { toValue: t.x, speed: 16, bounciness: 10, useNativeDriver: false }),
+      Animated.spring(w, { toValue: t.w, speed: 16, bounciness: 6, useNativeDriver: false }),
+    ]).start();
+  }, [idx, lay, reduce, x, w]);
+  return (
+    <View accessibilityRole="tablist" style={{ flexDirection: 'row', gap: 26, borderBottomWidth: 1, borderBottomColor: colors.line, marginTop: 6, marginBottom: 6 }}>
+      {options.map((o, i) => {
         const on = o.value === value;
         return (
           <Pressable key={o.value} accessibilityRole="tab" accessibilityState={{ selected: on }} onPress={() => onChange(o.value)}
-            style={{ flex: 1, minHeight: 40, borderRadius: 4, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? colors.gold : 'transparent' }}>
-            <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.bodyMedium, fontSize: 14, color: on ? colors.onGold : colors.muted }}>{o.label}</Text>
+            onLayout={(e) => { const { x: lx, width } = e.nativeEvent.layout; setLay((l) => { const n = [...l]; n[i] = { x: lx, w: width }; return n; }); }}
+            style={{ paddingVertical: 12 }}>
+            <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.bodyMedium, fontSize: 15, color: on ? colors.ink : colors.muted }}>{o.label}</Text>
           </Pressable>
         );
       })}
+      <Animated.View pointerEvents="none" style={{ position: 'absolute', bottom: -1, height: 2, backgroundColor: colors.ink, left: x, width: w }} />
     </View>
   );
 }
 
-export const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <Text accessibilityRole="header" style={{ fontFamily: fonts.bodySemi, fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', color: colors.faint, marginTop: 20, marginBottom: 8 }}>{children}</Text>
+export const SectionLabel = ({ children, info }: { children: React.ReactNode; info?: string }) => (
+  <View style={{ marginTop: 36, marginBottom: 10, borderTopWidth: 1, borderTopColor: colors.line, paddingTop: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+    <Text accessibilityRole="header" style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 2, textTransform: 'uppercase', color: colors.goldText }}>{children}</Text>
+    {info ? <Info text={info} title={typeof children === 'string' ? children : undefined} size={20} style={{ marginTop: 0 }} /> : null}
+  </View>
 );
 
-/** A round badge with the first letter, used for channels. */
-export function LetterBadge({ name, size = 44 }: { name: string; size?: number }) {
+/** The circle behind an activity's clipart. Without an activity it shows the first letter. */
+export function LetterBadge({ name, size = 56, activity }: { name: string; size?: number; activity?: string | null }) {
+  const icon = activityIcon(activity);
   return (
-    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.goldTint, borderWidth: 1, borderColor: colors.goldBorder, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontFamily: fonts.title, fontSize: size * 0.42, color: colors.goldText }}>{(name[0] ?? '?').toUpperCase()}</Text>
+    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.plate, alignItems: 'center', justifyContent: 'center' }}>
+      {icon ? <SvgXml xml={icon} width={size * 0.58} height={size * 0.58} color={colors.ink} /> : <Text style={{ fontFamily: fonts.title, fontSize: size * 0.42, color: colors.ink }}>{(name[0] ?? '?').toUpperCase()}</Text>}
+    </View>
+  );
+}
+export const ArchBadge = ({ name, size = 60, activity }: { name: string; size?: number; activity?: string | null }) => <LetterBadge name={name} size={size} activity={activity} />;
+
+/** The same circle with a small dot on the corner when something is new. */
+export function RingBadge({ name, unread, size = 60, activity }: { name: string; unread?: boolean; size?: number; activity?: string | null }) {
+  return (
+    <View style={{ width: size, height: size }}>
+      <LetterBadge name={name} size={size} activity={activity} />
+      {unread ? <View accessibilityLabel="New messages" style={{ position: 'absolute', top: 1, right: 1, width: 12, height: 12, borderRadius: 6, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.ground }} /> : null}
     </View>
   );
 }
 
-export function Row({ left, title, subtitle, meta, right, onPress, tag }: {
-  left?: React.ReactNode; title: string; subtitle?: string | null; meta?: string | null; right?: React.ReactNode; onPress?: () => void; tag?: string | null;
+/** Puts a small dot on the corner of whatever it wraps when there is something new. */
+export function WithDot({ on, children }: { on?: boolean; children: React.ReactNode }) {
+  return (
+    <View>
+      {children}
+      {on ? <View accessibilityLabel="New messages" style={{ position: 'absolute', top: 1, right: 1, width: 12, height: 12, borderRadius: 6, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.ground }} /> : null}
+    </View>
+  );
+}
+
+export function Row({ left, title, subtitle, meta, right, onPress, tag, unread }: {
+  left?: React.ReactNode; title: string; subtitle?: string | null; meta?: string | null; right?: React.ReactNode; onPress?: () => void; tag?: string | null; unread?: number;
 }) {
   const body = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, gap: 12, minHeight: 64 }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, gap: 16, minHeight: 84 }}>
       {left}
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-          <Text numberOfLines={1} style={{ flexShrink: 1, fontFamily: fonts.bodySemi, fontSize: 16, color: colors.ink }}>{title}</Text>
-          {meta ? <Text style={{ fontFamily: fonts.body, fontSize: 12, color: tag ? colors.goldText : colors.faint }}>{meta}</Text> : null}
+          <Text numberOfLines={1} style={{ flexShrink: 1, fontFamily: unread ? fonts.bodySemi : fonts.bodySemi, fontSize: 16, color: colors.ink }}>{title}</Text>
+          {meta ? <Text style={{ fontFamily: unread ? fonts.bodySemi : fonts.body, fontSize: 12.5, color: unread ? colors.ink : colors.faint }}>{meta}</Text> : null}
         </View>
-        {subtitle ? <Text numberOfLines={2} style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{subtitle}</Text> : null}
+        {subtitle ? <Text numberOfLines={2} style={{ fontFamily: unread ? fonts.bodyMedium : fonts.body, fontSize: 14, color: unread ? colors.ink : colors.muted, marginTop: 2 }}>{subtitle}</Text> : null}
       </View>
+      {unread ? <View accessibilityLabel={`${unread} unread`} style={{ minWidth: 22, height: 22, borderRadius: 11, paddingHorizontal: 6, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, color: colors.inkOn }}>{unread > 99 ? '99+' : unread}</Text></View> : null}
       {right}
     </View>
   );
-  return onPress ? (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, borderBottomWidth: 1, borderBottomColor: colors.line })}>{body}</Pressable>
-  ) : <View style={{ borderBottomWidth: 1, borderBottomColor: colors.line }}>{body}</View>;
+  return (
+    <FadeUp distance={8}>
+      {onPress ? (
+        <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, borderBottomWidth: 1, borderBottomColor: colors.line })}>{body}</Pressable>
+      ) : <View style={{ borderBottomWidth: 1, borderBottomColor: colors.line }}>{body}</View>}
+    </FadeUp>
+  );
 }
 
 export function Chip({ label, on, onPress }: { label: string; on?: boolean; onPress: () => void }) {
   return (
-    <Pressable accessibilityRole="button" accessibilityState={{ selected: !!on }} onPress={onPress}
-      style={{ minHeight: 40, paddingHorizontal: 14, justifyContent: 'center', borderRadius: 20, borderWidth: 1, borderColor: on ? colors.goldText : colors.line, backgroundColor: on ? colors.goldTint : colors.card, marginRight: 8 }}>
-      <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.body, fontSize: 14, color: colors.ink }}>{label}</Text>
-    </Pressable>
+    <PressScale accessibilityRole="button" accessibilityState={{ selected: !!on }} onPress={onPress}
+      style={{ height: 38, paddingHorizontal: 16, justifyContent: 'center', borderRadius: 19, borderWidth: 1, borderColor: on ? colors.ink : colors.line, backgroundColor: on ? colors.ink : 'transparent', marginRight: 8 }}>
+      <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: on ? colors.inkOn : colors.ink }}>{label}</Text>
+    </PressScale>
   );
 }
 
 export function State({ loading, error, empty, onRetry }: { loading?: boolean; error?: string | null; empty?: string | null; onRetry?: () => void }) {
-  if (loading) return <ActivityIndicator color={colors.goldText} style={{ marginTop: 40 }} />;
+  if (loading) return <ActivityIndicator color={colors.ink} style={{ marginTop: 40 }} />;
   if (error) return (
     <View style={{ marginTop: 32, alignItems: 'center', gap: 12 }}>
       <Text style={{ fontFamily: fonts.body, fontSize: 15, color: colors.error, textAlign: 'center' }}>{error}</Text>
@@ -84,17 +189,15 @@ export function State({ loading, error, empty, onRetry }: { loading?: boolean; e
   return null;
 }
 
-import { Modal } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-/** A bottom sheet over a dimmed background. */
+/** A bottom sheet that slides up over a dimmed background. */
 export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title?: string; children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable accessibilityLabel="Close" style={{ flex: 1, backgroundColor: 'rgba(33,28,22,0.4)', justifyContent: 'flex-end' }} onPress={onClose}>
-        <Pressable accessible={false} style={{ backgroundColor: colors.ground, borderTopLeftRadius: 16, borderTopRightRadius: 16, padding: 20, paddingBottom: insets.bottom + 20, maxHeight: '80%' }}>
-          {title ? <Text accessibilityRole="header" style={{ fontFamily: fonts.title, fontSize: 20, color: colors.ink, marginBottom: 8 }}>{title}</Text> : null}
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <Pressable accessibilityLabel="Close" style={{ flex: 1, backgroundColor: 'rgba(10,9,8,0.5)', justifyContent: 'flex-end' }} onPress={onClose}>
+        <Pressable accessible={false} style={{ backgroundColor: colors.ground, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 22, paddingTop: 12, paddingBottom: insets.bottom + 20, maxHeight: '82%' }}>
+          <View style={{ alignSelf: 'center', width: 40, height: 5, borderRadius: 3, backgroundColor: colors.lineStrong, marginBottom: 14 }} />
+          {title ? <Text accessibilityRole="header" style={{ fontFamily: fonts.title, fontSize: 24, color: colors.ink, marginBottom: 8 }}>{title}</Text> : null}
           {children}
         </Pressable>
       </Pressable>
@@ -121,5 +224,16 @@ export function FilterBar({ defs, values, onChange }: { defs: FilterDef[]; value
         </ScrollView>
       </Sheet>
     </>
+  );
+}
+
+/** A thin rule with the day in small capitals, between chat messages from different days. */
+export function DayDivider({ label }: { label: string }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 14 }}>
+      <View style={{ flex: 1, height: 1, backgroundColor: colors.line }} />
+      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.6, textTransform: 'uppercase', color: colors.faint }}>{label}</Text>
+      <View style={{ flex: 1, height: 1, backgroundColor: colors.line }} />
+    </View>
   );
 }

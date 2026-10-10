@@ -11,6 +11,7 @@ import { friendly } from '@/lib/messages';
 import { ageError, CHANNEL_CITIES } from '@/lib/channels';
 import { GENDERS } from '@/lib/profile';
 import { useLoad } from '@/lib/useLoad';
+import { Info } from '@/components/Info';
 
 const toggle = <T,>(xs: T[], x: T) => (xs.includes(x) ? xs.filter((y) => y !== x) : [...xs, x]);
 
@@ -55,7 +56,7 @@ export default function NewChannel() {
     <View style={{ flex: 1, backgroundColor: colors.ground }}>
       <Bar title="New channel" />
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
-        <Body style={{ fontSize: 14 }}>Anyone who fits the rules below can join. You own it. For a chat with friends, start a group in Messages instead.</Body>
+        <Info text={"Anyone who fits the rules below can join. You own it. For a chat with friends, start a group in Messages instead."} />
         <TextField label="Name" value={name} onChangeText={setName} maxLength={50} error={name && !nameOk ? 'Use 3 to 50 characters.' : null} />
 
         {label('Activity')}
@@ -63,7 +64,7 @@ export default function NewChannel() {
 
         {isPublic ? (<>
           {heading('Who can join')}
-          <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 4 }}>These are rules. Someone who doesn't match can see the channel but can't join. Leave a rule empty to let everyone in.</Text>
+          <Info text={"These are rules. Someone who doesn't match can see the channel but can't join. Leave a rule empty to let everyone in."} />
 
           {label('City')}
           <Button label={cities.length ? cities.join(', ') : 'Pan India (any city)'} variant="secondary" onPress={() => setPickCity(true)} />
@@ -80,7 +81,7 @@ export default function NewChannel() {
             <Chip label="Anyone" on={genders.length === 0} onPress={() => setGenders([])} />
             {GENDERS.map((g) => <Chip key={g.value} label={g.label} on={genders.includes(g.value)} onPress={() => setGenders((x) => toggle(x, g.value))} />)}
           </View>
-          <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>Pick one or more, or leave it on Anyone.</Text>
+          <Info text={"Pick one or more, or leave it on Anyone."} />
         </>) : null}
 
         {mine.data != null ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 24 }}>{mine.data} of 2 channels open. Get one channel to 50 members and you can open a third.</Text> : null}
@@ -91,7 +92,7 @@ export default function NewChannel() {
       <ActivityPicker visible={pickActivity} onClose={() => setPickActivity(false)} selectedId={interest?.id} onPick={(a) => { setInterest(a); setPickActivity(false); }} />
       <Sheet visible={pickCity} onClose={() => setPickCity(false)} title="Cities">
         <ScrollView>
-          <Body style={{ fontSize: 14, marginBottom: 8 }}>Pick one or more cities. Pick none for Pan India.</Body>
+          <Info text={"Pick one or more cities. Pick none for Pan India."} />
           {CHANNEL_CITIES.map((c) => <Row key={c} title={c} right={cities.includes(c) ? <Text style={{ color: colors.sage, fontFamily: fonts.bodySemi, fontSize: 18 }}>✓</Text> : undefined} onPress={() => setCities((x) => toggle(x, c))} />)}
         </ScrollView>
         <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>

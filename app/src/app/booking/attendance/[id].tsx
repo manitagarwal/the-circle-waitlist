@@ -10,6 +10,7 @@ import { api } from '@/lib/auth';
 import { clock } from '@/lib/format';
 import { friendly } from '@/lib/messages';
 import { useLoad } from '@/lib/useLoad';
+import { Info } from '@/components/Info';
 
 export default function Attendance() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -59,12 +60,12 @@ export default function Attendance() {
               </View>
             );
           })}
-          <Body style={{ fontSize: 13, marginTop: 12 }}>Skip anyone and they count as showed up after 48 hours. A no-show costs a member their reliability score, so mark it only if it's true.</Body>
+          <Info text={"Skip anyone and they count as showed up after 48 hours. A no-show costs a member their reliability score, so mark it only if it's true."} />
 
           {b.channel_id ? (
-            <View style={{ marginTop: 24, padding: 14, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line }}>
-              <Text style={{ fontFamily: fonts.titleMedium, fontSize: 18, color: colors.ink }}>Keep the chat going?</Text>
-              <Body style={{ fontSize: 14, marginTop: 4 }}>The booking chat closes a day after the game. Keep it and it becomes a private channel for this group. Only the host can keep it. It counts toward your 2 channels.</Body>
+            <View style={{ marginTop: 24, padding: 14, backgroundColor: colors.surface, borderRadius: radius.card }}>
+              <Text style={{ fontFamily: fonts.titleMedium, fontSize: 21, color: colors.ink }}>Keep the chat going?</Text>
+              <Info text={"The booking chat closes a day after the game. Keep it and it becomes a private channel for this group. Only the host can keep it. It counts toward your 2 channels."} />
               <View style={{ flexDirection: 'row', marginTop: 12 }}>
                 <Chip label="Keep this chat" on={keep === true} onPress={() => setKeep(true)} />
                 <Chip label="Let it go" on={keep === false} onPress={() => setKeep(false)} />

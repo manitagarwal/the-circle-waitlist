@@ -9,6 +9,7 @@ import { NOTIFICATION_SWITCHES, parseDob, profileArgs } from '@/lib/profile';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { useSetup } from './_layout';
+import { Info } from '@/components/Info';
 
 export default function NotificationsStep() {
   const r = useRouter();
@@ -44,17 +45,17 @@ export default function NotificationsStep() {
     </View>}>
       <StepHeader step={4} of={4} />
       <Title italic>Want a nudge?</Title>
-      <Body style={{ marginTop: 6, fontSize: 14 }}>We only buzz you for things that need you.</Body>
-      <View style={{ marginTop: 20, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line }}>
+      <Info text={"We only buzz you for things that need you."} />
+      <View style={{ marginTop: 20, backgroundColor: colors.surface, borderRadius: radius.card }}>
         {NOTIFICATION_SWITCHES.map((sw, i) => (
           <View key={sw.key} style={{ flexDirection: 'row', alignItems: 'center', padding: 14, borderTopWidth: i ? 1 : 0, borderTopColor: colors.line }}>
             <Text style={{ flex: 1, fontFamily: fonts.body, fontSize: 15, color: colors.ink, paddingRight: 12 }}>{sw.label}</Text>
             <Switch accessibilityLabel={sw.label} value={on[sw.key]} onValueChange={(v) => setOn((o) => ({ ...o, [sw.key]: v }))}
-              trackColor={{ true: colors.gold, false: colors.line }} thumbColor="#ffffff" />
+              trackColor={{ true: colors.ink, false: colors.lineStrong }} thumbColor={colors.ground} />
           </View>
         ))}
       </View>
-      <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 12 }}>Switch any of these off later in Settings.</Text>
+      <Info text={"Switch any of these off later in Settings."} />
       {err ? <Notice tone="error">{err}</Notice> : null}
     </Screen>
   );

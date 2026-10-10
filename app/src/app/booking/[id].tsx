@@ -58,7 +58,7 @@ export default function BookingDetail() {
     const menWanted = Math.max(0, (b.male_slots ?? 0) - b.male_joined), womenWanted = Math.max(0, (b.female_slots ?? 0) - b.female_joined);
     body = (<>
       <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}  ·  {b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
-      <Text style={{ fontFamily: fonts.title, fontSize: 28, lineHeight: 34, color: colors.ink, marginTop: 6 }}>{b.title}</Text>
+      <Text style={{ fontFamily: fonts.title, fontSize: 32, lineHeight: 39, color: colors.ink, marginTop: 6 }}>{b.title}</Text>
       <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 6 }}>
         Hosted by <Text accessibilityRole="link" onPress={() => r.push({ pathname: '/member/[id]', params: { id: b.host_id } })} style={{ fontFamily: fonts.bodySemi, color: colors.ink, textDecorationLine: 'underline' }}>{b.host_username}</Text>{host ? `. ${host.bookings_hosted} ${host.bookings_hosted === 1 ? 'booking' : 'bookings'} hosted. Member since ${month(host.member_since)}.` : ''}
       </Text>
@@ -73,7 +73,7 @@ export default function BookingDetail() {
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
         {roster.map((p) => (
           <Pressable key={p.member_id} accessibilityRole="button" accessibilityLabel={`View ${p.username}'s profile`} onPress={() => r.push({ pathname: '/member/[id]', params: { id: p.member_id } })}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 12, backgroundColor: colors.card, borderRadius: 24, borderWidth: 1, borderColor: colors.line }}>
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 12, backgroundColor: colors.surface, borderRadius: 24 }}>
             <PersonAvatar person={p} size={36} /><Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink }}>{p.username}</Text>
           </Pressable>
         ))}

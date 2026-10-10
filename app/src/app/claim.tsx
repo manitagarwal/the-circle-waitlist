@@ -5,6 +5,7 @@ import { colors, fonts } from '@/theme';
 import { cleanUsername, usernameProblem } from '@/lib/validators';
 import { api, useAuth } from '@/lib/auth';
 import { friendly, usernameStatusText } from '@/lib/messages';
+import { Info } from '@/components/Info';
 
 /** Accepted, no membership yet: pick the name everyone will know you by. */
 export default function Claim() {
@@ -34,7 +35,7 @@ export default function Claim() {
   return (
     <Screen footer={<Text onPress={signOut} accessibilityRole="link" style={{ textAlign: 'center', fontFamily: fonts.body, fontSize: 14, color: colors.muted, padding: 8 }}>Log out</Text>}>
       <Title italic>You're in, {application?.full_name.split(' ')[0]}.</Title>
-      <Body style={{ marginTop: 6 }}>Your application was accepted. One last thing: pick the name everyone will know you by.</Body>
+      <Info text={"Your application was accepted. One last thing: pick the name everyone will know you by."} />
       <TextField label="Username" value={name} onChangeText={(v) => setName(cleanUsername(v).slice(0, 20))} autoCapitalize="none" autoCorrect={false}
         error={nameError} ok={avail === 'ok'}
         hint={avail === 'ok' ? `${name} is available.` : avail === 'checking' ? 'Checking…' : 'Lowercase letters, numbers, dot and underscore. 3 to 20 characters. Change it once every 30 days.'} />

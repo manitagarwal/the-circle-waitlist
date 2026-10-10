@@ -8,6 +8,7 @@ import { formatPhone, validatePhone } from '@/lib/phone';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { cityValue, useApply } from './_layout';
+import { Info } from '@/components/Info';
 
 const Row = ({ k, v }: { k: string; v: string }) => (
   <View style={{ flexDirection: 'row', paddingVertical: 8 }}>
@@ -44,8 +45,8 @@ export default function Review() {
     </View>}>
       <StepHeader step={5} of={5} />
       <Title italic>Last look.</Title>
-      <Body style={{ marginTop: 6, fontSize: 14 }}>Check it's all you. You can't edit after you submit.</Body>
-      <View style={{ marginTop: 16, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 14, paddingVertical: 6 }}>
+      <Info text={"Check it's all you. You can't edit after you submit."} />
+      <View style={{ marginTop: 16, backgroundColor: colors.surface, borderRadius: radius.card, paddingHorizontal: 14, paddingVertical: 6 }}>
         <Row k="Name" v={s.fullName} />
         <Row k="Phone" v={formatPhone(phone)} />
         <Row k="Login email" v={s.personalEmail} />
@@ -55,7 +56,7 @@ export default function Review() {
         {s.referredByCode ? <Row k="Referral code" v={s.referredByCode} /> : null}
         {s.vouches.length ? <Row k="Vouching for" v={`${s.vouches.length} ${s.vouches.length === 1 ? 'person' : 'people'}`} /> : null}
       </View>
-      <Body style={{ marginTop: 16, fontSize: 14 }}>We'll tell you if you're in by email or WhatsApp. Applications are reviewed by hand, which takes a little while.</Body>
+      <Info text={"We'll tell you if you're in by email or WhatsApp. Applications are reviewed by hand, which takes a little while."} />
       {err ? <Notice tone="error">{err}</Notice> : null}
     </Screen>
   );
