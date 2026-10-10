@@ -219,7 +219,7 @@ export function FilterBar({ defs, values, onChange }: { defs: FilterDef[]; value
         <ChipRow>{defs.map((d) => <Chip key={d.key} label={values[d.key] ? `${d.label}: ${values[d.key]}` : d.label} on={!!values[d.key]} onPress={() => setOpen(d.key)} />)}</ChipRow>
       </View>
       <Sheet visible={!!def} onClose={() => setOpen(null)} title={def?.label}>
-        <ScrollView>
+        <ScrollView style={{ flexGrow: 0, flexShrink: 1 }}>
           <Row title="Any" onPress={() => { onChange(open!, undefined); setOpen(null); }} />
           {def?.options.map((o) => <Row key={o} title={o} onPress={() => { onChange(open!, o); setOpen(null); }} right={values[open!] === o ? <Text style={{ color: colors.sage, fontFamily: fonts.bodySemi }}>✓</Text> : undefined} />)}
           {def && def.options.length === 0 ? <State empty="No options yet." /> : null}

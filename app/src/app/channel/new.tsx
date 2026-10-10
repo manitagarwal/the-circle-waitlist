@@ -91,7 +91,7 @@ export default function NewChannel() {
 
       <ActivityPicker visible={pickActivity} onClose={() => setPickActivity(false)} selectedId={interest?.id} onPick={(a) => { setInterest(a); setPickActivity(false); }} />
       <Sheet visible={pickCity} onClose={() => setPickCity(false)} title="Cities">
-        <ScrollView>
+        <ScrollView style={{ flexGrow: 0, flexShrink: 1 }}>
           <Info text={"Pick one or more cities. Pick none for Pan India."} />
           {CHANNEL_CITIES.map((c) => <Row key={c} title={c} right={cities.includes(c) ? <Text style={{ color: colors.sage, fontFamily: fonts.bodySemi, fontSize: 18 }}>✓</Text> : undefined} onPress={() => setCities((x) => toggle(x, c))} />)}
         </ScrollView>
