@@ -4,7 +4,8 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { Collapsible } from './Collapsible';
 import { Notice } from './ui';
 import { Button } from './ui';
-import { colors, fonts, radius } from '@/theme';
+import { colors, fonts, isDark, radius } from '@/theme';
+import { toneFor } from '@/lib/tones';
 import { INTERESTS_MAX, INTERESTS_MIN, toggleInterest } from '@/lib/profile';
 import { api } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
@@ -31,7 +32,7 @@ export function InterestPicker({ selected, onChange }: { selected: number[]; onC
               const on = selected.includes(i.id);
               const full = !on && n >= INTERESTS_MAX;
               return (
-                <Pill key={i.id} label={i.name} role="checkbox" on={on} disabled={full} onPress={() => onChange(toggleInterest(selected, i.id))} />
+                <Pill key={i.id} label={i.name} tint={toneFor(i.name, isDark)} role="checkbox" on={on} disabled={full} onPress={() => onChange(toggleInterest(selected, i.id))} />
               );
             })}
           </View>

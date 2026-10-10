@@ -4,6 +4,10 @@ import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
 import { Buckets } from '@/components/Buckets';
 import { LetterBadge } from '@/components/lists';
+import { toneFor } from '@/lib/tones';
+import { isDark } from '@/theme';
+/** The activity colour at about a third of its strength, for card backgrounds. */
+const tint = (hex: string) => `${hex}55`;
 import { FilterBar, Segmented, SectionLabel, State, TabHeader } from '@/components/lists';
 import { Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
@@ -16,7 +20,7 @@ function Card({ b, onPress, note, group }: { b: BookingRow; onPress: () => void;
   const sp = spots(b);
   const mix = genderWanted(b);
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: colors.surface, borderRadius: radius.card, padding: 16, marginBottom: 12, flexDirection: 'row', gap: 14, alignItems: 'center' })}>
+    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: toneFor(b.interest_name, isDark) ? tint(toneFor(b.interest_name, isDark)!) : colors.surface, borderRadius: radius.card, padding: 16, marginBottom: 12, flexDirection: 'row', gap: 14, alignItems: 'center' })}>
       <LetterBadge name={b.title} activity={b.interest_name} size={56} />
       <View style={{ flex: 1 }}>
         <Text style={{ fontFamily: fonts.title, fontSize: 21, color: colors.ink }}>{b.title}</Text>

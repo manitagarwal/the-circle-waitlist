@@ -9,7 +9,8 @@ import { Icon } from '@/components/Icon';
 import { ReportSheet } from '@/components/ReportSheet';
 import { Row, SectionLabel, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice } from '@/components/ui';
-import { colors, fonts, radius } from '@/theme';
+import { colors, fonts, isDark, radius } from '@/theme';
+import { toneFor } from '@/lib/tones';
 import { api, useAuth } from '@/lib/auth';
 import { bookingDay } from '@/lib/bookings';
 import { useSignedUrl } from '@/lib/media';
@@ -60,7 +61,7 @@ export default function MemberProfile() {
           {err ? <Notice tone="error">{err}</Notice> : null}
 
           {p.interests?.length ? (<><SectionLabel>Into</SectionLabel>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>{p.interests.map((i) => <Text key={i} style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 22, backgroundColor: colors.surface, overflow: 'hidden' }}>{i}</Text>)}</View></>) : null}
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>{p.interests.map((i) => <Text key={i} style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 22, backgroundColor: toneFor(i, isDark) ?? colors.surface, overflow: 'hidden' }}>{i}</Text>)}</View></>) : null}
 
           {upcoming.length ? (<><SectionLabel>Hosting</SectionLabel>
             {upcoming.map((b) => <Row key={b.id} title={b.title} subtitle={`${bookingDay(b.starts_at)}${b.area ? `. ${b.area}` : ''}`} onPress={() => r.push({ pathname: '/booking/[id]', params: { id: b.id } })} />)}</>) : null}

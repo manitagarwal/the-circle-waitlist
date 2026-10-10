@@ -275,3 +275,8 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - Buying: pick a ticket, optionally enter a promo code, pay in Razorpay's checkout (opens in the browser), come back with your ticket. A spot is held for 15 minutes while you pay. Paid events have no waitlist: sold out is sold out.
 - Cancelling a paid ticket returns money by the event's refund rules and counts like any cancel for reliability.
 - See `docs/payments.md`.
+
+## Colour (livelier, still grown-up)
+- Each of the seven activity groups has a soft colour (`app/src/lib/tones.ts`, pastel in light mode, deep in dark mode). It tints the circle behind an activity's clipart, event covers without a photo, booking cards, interest chips and the group dots in the filter rail. Everything else stays ivory and charcoal.
+- The welcome screen shows three nested half-discs in those colours.
+- Pictures: events use the cover photo an admin uploads (shown full width); members' photos stay circles.

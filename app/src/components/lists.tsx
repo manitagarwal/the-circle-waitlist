@@ -6,7 +6,8 @@ import { Icon } from './Icon';
 import { Info } from './Info';
 import { useUnread } from '@/lib/unread';
 import { activityIcon } from '@/lib/activityIcons';
-import { colors, fonts, radius } from '@/theme';
+import { colors, fonts, isDark, radius } from '@/theme';
+import { toneFor } from '@/lib/tones';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton, Button } from './ui';
 import { ChipRow } from './ChipRow';
@@ -115,7 +116,7 @@ export const SectionLabel = ({ children, info }: { children: React.ReactNode; in
 export function LetterBadge({ name, size = 56, activity }: { name: string; size?: number; activity?: string | null }) {
   const icon = activityIcon(activity);
   return (
-    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.plate, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: toneFor(activity, isDark) ?? colors.plate, alignItems: 'center', justifyContent: 'center' }}>
       {icon ? <SvgXml xml={icon} width={size * 0.58} height={size * 0.58} color={colors.ink} /> : <Text style={{ fontFamily: fonts.title, fontSize: size * 0.42, color: colors.ink }}>{(name[0] ?? '?').toUpperCase()}</Text>}
     </View>
   );
@@ -168,10 +169,11 @@ export function Row({ left, title, subtitle, meta, right, onPress, tag, unread }
   );
 }
 
-export function Chip({ label, on, onPress }: { label: string; on?: boolean; onPress: () => void }) {
+export function Chip({ label, on, onPress, dot }: { label: string; on?: boolean; onPress: () => void; dot?: string | null }) {
   return (
     <PressScale accessibilityRole="button" accessibilityState={{ selected: !!on }} onPress={onPress}
-      style={{ height: 38, paddingHorizontal: 16, justifyContent: 'center', borderRadius: 19, borderWidth: 1, borderColor: on ? colors.ink : colors.line, backgroundColor: on ? colors.ink : 'transparent', marginRight: 8 }}>
+      style={{ height: 38, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 19, borderWidth: 1, borderColor: on ? colors.ink : colors.line, backgroundColor: on ? colors.ink : 'transparent', marginRight: 8 }}>
+      {dot ? <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: dot, borderWidth: 1, borderColor: on ? colors.inkOn : colors.lineStrong }} /> : null}
       <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: on ? colors.inkOn : colors.ink }}>{label}</Text>
     </PressScale>
   );

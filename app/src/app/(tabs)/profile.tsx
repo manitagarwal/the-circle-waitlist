@@ -7,7 +7,8 @@ import { Icon } from '@/components/Icon';
 import { FadeUp, GrowBar } from '@/components/motion';
 import { SectionLabel, State, TabHeader } from '@/components/lists';
 import { Button, Screen } from '@/components/ui';
-import { colors, fonts, radius } from '@/theme';
+import { colors, fonts, isDark, radius } from '@/theme';
+import { toneFor } from '@/lib/tones';
 import { SITE_URL } from '@/lib/config';
 import { api, useAuth } from '@/lib/auth';
 import { useSignedUrl } from '@/lib/media';
@@ -88,7 +89,7 @@ export default function Profile() {
         {p.interests?.length ? (<>
           <SectionLabel>Into</SectionLabel>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-            {p.interests.map((i) => <Text key={i} style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 22, backgroundColor: colors.surface, overflow: 'hidden' }}>{i}</Text>)}
+            {p.interests.map((i) => <Text key={i} style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 22, backgroundColor: toneFor(i, isDark) ?? colors.surface, overflow: 'hidden' }}>{i}</Text>)}
           </View>
         </>) : null}
         <View style={{ height: 24 }} />

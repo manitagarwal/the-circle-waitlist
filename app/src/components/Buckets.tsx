@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Text } from 'react-native';
 import { ChipRow } from './ChipRow';
 import { Chip } from './lists';
-import { colors, fonts } from '@/theme';
+import { colors, fonts, isDark } from '@/theme';
+import { toneFor } from '@/lib/tones';
 
 type Bucket<T> = { group: { id: number | string; name: string }; items: T[] };
 
@@ -18,7 +19,7 @@ export function Buckets<T>({ buckets, render }: { buckets: Bucket<T>[]; render: 
       {buckets.length > 1 ? (
         <ChipRow>
           <Chip label={`All ${total}`} on={!chosen} onPress={() => setSel('all')} />
-          {buckets.map((b) => <Chip key={b.group.id} label={`${b.group.name} ${b.items.length}`} on={chosen === b} onPress={() => setSel(String(b.group.id))} />)}
+          {buckets.map((b) => <Chip key={b.group.id} label={`${b.group.name} ${b.items.length}`} dot={toneFor(String(b.group.name), isDark)} on={chosen === b} onPress={() => setSel(String(b.group.id))} />)}
         </ChipRow>
       ) : null}
       {chosen ? <Text style={{ fontFamily: fonts.title, fontSize: 26, color: colors.ink, marginTop: 20, marginBottom: 2 }}>{chosen.group.name}</Text> : null}
