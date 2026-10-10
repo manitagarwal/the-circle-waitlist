@@ -43,6 +43,9 @@ const ERRORS = {
   min_score_invalid: 'The reliability score is between 0 and 10.', capacity_below_going: 'More people have already reserved than that capacity.',
   event_locked: 'A cancelled or completed event cannot be edited.', status_invalid: 'That change is not allowed for this event.', ticket_not_found: 'No ticket with that code for this event.', booking_not_started: 'That booking has not started yet.',
   ticket_not_valid: 'That ticket is not valid (cancelled or on the waitlist).', not_joined: 'That member has not reserved a spot.', conflict_of_interest: 'You cannot act on your own case.',
+  ticket_invalid: 'Each ticket needs a name and a price (and a whole number for how many).', refund_rules_invalid: 'Refund rules need hours before the event (0 or more) and a percentage from 0 to 100.',
+  promo_code_invalid: 'Promo codes are 3 to 20 letters, numbers, dash or underscore.', promo_exists: 'That promo code already exists.', promo_value_invalid: 'Enter a discount above 0 (percent up to 100).',
+  refund_not_possible: 'That payment cannot be refunded.', refund_amount_invalid: 'The refund amount is not valid.', payment_not_found: 'No paid payment found.', payments_not_configured: 'Razorpay keys are not set up yet.',
   already_resolved: 'That report was already resolved.', interest_exists: 'That activity already exists.', message_invalid: 'Title up to 80 characters, message up to 500 (2000 for a lobby message).', image_invalid: 'That image could not be used.', channel_not_found: 'No lobby found to post in.',
 };
 const friendlyError = (e) => ERRORS[e && e.message] || (e && e.message) || 'Something went wrong.';
@@ -151,7 +154,7 @@ async function gate() {
 }
 
 /* ---------- shell and routing ---------- */
-const PAGES = [['dashboard', 'Dashboard'], ['applicants', 'Applicants'], ['members', 'Members'], ['reports', 'Reports'], ['events', 'Events'], ['announce', 'Announcements'], ['bookings', 'Bookings'], ['settings', 'Settings'], ['log', 'Activity log']];
+const PAGES = [['dashboard', 'Dashboard'], ['applicants', 'Applicants'], ['members', 'Members'], ['reports', 'Reports'], ['events', 'Events'], ['payments', 'Payments'], ['promos', 'Promo codes'], ['announce', 'Announcements'], ['bookings', 'Bookings'], ['settings', 'Settings'], ['log', 'Activity log']];
 let counts = {};
 
 async function startShell(user) {
@@ -296,13 +299,62 @@ renderers.events = async (main, sub) => {
   put(main, h('div', { class: 'row', style: 'justify-content:space-between' }, header('Events', 'Events we host. Members see published ones in the app.'), h('a', { class: 'btn primary', href: '#/events/new' }, 'New event')),
     list.length ? table(['Event', 'When', 'Status', 'Going', 'Waitlist', 'Attended', 'Price'], list.map((e) => tr([
       h('a', { href: '#/events/' + e.id }, e.title), fmtDate(e.starts_at), badge(e.status, tone[e.status]),
-      e.going + (e.capacity ? ' / ' + e.capacity : ''), e.waitlist, e.attended + (e.no_show ? ' (' + e.no_show + ' no-show)' : ''), Number(e.price_inr) ? '₹' + e.price_inr : 'Free',
+      e.going + (e.capacity ? ' / ' + e.capacity : ''), e.waitlist, e.attended + (e.no_show ? ' (' + e.no_show + ' no-show)' : ''), Number(e.price_inr) ? 'from ' + inr(e.price_inr) : 'Free',
     ]))) : h('p', { class: 'muted' }, 'No events yet.'));
 };
 
+const inr = (n) => '₹' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+
+// ticket types: name, price in rupees, how many (blank = no limit)
+function ticketEditor(initial) {
+  const rows = []; const box = h('div');
+  const addRow = (t = {}) => {
+    const name = h('input', { placeholder: 'Ticket name, e.g. Early bird', value: t.name || '', maxlength: '40', 'aria-label': 'Ticket name', style: 'flex:1;min-width:150px' });
+    const price = h('input', { type: 'number', min: '0', step: '1', placeholder: '₹ price', value: t.price_inr ?? '', 'aria-label': 'Price in rupees', style: 'max-width:110px' });
+    const qty = h('input', { type: 'number', min: '1', step: '1', placeholder: 'No limit', value: t.quantity ?? '', 'aria-label': 'How many are available', style: 'max-width:110px' });
+    const row = { id: t.id || null, name, price, qty, el: null };
+    row.el = h('div', { class: 'row', style: 'gap:8px;margin-bottom:8px;flex-wrap:wrap' }, name, price, qty, t.sold ? h('span', { class: 'faint' }, t.sold + ' sold') : null,
+      h('button', { type: 'button', class: 'small', on: { click: () => { rows.splice(rows.indexOf(row), 1); row.el.remove(); } } }, 'Remove'));
+    rows.push(row); box.append(row.el);
+  };
+  (initial || []).forEach(addRow);
+  const el = h('div', null, h('p', { class: 'faint' }, 'Name, price in rupees, and how many are available (blank = no limit). Leave empty for a free event. Members pick one when they buy.'), box,
+    h('button', { type: 'button', class: 'small', on: { click: () => addRow() } }, 'Add a ticket type'));
+  return { el, value: () => rows.map((r) => ({ id: r.id, name: r.name.value, price_inr: Number(r.price.value || 0), quantity: r.qty.value === '' ? null : Number(r.qty.value) })) };
+}
+
+// refund rules: cancelling at least N hours before the start returns P% of the price; the most generous rule that applies wins
+function refundEditor(initial) {
+  const rows = []; const box = h('div');
+  const addRow = (r = {}) => {
+    const hours = h('input', { type: 'number', min: '0', step: '1', value: r.hours_before ?? '', 'aria-label': 'Hours before the event', style: 'max-width:90px' });
+    const pct = h('input', { type: 'number', min: '0', max: '100', step: '1', value: r.percent ?? '', 'aria-label': 'Percent refunded', style: 'max-width:90px' });
+    const row = { hours, pct, el: null };
+    row.el = h('div', { class: 'row', style: 'gap:8px;margin-bottom:8px;align-items:center' }, 'Cancel at least', hours, 'hours before: refund', pct, '%',
+      h('button', { type: 'button', class: 'small', on: { click: () => { rows.splice(rows.indexOf(row), 1); row.el.remove(); } } }, 'Remove'));
+    rows.push(row); box.append(row.el);
+  };
+  const setAll = (list) => { rows.splice(0).forEach((r) => r.el.remove()); list.forEach(addRow); };
+  (initial || []).forEach(addRow);
+  const preset = (label, list) => h('button', { type: 'button', class: 'small', on: { click: () => setAll(list) } }, label);
+  const el = h('div', null, h('p', { class: 'faint' }, 'When a member cancels, they get back the percentage of the rule that fits. Cancelling later than every rule returns nothing. No rules means no refunds.'), box,
+    h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap' }, h('button', { type: 'button', class: 'small', on: { click: () => addRow() } }, 'Add a rule'),
+      preset('No refunds', []), preset('Full until 48 h, half until 24 h', [{ hours_before: 48, percent: 100 }, { hours_before: 24, percent: 50 }]), preset('Full until 24 h', [{ hours_before: 24, percent: 100 }])));
+  return { el, value: () => rows.filter((r) => r.hours.value !== '' && r.pct.value !== '').map((r) => ({ hours_before: Number(r.hours.value), percent: Number(r.pct.value) })) };
+}
+
+// the admin portal talks to the payments function as the signed-in admin
+async function refundVia(body) {
+  const { data, error } = await sb.functions.invoke('payments?action=refund', { body });
+  if (error) { let m = error.message; try { const j = await error.context.json(); m = j.error || m; } catch (_) {} throw new Error(m); }
+  return data;
+}
+
 async function eventForm(main, id) {
   const interests = await rows(sb.from('interests').select('id,name').eq('is_active', true).order('name'));
-  const e = id ? await rpc('admin_event_get', { p_id: id }) : { genders: [], cities: [] };
+  const e = id ? await rpc('admin_event_get', { p_id: id }) : { genders: [], cities: [], tickets: [], refund_rules: [] };
+  const tix = ticketEditor((e.tickets && e.tickets.length) ? e.tickets : (Number(e.price_inr) > 0 ? [{ name: 'General', price_inr: e.price_inr }] : []));
+  const refunds = refundEditor(e.refund_rules || []);
   let cover = e.cover_path || '';
   const f = {};
   const inp = (key, label, attrs = {}, tag = 'input') => { f[key] = h(tag, { id: 'f-' + key, ...attrs }); return h('div', null, h('label', { class: 'f', for: 'f-' + key }, label), f[key]); };
@@ -325,7 +377,7 @@ async function eventForm(main, id) {
   const form = h('form', { class: 'panel', on: { submit: async (ev) => {
     ev.preventDefault(); err.textContent = ''; save.disabled = true;
     const p = { id: id || null, title: f.title.value, description: f.description.value, interest_id: sel.value || null, cover_path: cover || null, venue_name: f.venue.value, area: f.area.value, city: f.city.value, address_text: f.address.value,
-      starts_at: fromInput(f.starts.value), ends_at: fromInput(f.ends.value), capacity: num(f.capacity.value), price_inr: num(f.price.value) || 0, age_min: num(f.amin.value), age_max: num(f.amax.value), min_score: num(f.score.value),
+      starts_at: fromInput(f.starts.value), ends_at: fromInput(f.ends.value), capacity: num(f.capacity.value), price_inr: 0, tickets: tix.value(), refund_rules: refunds.value(), age_min: num(f.amin.value), age_max: num(f.amax.value), min_score: num(f.score.value),
       genders: gend.filter((g) => g[2].checked).map((g) => g[0]), cities: cityBoxes.filter((c) => c[1].checked).map((c) => c[0]) };
     try { const newId = await rpc('admin_save_event', { p }); toast('Saved'); location.hash = '#/events/' + newId; } catch (x) { err.textContent = friendlyError(x); }
     save.disabled = false;
@@ -336,8 +388,9 @@ async function eventForm(main, id) {
     h('div', { class: 'grid2' }, inp('starts', 'Starts (IST)', { type: 'datetime-local', value: toInput(e.starts_at), required: true }), inp('ends', 'Ends (IST)', { type: 'datetime-local', value: toInput(e.ends_at), required: true })),
     h('div', { class: 'grid2' }, inp('venue', 'Venue', { value: e.venue_name || '' }), inp('area', 'Area', { value: e.area || '' })),
     h('div', { class: 'grid2' }, inp('city', 'City', { value: e.city || '' }), inp('address', 'Full address (shown after reserving)', { value: e.address_text || '' })),
-    h('div', { class: 'grid2' }, inp('capacity', 'Capacity (blank = unlimited)', { type: 'number', min: '1', value: e.capacity ?? '' }), inp('price', 'Price in ₹ (0 = free)', { type: 'number', min: '0', value: e.price_inr ?? 0 })),
-    h('p', { class: 'faint' }, 'Paid events show “Tickets open soon” in the app until payments are built.'),
+    h('div', { class: 'grid2' }, inp('capacity', 'Capacity in total (blank = unlimited)', { type: 'number', min: '1', value: e.capacity ?? '' })),
+    h('h3', null, 'Tickets and prices'), tix.el,
+    h('h3', null, 'Refunds'), refunds.el,
     h('h3', null, 'Who can join'),
     h('div', { class: 'grid2' }, inp('amin', 'Minimum age', { type: 'number', min: '18', value: e.age_min ?? '' }), inp('amax', 'Maximum age', { type: 'number', min: '18', value: e.age_max ?? '' })),
     inp('score', 'Minimum reliability score (0 to 10)', { type: 'number', min: '0', max: '10', step: '0.1', value: e.min_score ?? '' }),
@@ -350,7 +403,7 @@ async function eventForm(main, id) {
 }
 
 async function eventDetail(main, id) {
-  const [e, att] = await Promise.all([rpc('admin_event_get', { p_id: id }), rpc('admin_event_attendees', { p_event: id })]);
+  const [e, att, pays] = await Promise.all([rpc('admin_event_get', { p_id: id }), rpc('admin_event_guests', { p_event: id }), rpc('admin_payments', { p_event: id })]);
   const going = att.filter((a) => a.status === 'going' || a.status === 'attended' || a.status === 'no_show');
   const wait = att.filter((a) => a.status === 'waitlist');
   const status = async (s, title, text, danger) => {
@@ -372,17 +425,72 @@ async function eventDetail(main, id) {
   if (e.status === 'published') actions.push(h('button', { on: { click: () => status('completed', 'Mark as completed?', 'Closes check-in and ends the event.') } }, 'Mark completed'));
   if (e.status === 'draft' || e.status === 'published') actions.push(h('button', { class: 'danger', on: { click: () => status('cancelled', 'Cancel this event') } }, 'Cancel event'));
   if (e.status !== 'cancelled' && e.status !== 'completed') actions.push(h('a', { class: 'btn', href: '#/events/' + id + '/edit' }, 'Edit'));
-  const attRows = (list) => list.map((a) => tr([h('div', null, a.full_name || '—', h('div', { class: 'faint' }, '@' + a.username)), a.phone, a.ticket_code, badge(a.status.replace('_', ' '), a.status === 'attended' ? 'ok' : null), a.checked_in_at ? fmtDate(a.checked_in_at) : '',
+  const attRows = (list) => list.map((a) => tr([h('div', null, a.full_name || '—', h('div', { class: 'faint' }, '@' + a.username)), a.phone, a.ticket_code, a.ticket_name ? a.ticket_name + (a.paid_inr != null ? ' · ' + inr(a.paid_inr) : '') : '', badge(a.status.replace('_', ' '), a.status === 'attended' ? 'ok' : null), a.checked_in_at ? fmtDate(a.checked_in_at) : '',
     h('div', { class: 'row' }, a.status !== 'attended' ? h('button', { class: 'small', on: { click: mark(a, 'attended') } }, 'Attended') : null, a.status !== 'no_show' ? h('button', { class: 'small', on: { click: mark(a, 'no_show') } }, 'No-show') : null)]));
   put(main, h('p', null, h('a', { href: '#/events' }, '← All events')), header(e.title, fmtDate(e.starts_at) + ' to ' + fmtDate(e.ends_at) + ' · ' + e.status),
     h('p', { class: 'muted', style: 'white-space:pre-wrap' }, e.description || ''), h('div', { class: 'row' }, actions),
+    (() => {
+      const paid = pays.filter((x) => ['paid', 'refund_pending', 'refunded', 'partially_refunded'].includes(x.status));
+      if (!paid.length) return null;
+      const gross = paid.reduce((n, x) => n + Number(x.amount_inr), 0), back = paid.reduce((n, x) => n + Number(x.refund_inr || 0), 0);
+      const due = paid.filter((x) => x.status === 'paid' || x.status === 'refund_pending').length;
+      return h('div', { class: 'panel' }, h('h3', null, 'Money'), h('p', null, paid.length + ' payments · ' + inr(gross) + ' taken · ' + inr(back) + ' refunded · ' + inr(gross - back) + ' kept'),
+        e.status === 'cancelled' && due ? h('button', { class: 'danger', on: { click: async () => {
+          if (!(await confirmBox('Refund every paid ticket?', 'All ' + due + ' paid tickets for this event are refunded in full through Razorpay.', 'Refund all', true))) return;
+          if (await act(async () => { const r = await refundVia({ event_id: id }); if (r.failed) throw new Error(r.failed + ' refunds failed. Try again from Payments.'); }, 'Refunds sent')) refresh();
+        } } }, 'Refund all paid tickets') : null, h('p', null, h('a', { href: '#/payments/' + id }, 'See every payment for this event')));
+    })(),
     e.status === 'published' ? h('div', { class: 'panel' }, h('h3', null, 'Check in'), h('div', { class: 'row' }, code, h('button', { class: 'primary', on: { click: checkIn } }, 'Check in')), result) : null,
     h('h3', null, 'Reserved (' + going.length + (e.capacity ? ' of ' + e.capacity : '') + ')'),
-    going.length ? table(['Member', 'Phone', 'Code', 'Status', 'Checked in', ''], attRows(going)) : h('p', { class: 'muted' }, 'No reservations yet.'),
-    wait.length ? [h('h3', null, 'Waitlist (' + wait.length + ')'), table(['Member', 'Phone', 'Code', 'Status', '', ''], attRows(wait))] : null,
-    att.length ? h('p', null, h('button', { on: { click: () => csv('event-' + id.slice(0, 8) + '.csv', ['Name', 'Username', 'Phone', 'Status', 'Ticket code', 'Joined', 'Checked in'], att.map((a) => [a.full_name, a.username, a.phone, a.status, a.ticket_code, a.joined_at, a.checked_in_at])) } }, 'Download attendee list (CSV)')) : null);
+    going.length ? table(['Member', 'Phone', 'Code', 'Ticket', 'Status', 'Checked in', ''], attRows(going)) : h('p', { class: 'muted' }, 'No reservations yet.'),
+    wait.length ? [h('h3', null, 'Waitlist (' + wait.length + ')'), table(['Member', 'Phone', 'Code', 'Ticket', 'Status', '', ''], attRows(wait))] : null,
+    att.length ? h('p', null, h('button', { on: { click: () => csv('event-' + id.slice(0, 8) + '.csv', ['Name', 'Username', 'Phone', 'Email', 'Status', 'Ticket code', 'Ticket', 'Paid (₹)', 'Joined', 'Checked in'], att.map((a) => [a.full_name, a.username, a.phone, a.email, a.status, a.ticket_code, a.ticket_name, a.paid_inr, a.joined_at, a.checked_in_at])) } }, 'Download attendee list (CSV)')) : null);
   code.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') checkIn(); });
 }
+
+/* ---------- payments: every ticket sale, with refunds and totals ---------- */
+renderers.payments = async (main, sub) => {
+  const evId = sub[0] || null;
+  const all = await rpc('admin_payments', { p_event: evId });
+  const events = await rpc('admin_events');
+  const title = evId ? (events.find((e) => e.id === evId) || {}).title || 'Event' : 'All events';
+  const taken = all.filter((x) => ['paid', 'refund_pending', 'refunded', 'partially_refunded'].includes(x.status));
+  const gross = taken.reduce((n, x) => n + Number(x.amount_inr), 0), back = taken.reduce((n, x) => n + Number(x.refund_inr || 0), 0), disc = taken.reduce((n, x) => n + Number(x.discount_inr || 0), 0);
+  const pick = h('select', { 'aria-label': 'Event', on: { change: () => { location.hash = '#/payments' + (pick.value ? '/' + pick.value : ''); } } }, h('option', { value: '' }, 'All events'), events.map((e) => h('option', { value: e.id, selected: e.id === evId }, e.title)));
+  const tone = { paid: 'ok', refunded: null, partially_refunded: null, refund_pending: null, failed: null };
+  const refund = (x) => async () => {
+    const amt = await promptBox('Refund ' + inr(x.amount_inr) + ' to ' + (x.full_name || x.username) + '?', 'Amount in ₹ (full = ' + x.amount_inr + ')', { value: String(x.amount_inr), required: true, ok: 'Refund' }); if (amt == null) return;
+    if (await act(async () => { const r = await refundVia({ payment_id: x.id, amount: Number(amt) }); if (r.failed) throw new Error('The refund did not go through. Try again in a moment.'); }, 'Refund sent')) refresh();
+  };
+  put(main, header('Payments', title), h('div', { class: 'row' }, pick),
+    h('div', { class: 'panel' }, h('p', null, taken.length + ' paid tickets · ' + inr(gross) + ' taken · ' + inr(disc) + ' given as discounts · ' + inr(back) + ' refunded · ' + inr(gross - back) + ' kept')),
+    all.length ? table(['When', 'Member', 'Event', 'Ticket', 'Promo', 'Paid', 'Status', 'Razorpay id', ''], all.map((x) => tr([
+      fmtDate(x.paid_at || x.created_at), h('div', null, x.full_name || '—', h('div', { class: 'faint' }, '@' + x.username)), x.event_title, x.ticket_name, x.promo_code || '',
+      inr(x.amount_inr) + (Number(x.discount_inr) ? ' (−' + inr(x.discount_inr) + ')' : ''), badge(x.status.replace('_', ' '), tone[x.status]) , x.razorpay_payment_id || '',
+      ['paid', 'refund_pending', 'partially_refunded'].includes(x.status) ? h('button', { class: 'small', on: { click: refund(x) } }, x.status === 'refund_pending' ? 'Retry refund' : 'Refund') : null,
+    ]))) : h('p', { class: 'muted' }, 'No payments yet.'),
+    all.length ? h('p', null, h('button', { on: { click: () => csv('payments.csv', ['Paid at', 'Member', 'Username', 'Event', 'Ticket', 'Promo', 'List price', 'Discount', 'Paid', 'Refunded', 'Status', 'Method', 'Razorpay payment'],
+      all.map((x) => [x.paid_at || x.created_at, x.full_name, x.username, x.event_title, x.ticket_name, x.promo_code, x.list_price_inr, x.discount_inr, x.amount_inr, x.refund_inr, x.status, x.method, x.razorpay_payment_id])) } }, 'Download (CSV)')) : null);
+};
+
+/* ---------- promo codes ---------- */
+renderers.promos = async (main) => {
+  const [list, events] = await Promise.all([rpc('admin_promos'), rpc('admin_events')]);
+  const code = h('input', { placeholder: 'CODE', 'aria-label': 'Promo code', maxlength: '20', style: 'max-width:150px;text-transform:uppercase' });
+  const kind = h('select', { 'aria-label': 'Type' }, h('option', { value: 'percent' }, '% off'), h('option', { value: 'amount' }, '₹ off'));
+  const val = h('input', { type: 'number', min: '1', step: '1', placeholder: 'Amount', 'aria-label': 'Discount', style: 'max-width:100px' });
+  const ev = h('select', { 'aria-label': 'Event' }, h('option', { value: '' }, 'Any event'), events.filter((e) => e.status === 'published' || e.status === 'draft').map((e) => h('option', { value: e.id }, e.title)));
+  const max = h('input', { type: 'number', min: '1', step: '1', placeholder: 'No limit', 'aria-label': 'How many times it can be used', style: 'max-width:110px' });
+  const exp = h('input', { type: 'datetime-local', 'aria-label': 'Expires (IST)' });
+  const make = async () => {
+    if (await act(() => rpc('admin_save_promo', { p: { code: code.value, kind: kind.value, value: Number(val.value), event_id: ev.value || null, max_uses: max.value === '' ? null : Number(max.value), expires_at: exp.value ? fromInput(exp.value) : null } }), 'Promo code created')) refresh();
+  };
+  const toggle = (c) => async () => { if (await act(() => rpc('admin_save_promo', { p: { id: c.id, active: !c.active } }), c.active ? 'Switched off' : 'Switched on')) refresh(); };
+  put(main, header('Promo codes', 'A code takes money off a ticket. Members type it when they buy. Use ₹ off for a fixed amount, or % off.'),
+    h('div', { class: 'panel' }, h('h3', null, 'New code'), h('div', { class: 'row', style: 'gap:8px;flex-wrap:wrap' }, code, kind, val, ev, max, exp, h('button', { class: 'primary', on: { click: make } }, 'Create'))),
+    list.length ? table(['Code', 'Discount', 'Event', 'Used', 'Expires', 'Status', ''], list.map((c) => tr([h('code', null, c.code), c.kind === 'percent' ? c.value + '% off' : inr(c.value) + ' off', c.event_title || 'Any event',
+      c.used + (c.max_uses ? ' / ' + c.max_uses : ''), c.expires_at ? fmtDate(c.expires_at) : 'Never', badge(c.active ? 'on' : 'off', c.active ? 'ok' : null), h('button', { class: 'small', on: { click: toggle(c) } }, c.active ? 'Switch off' : 'Switch on')]))) : h('p', { class: 'muted' }, 'No promo codes yet.'));
+};
 
 /* ---------- announcements: a notification (and phone alert), a message in lobbies, and what was sent ---------- */
 const IMG_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };

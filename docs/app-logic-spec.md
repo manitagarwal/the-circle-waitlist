@@ -269,3 +269,9 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 ## Unread
 - A dot on a channel, group or DM badge means it has messages you haven't opened; it goes away when you open the chat. Messages (DMs and groups) and Activity show a count on their header icons. Counts update live.
 - Messages and Activity open as their own screens with a back button; the bottom bar is hidden there, like Find people.
+
+## Event tickets and payments
+- Events can have several ticket types with their own prices and quantities, optional promo codes and per-event refund rules, all set in the portal. Free events work as before.
+- Buying: pick a ticket, optionally enter a promo code, pay in Razorpay's checkout (opens in the browser), come back with your ticket. A spot is held for 15 minutes while you pay. Paid events have no waitlist: sold out is sold out.
+- Cancelling a paid ticket returns money by the event's refund rules and counts like any cancel for reliability.
+- See `docs/payments.md`.
