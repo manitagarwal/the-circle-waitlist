@@ -96,3 +96,15 @@ export function groupByDay<T extends { starts_at: string }>(rows: T[], now = new
   }
   return out;
 }
+
+/** The reliability levels a host can ask for, and the search filter offers. */
+export const SCORE_STEPS = [5, 6, 7, 8, 9] as const;
+export const SCORE_OPEN = 'Open to everyone';
+export const scoreLabel = (n: number) => `${n}+`;
+/** Search filter: "Open to everyone" keeps bookings with no minimum; "7+" keeps bookings that ask for 7 or more. */
+export function scoreMatches(min: number | null, choice: string | undefined): boolean {
+  if (!choice) return true;
+  if (choice === SCORE_OPEN) return min == null;
+  const n = Number(choice.replace('+', ''));
+  return min != null && min >= n;
+}

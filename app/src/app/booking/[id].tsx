@@ -84,7 +84,7 @@ export default function BookingDetail() {
 
       {age || b.min_score != null ? <SectionLabel>To join</SectionLabel> : null}
       {age ? <Line k={`Age ${age}`} v={me.age != null ? `You're ${me.age}` : ''} note={me.age != null && joinCheck({ ...b, is_host: false, my_status: null, male_slots: null, female_slots: null, joined_count: 0 }, me).ok ? 'You qualify' : null} /> : null}
-      {b.min_score != null ? <Line k="Reliable members only" v="Hosts can hide a booking from members with a low reliability score." note={qualifies === true ? 'You qualify' : qualifies === false ? 'Not yet' : null} /> : null}
+      {b.min_score != null ? <Line k="Minimum reliability" v={`${b.min_score} or higher`} note={qualifies === true ? 'You qualify' : qualifies === false ? 'Not yet' : null} /> : null}
 
       {b.description ? <Body style={{ marginTop: 16 }}>{b.description}</Body> : null}
       {err ? <Notice tone="error">{err}</Notice> : null}

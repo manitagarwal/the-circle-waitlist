@@ -46,3 +46,14 @@ test('slotDay never says Tonight', () => {
   assert.equal(slotDay('2026-10-08T15:00:00Z', now), 'Today');
   assert.equal(slotDay('2026-10-09T03:00:00Z', now), 'Tomorrow');
 });
+
+test('the reliability filter and the hosting steps agree', async () => {
+  const { scoreMatches, SCORE_OPEN, scoreLabel, SCORE_STEPS } = await import('./bookings.ts');
+  assert.equal(scoreMatches(null, undefined), true);
+  assert.equal(scoreMatches(null, SCORE_OPEN), true);
+  assert.equal(scoreMatches(7, SCORE_OPEN), false);
+  assert.equal(scoreMatches(7, scoreLabel(7)), true);
+  assert.equal(scoreMatches(7, scoreLabel(8)), false);
+  assert.equal(scoreMatches(null, scoreLabel(5)), false);
+  assert.deepEqual([...SCORE_STEPS].map(scoreLabel), ['5+', '6+', '7+', '8+', '9+']);
+});
