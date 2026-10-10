@@ -315,3 +315,9 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Privacy: 7 switches (`lib/privacy.ts` PRIVACY_FIELDS), all visible by default. Members can hide any of them in Settings > What others see.
 - Always visible: photo, name, username. Reliability score is never shown to others (only used for booking filters).
 - Hidden fields are masked on the server in the `member_profiles` view, so the app receives null; screens show nothing for null fields.
+
+## History, queue, area (Oct 2026)
+- Profile > "Your history": every past booking (hosted/joined/cancelled) and event (attended/missed/cancelled) with All / Bookings / Events tabs, grouped by month (`lib/history.ts`).
+- Queue number shown to applicants = 432 + real position, so the first applicant sees #433.
+- Delhi NCR only: the database refuses applications from other cities (`outside_area`). Choosing "Other" in the app takes an email and city, saved to `city_interest`, and does not enter the queue.
+- Avatars are drawn in a per-avatar colour pair (light and dark variants) instead of one ink colour.

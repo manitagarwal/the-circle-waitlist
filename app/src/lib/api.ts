@@ -190,6 +190,11 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       if (error) throw error;
       return data as BookingRow[];
     },
+    bookingsHistory: async () => {
+      const { data, error } = await sb.from('bookings_overview').select('*').or('is_host.eq.true,my_status.not.is.null').lt('ends_at', new Date().toISOString()).order('starts_at', { ascending: false });
+      if (error) throw error;
+      return data as BookingRow[];
+    },
     booking: async (id: string) => {
       const { data, error } = await sb.from('bookings_overview').select('*').eq('id', id).maybeSingle();
       if (error) throw error;
@@ -335,6 +340,7 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     markAllRead: () => rpc<number>('mark_all_notifications_read'),
     respondFriend: (from: string, accept: boolean) => rpc<void>('respond_friend_request', { p_from: from, p_accept: accept }),
     hasPassword: () => rpc<boolean>('has_password'),
+    registerCityInterest: (email: string, city: string) => rpc<void>('register_city_interest', { p_email: email, p_city: city }),
     myApplication: async (): Promise<Application | null> => {
       const rows = await rpc<Application[]>('my_application');
       return rows?.[0] ?? null;

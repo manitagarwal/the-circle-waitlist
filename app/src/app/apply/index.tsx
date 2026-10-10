@@ -19,8 +19,21 @@ export default function Details() {
   const { s, set } = useApply();
   const [errs, setErrs] = useState<Errs>({});
   const [busy, setBusy] = useState(false);
+  const [noted, setNoted] = useState(false);
 
   const next = async () => {
+    if (s.city === 'Other') {
+      const e: Errs = {};
+      if (!cityValue(s)) e.city = 'Type your city.';
+      if (!isEmail(s.personalEmail)) e.personalEmail = 'Enter a valid email address.';
+      setErrs(e);
+      if (Object.keys(e).length) return;
+      setBusy(true);
+      try { await api.registerCityInterest(s.personalEmail, cityValue(s)); setNoted(true); }
+      catch { setErrs({ fullName: "Can't reach the server. Check your connection." }); }
+      finally { setBusy(false); }
+      return;
+    }
     const e: Errs = {};
     if (s.fullName.trim().length < 2) e.fullName = 'Enter your full name.';
     const pe = phoneError(s.dial, s.phone);
@@ -43,8 +56,15 @@ export default function Details() {
     finally { setBusy(false); }
   };
 
+  if (noted) return (
+    <Screen footer={<Button label="Back" variant="secondary" onPress={() => { setNoted(false); set({ city: '', cityOther: '' }); }} />}>
+      <Title italic>Not there yet.</Title>
+      <Body style={{ marginTop: 8 }}>The Semi Circle is only in Delhi NCR for now. We've noted {cityValue(s)} and will email {s.personalEmail} when we open there.</Body>
+    </Screen>
+  );
+
   return (
-    <Screen footer={<Button label="Continue" onPress={next} loading={busy} />}>
+    <Screen footer={<Button label={s.city === 'Other' ? 'Notify me' : 'Continue'} onPress={next} loading={busy} />}>
       <StepHeader step={1} of={5} />
       <Title italic>Request an invitation.</Title>
       <Info text={"Five short steps. Read by people, not a model."} />
@@ -53,7 +73,7 @@ export default function Details() {
       <View style={{ marginTop: 16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
           <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted }}>City</Text>
-          <Info text="Delhi NCR only for now. Elsewhere? Pick Other and we'll tell you when we reach you." title="City" size={18} style={{ marginTop: 0 }} />
+          <Info text="Delhi NCR only for now. Elsewhere? Pick Other and we'll email you when we reach your city. You won't join the queue." title="City" size={18} style={{ marginTop: 0 }} />
         </View>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           {CITIES.map((c) => {
@@ -66,9 +86,10 @@ export default function Details() {
         {errs.city ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.error, marginTop: 6 }}>{errs.city}</Text> : null}
       </View>
       {s.city === 'Other' ? <TextField label="Your city" value={s.cityOther} onChangeText={(v) => set({ cityOther: v })} autoComplete="off" /> : null}
+      {s.city === 'Other' ? <Body style={{ marginTop: 12 }}>We're only in Delhi NCR for now. Add your email below and we'll tell you when we open in your city.</Body> : null}
       <TextField label="Personal email" value={s.personalEmail} onChangeText={(v) => set({ personalEmail: v })} keyboardType="email-address" autoCapitalize="none" autoComplete="email"
         editable={!s.personalVerified} error={errs.personalEmail} hint="This is your login. We'll check it's yours in the next step." />
-      <TextField label="LinkedIn URL" value={s.linkedin} onChangeText={(v) => set({ linkedin: v })} keyboardType="url" autoCapitalize="none" placeholder="https://linkedin.com/in/yourname" error={errs.linkedin} />
+      {s.city === 'Other' ? null : <TextField label="LinkedIn URL" value={s.linkedin} onChangeText={(v) => set({ linkedin: v })} keyboardType="url" autoCapitalize="none" placeholder="https://linkedin.com/in/yourname" error={errs.linkedin} />}
     </Screen>
   );
 }

@@ -19,7 +19,7 @@ const month = (iso: string) => new Intl.DateTimeFormat('en-IN', { month: 'long',
 
 function Stat({ n, label, onPress }: { n: number | string; label: string; onPress?: () => void }) {
   return (
-    <Pressable accessibilityRole={onPress ? 'button' : undefined} disabled={!onPress} onPress={onPress} style={{ flex: 1, alignItems: 'center', paddingVertical: 14 }}>
+    <Pressable disabled={!onPress} onPress={onPress} style={{ flex: 1, alignItems: 'center', paddingVertical: 14 }}>
       <Text style={{ fontFamily: fonts.display, fontSize: 32, color: colors.ink }}>{n}</Text>
       <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.4, textTransform: 'uppercase', color: colors.muted, marginTop: 2 }}>{label}</Text>
     </Pressable>
@@ -76,6 +76,11 @@ export default function Profile() {
           <Stat n={p.bookings_hosted ?? 0} label="Hosted" /><Stat n={data!.friends} label="Friends" onPress={() => r.push('/friends')} /><Stat n={data!.channels} label="Channels" />
         </View>
         {p.member_since ? <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.6, textTransform: 'uppercase', color: colors.faint, textAlign: 'center', marginTop: 12 }}>Member since {month(p.member_since)}</Text> : null}
+
+        <Pressable onPress={() => r.push('/history')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 56, borderBottomWidth: 1, borderBottomColor: colors.line }}>
+          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.ink }}>Your history</Text>
+          <Icon name="chevron" size={18} color={colors.faint} />
+        </Pressable>
 
         {data!.score != null ? (<>
           <SectionLabel info="Only you can see this.">Your reliability</SectionLabel>

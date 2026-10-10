@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, Switch, Text, View } from 'react-native';
 import { Bar } from '@/components/Bar';
-import { Info } from '@/components/Info';
 import { State } from '@/components/lists';
 import { Notice } from '@/components/ui';
 import { colors, fonts } from '@/theme';
@@ -30,7 +29,6 @@ export default function PrivacyScreen() {
         {data ? (<>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.8, color: colors.faint }}>ALWAYS VISIBLE: PHOTO, NAME, USERNAME</Text>
-            <Info text="Everyone needs to know who they are talking to, so your photo, name and username can't be hidden. Everything else is up to you. Your reliability score is never shown to anyone." title="Always visible" size={18} style={{ marginTop: 0 }} />
           </View>
           <View style={{ marginTop: 8 }}>
             {PRIVACY_FIELDS.map((f) => {

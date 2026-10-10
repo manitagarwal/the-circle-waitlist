@@ -125,3 +125,8 @@ Security definer. Caller must be in the public channel; invitee must be an activ
 - `members.privacy jsonb` (field -> bool, missing = visible).
 - `member_profiles` view masks hidden fields as null.
 - Functions: `my_privacy()`, `set_privacy(field, shown)`.
+
+## Migration 042: queue base, NCR only
+- `my_application()` queue_position = 432 + count.
+- `is_ncr_city(text)`, trigger `applicants_ncr_only` on applicants (insert / city update) raising `outside_area`.
+- `city_interest(email, city)` with RLS on and no policies; written only through `register_city_interest(email, city)`.

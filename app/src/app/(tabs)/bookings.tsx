@@ -12,7 +12,7 @@ import { FilterBar, Segmented, SectionLabel, State, TabHeader } from '@/componen
 import { Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api } from '@/lib/auth';
-import { type BookingRow, genderWanted, groupByDay, joinCheck, SCORE_OPEN, SCORE_STEPS, scoreLabel, scoreMatches, spots, timeRange } from '@/lib/bookings';
+import { type BookingRow, genderWanted, groupByDay, joinCheck, SCORE_OPEN, scoreLabel, scoreMatches, spots, timeRange } from '@/lib/bookings';
 import { bucket, interestIndex, loadInterestGroups } from '@/lib/interests';
 import { useLoad } from '@/lib/useLoad';
 
@@ -68,7 +68,7 @@ export default function Bookings() {
           { key: 'area', label: 'Area', options: uniq(data.upcoming.map((b) => b.area)) },
           { key: 'activity', label: 'Activity', options: uniq(data.upcoming.map((b) => b.interest_name)) },
           { key: 'mix', label: 'Gender mix', options: ['Open to men', 'Open to women'] },
-          { key: 'score', label: 'Reliability', options: [SCORE_OPEN, ...SCORE_STEPS.map(scoreLabel)] },
+          { key: 'score', label: 'Reliability', options: [SCORE_OPEN], slider: { min: 0, max: 10, step: 0.5, format: scoreLabel } },
           { key: 'fit', label: 'Fits me', options: ['Only ones I can join'] },
         ]} />
         <State empty={shown.length === 0 && !loading ? (data.upcoming.length === 0 ? 'No bookings yet. Host the first one.' : 'Nothing matches those filters.') : null} />

@@ -9,18 +9,13 @@ import { DatePickerSheet, TimePickerSheet } from '@/components/Pickers';
 import { Body, Button, Notice, Stepper, TextField } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api } from '@/lib/auth';
-import { closeLabel, SCORE_STEPS, scoreLabel } from '@/lib/bookings';
+import { closeLabel } from '@/lib/bookings';
 import type { BookingLimits } from '@/lib/api';
 import { clampDuration, type Clock12, DURATION_STEP, durationLabel, istToIso, MIN_DURATION, startError, todayIST, type YMD, ymdLabel, clockLabel } from '@/lib/schedule';
 import { clock } from '@/lib/format';
 import { friendly } from '@/lib/messages';
 import { useLoad } from '@/lib/useLoad';
 import { Info } from '@/components/Info';
-
-const AGES: { label: string; min: number | null; max: number | null }[] = [
-  { label: 'Any age', min: null, max: null }, { label: '18 to 25', min: 18, max: 25 }, { label: '25 to 35', min: 25, max: 35 },
-  { label: '35 to 45', min: 35, max: 45 }, { label: '45 and over', min: 45, max: null },
-];
 
 export default function NewBooking() {
   const r = useRouter();
@@ -41,11 +36,12 @@ export default function NewBooking() {
   const [area, setArea] = useState('');
   const [address, setAddress] = useState('');
   const [people, setPeople] = useState(4);
-  const [age, setAge] = useState(0);
+  const [ageMinT, setAgeMinT] = useState('');
+  const [ageMaxT, setAgeMaxT] = useState('');
   const [mixOn, setMixOn] = useState(false);
   const [men, setMen] = useState(2);
   const [women, setWomen] = useState(2);
-  const [minScore, setMinScore] = useState<number | null>(null);
+  const [minScoreT, setMinScoreT] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -63,8 +59,13 @@ export default function NewBooking() {
     void api.bookingWindow(a.id).then(setWin);
     void api.bookingLimits(a.id).then((l) => { setLimits(l); setCloseH(l.close_hours); setPeople((p) => Math.min(p, l.max_people)); setMen(0); setWomen(0); });
   };
+  const num = (s: string) => (s.trim() === '' ? null : Number(s.trim().replace(',', '.')));
+  const ageMin = num(ageMinT), ageMax = num(ageMaxT), minScore = num(minScoreT);
+  const ageErr = (ageMin != null && (!Number.isInteger(ageMin) || ageMin < 18 || ageMin > 99)) || (ageMax != null && (!Number.isInteger(ageMax) || ageMax < 18 || ageMax > 99))
+    ? 'Ages are whole numbers from 18 to 99.' : ageMin != null && ageMax != null && ageMax < ageMin ? 'The maximum age can’t be below the minimum.' : null;
+  const scoreErr = minScore != null && (Number.isNaN(minScore) || minScore < 0 || minScore > 10) ? 'Reliability is a number from 0 to 10.' : null;
   const headcount = mixOn ? men + women : people;
-  const ready = !!interest && title.trim().length >= 3 && !!start && !startErr && venue.trim() && area.trim() && address.trim() && headcount >= 2;
+  const ready = !!interest && title.trim().length >= 3 && !!start && !startErr && venue.trim() && area.trim() && address.trim() && headcount >= 2 && !ageErr && !scoreErr;
 
   const post = async () => {
     if (!interest || !start || !end) return;
@@ -73,7 +74,7 @@ export default function NewBooking() {
       const id = await api.createBooking({
         interestId: interest.id, title: title.trim(), description: desc.trim() || null, venue: venue.trim(), area: area.trim(), address: address.trim(),
         startsAt: start, endsAt: end, headcountMax: headcount, maleSlots: mixOn ? men : null, femaleSlots: mixOn ? women : null,
-        minScore, ageMin: AGES[age].min, ageMax: AGES[age].max,
+        minScore, ageMin, ageMax,
       });
       if (limits && closeH != null && closeH > limits.close_hours) await api.setBookingCloseHours(id, closeH).catch(() => {});
       r.replace({ pathname: '/booking/[id]', params: { id } });
@@ -117,7 +118,11 @@ export default function NewBooking() {
         {label(limits ? `People, up to ${limits.max_people} for ${interest?.name ?? 'this activity'}` : 'People')}
         {mixOn ? <Body style={{ fontSize: 14 }}>{men + women} in total, including you.</Body> : <Stepper label="People, including you" value={people} min={2} max={limits?.max_people ?? 30} onChange={setPeople} />}
         {label('Age range')}
-        <ChipRow>{AGES.map((a, i) => <Chip key={a.label} label={a.label} on={age === i} onPress={() => setAge(i)} />)}</ChipRow>
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <View style={{ flex: 1 }}><TextField label="Youngest (optional)" value={ageMinT} onChangeText={(v) => setAgeMinT(v.replace(/\D/g, '').slice(0, 2))} keyboardType="number-pad" placeholder="Any" /></View>
+          <View style={{ flex: 1 }}><TextField label="Oldest (optional)" value={ageMaxT} onChangeText={(v) => setAgeMaxT(v.replace(/\D/g, '').slice(0, 2))} keyboardType="number-pad" placeholder="Any" /></View>
+        </View>
+        {ageErr ? <Body style={{ fontSize: 13 }}>{ageErr}</Body> : null}
         {label('Gender mix')}
         <View style={{ flexDirection: 'row' }}><Chip label="Anyone" on={!mixOn} onPress={() => setMixOn(false)} /><Chip label="Set the mix" on={mixOn} onPress={() => setMixOn(true)} /></View>
         {mixOn ? <><Stepper label="Men, including you if you are one" value={men} min={0} max={Math.max(0, (limits?.max_people ?? 30) - women)} onChange={setMen} /><Stepper label="Women, including you if you are one" value={women} min={0} max={Math.max(0, (limits?.max_people ?? 30) - men)} onChange={setWomen} /></> : null}
@@ -127,13 +132,11 @@ export default function NewBooking() {
           <ChipRow>{[limits.close_hours, ...[3, 4, 6, 12, 24, 48, 72, 168].filter((h) => h > limits.close_hours)].map((h) => <Chip key={h} label={closeLabel(h, h === limits.close_hours)} on={closeH === h} onPress={() => setCloseH(h)} />)}</ChipRow>
         </>) : null}
         {label('Minimum reliability')}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <View style={{ flex: 1 }}><ChipRow>
-            <Chip label="Anyone" on={minScore == null} onPress={() => setMinScore(null)} />
-            {SCORE_STEPS.map((n) => <Chip key={n} label={scoreLabel(n)} on={minScore === n} onPress={() => setMinScore(n)} />)}
-          </ChipRow></View>
-          <Info text="Only members whose reliability score is at or above this can join your booking." title="Minimum reliability" />
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
+          <View style={{ flex: 1 }}><TextField label="Lowest score that can join (optional)" value={minScoreT} onChangeText={(v) => setMinScoreT(v.replace(/[^0-9.,]/g, '').slice(0, 4))} keyboardType="decimal-pad" placeholder="Anyone" /></View>
+          <Info text="Only members whose reliability score is at or above this can join your booking. Scores go from 0 to 10. Leave empty to let anyone join." title="Minimum reliability" />
         </View>
+        {scoreErr ? <Body style={{ fontSize: 13 }}>{scoreErr}</Body> : null}
         <TextField label="Anything else? (optional)" value={desc} onChangeText={setDesc} multiline maxLength={500} style={{ height: 88, paddingTop: 12, textAlignVertical: 'top' }} />
 
         {mine.data ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 20 }}>{mine.data.open} of 2 bookings open. {Math.max(0, 3 - mine.data.today)} of 3 left to post today.</Text> : null}

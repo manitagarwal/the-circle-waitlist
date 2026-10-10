@@ -11,7 +11,6 @@ import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { NOTIFICATION_SWITCHES } from '@/lib/profile';
 import { useLoad } from '@/lib/useLoad';
-import { Info } from '@/components/Info';
 
 const Chev = () => <Icon name="chevron" size={18} color={colors.faint} />;
 
@@ -54,9 +53,8 @@ export default function Settings() {
               <Switch accessibilityLabel={sw.label} value={isOn(sw.categories)} onValueChange={(v) => toggle(sw.categories, v)} trackColor={{ true: colors.ink, false: colors.lineStrong }} thumbColor={colors.ground} />
             </View>))}
           {err ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.error, marginTop: 8 }}>{err}</Text> : null}
-          <Info text={"Notices about your account, like a warning, always come through."} />
 
-          <SectionLabel>More</SectionLabel>
+          <SectionLabel>About</SectionLabel>
           <Row title="Community guidelines" right={<Chev />} onPress={() => r.push('/settings/guidelines')} />
           <Row title="Terms of use" right={<Chev />} onPress={() => void Linking.openURL(`${SITE_URL}/terms/`)} />
           <Row title="Privacy policy" right={<Chev />} onPress={() => void Linking.openURL(`${SITE_URL}/privacy/`)} />

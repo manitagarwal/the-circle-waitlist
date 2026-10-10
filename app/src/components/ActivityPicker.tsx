@@ -15,7 +15,7 @@ export function ActivityPicker({ visible, onClose, onPick, selectedId, bookableO
   useEffect(() => { if (visible && !groups) loadInterestGroups(() => api.interestGroups()).then(setGroups).catch((e) => setErr(friendly(e))); }, [visible, groups]);
   return (
     <Sheet visible={visible} onClose={onClose} title="Activity">
-      <ScrollView>
+      <ScrollView style={{ flexGrow: 0, flexShrink: 1 }}>
         <State loading={!groups && !err} error={err} />
         {groups?.filter((g) => !bookableOnly || g.bookings_allowed).map((g) => (
           <Collapsible key={g.id} title={g.name} count={g.interests.length} defaultOpen={g.interests.some((i) => i.id === selectedId)}>
