@@ -234,5 +234,5 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - Actions: Add friend (request, optional note), Message (one message until they accept), and the ... menu with Unfriend, Report and Block. Blocked members cannot see each other's profiles at all.
 
 ## Legal pages and icon
-- Privacy policy at /privacy/ and terms at /terms/ on the website, linked from the site footer and from Settings in the app. Bracketed highlighted parts (legal entity, address, dates, grievance officer, refund policy) must be filled in before launch.
+- Privacy policy at /privacy/ and terms at /terms/ on the website, linked from Settings in the app. They are marked noindex and not yet linked from the site footer; add the footer links and remove noindex once the bracketed parts are filled in. Bracketed highlighted parts (legal entity, address, dates, grievance officer, refund policy) must be filled in before launch.
 - App icon: the half-circle mark in gold on near-black (`app/assets/icon.png`, plus an Android adaptive icon, splash mark and favicon).
