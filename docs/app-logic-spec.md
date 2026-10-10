@@ -215,3 +215,9 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - Email and password only. The authenticator-app step is built but switched off (`REQUIRE_MFA` in admin.js). Only accounts that pass `is_admin()` get in.
 - Pages: Dashboard, Applicants (shortlist, accept, reject), Members (warn, suspend, ban, lift), Reports (dismiss, minor, severe), Events (create, edit, publish, cancel, complete, attendees, check-in, CSV, cover image), Applicants: accepting also emails them (send-acceptance function, needs the Resend key as a Supabase secret). Announcements (a notification to all or by activity, or a message posted in chosen lobbies), Bookings (read only), Settings (rules, activities, suggestions, blocked words), Activity log.
 - Every action calls an admin-only database function or a table with an admin-only policy.
+
+## Website apply flow (thesemicircle.in)
+- The website form is the same five steps as the app, with the same wording, checks and database calls: Details, Login (personal email code, then password), Work email (verified through a throwaway client), Vouch (referral code and people), Review and submit.
+- "Already applied? Log in" on the page signs in with email and password and shows the application status (queue position, declined, accepted, or already a member). "Forgot, or haven't set a password?" uses the emailed code. This replaces the old status page; `status.html` now just redirects.
+- A referral link `/?ref=CODE` pre-fills the referral code on step 4.
+- Nothing typed on the page is ever inserted as HTML.

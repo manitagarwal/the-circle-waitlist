@@ -42,7 +42,7 @@ export default function Details() {
     <Screen footer={<Button label="Continue" onPress={next} loading={busy} />}>
       <StepHeader step={1} of={5} />
       <Title italic>Request an invitation.</Title>
-      <Body style={{ marginTop: 6, fontSize: 14 }}>Four short steps. Read by people, not a model.</Body>
+      <Body style={{ marginTop: 6, fontSize: 14 }}>Five short steps. Read by people, not a model.</Body>
       <TextField label="Full name" value={s.fullName} onChangeText={(v) => set({ fullName: v })} autoComplete="name" error={errs.fullName} />
       <TextField label="Phone number" value={s.phone} onChangeText={(v) => set({ phone: v })} keyboardType="phone-pad" autoComplete="tel" error={errs.phone} />
       <View style={{ marginTop: 16 }}>
