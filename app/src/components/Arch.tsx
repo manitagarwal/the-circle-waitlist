@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, View } from 'react-native';
 import Svg, { Path, SvgXml } from 'react-native-svg';
 import { AVATAR_SVGS } from '@/lib/avatars';
-import { colors } from '@/theme';
+import { colors, isDark } from '@/theme';
 import { useReduceMotion } from './motion';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -76,6 +76,26 @@ export function Arcs({ width = 300, color = colors.line, stroke = 1.5, delay = 2
             strokeDashoffset={vals[i].interpolate({ inputRange: [0, 1], outputRange: [len, 0] })} />;
         })}
       </Svg>
+    </View>
+  );
+}
+
+/** Three nested half-discs in the activity colours that rise into place: the welcome picture. */
+export function ArchDiscs({ width = 320 }: { width?: number }) {
+  const reduce = useReduceMotion();
+  const h = width / 2;
+  const discs = [{ r: h, c: isDark ? '#3a3157' : '#d9ccf2' }, { r: h * 0.72, c: isDark ? '#5a3f26' : '#f6d3b3' }, { r: h * 0.44, c: isDark ? '#2e4a33' : '#cfe4c8' }];
+  const vals = useRef(discs.map(() => new Animated.Value(0))).current;
+  useEffect(() => {
+    if (reduce) { vals.forEach((v) => v.setValue(1)); return; }
+    Animated.stagger(160, vals.map((v) => Animated.spring(v, { toValue: 1, speed: 10, bounciness: 9, useNativeDriver: true }))).start();
+  }, [reduce, vals]);
+  return (
+    <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ width, height: h, alignItems: 'center', justifyContent: 'flex-end', overflow: 'hidden' }}>
+      {discs.map((d, i) => (
+        <Animated.View key={i} style={{ position: 'absolute', bottom: 0, width: d.r * 2, height: d.r, borderTopLeftRadius: d.r, borderTopRightRadius: d.r, backgroundColor: d.c,
+          opacity: vals[i], transform: [{ translateY: vals[i].interpolate({ inputRange: [0, 1], outputRange: [d.r * 0.5, 0] }) }] }} />
+      ))}
     </View>
   );
 }

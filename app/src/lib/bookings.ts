@@ -4,7 +4,7 @@ export type BookingRow = {
   id: string; kind: 'admin' | 'member'; status: 'open' | 'full' | 'completed' | 'cancelled'; interest_id: number; interest_name: string;
   title: string; description: string | null; venue_name: string | null; area: string | null; address_outer: string | null;
   starts_at: string; ends_at: string; headcount_min: number | null; headcount_max: number | null; male_slots: number | null; female_slots: number | null;
-  min_score: number | null; age_min: number | null; age_max: number | null; created_at: string; host_id: string; host_username: string;
+  min_score: number | null; close_hours?: number | null; age_min: number | null; age_max: number | null; created_at: string; host_id: string; host_username: string;
   joined_count: number; male_joined: number; female_joined: number; my_status: string | null; is_host: boolean; channel_id: string | null;
 };
 
@@ -78,6 +78,7 @@ export function joinCheck(b: BookingRow, me: { age: number | null; gender: strin
   if (b.is_host || b.my_status === 'joined') return { ok: false };
   if (b.status === 'full' || (b.headcount_max != null && b.joined_count >= b.headcount_max)) return { ok: false, reason: 'This booking is full.' };
   if (b.status !== 'open' || new Date(b.starts_at) <= now) return { ok: false, reason: 'This booking has closed.' };
+  if (b.close_hours != null && joinClosesAt(b.starts_at, b.close_hours) <= now) return { ok: false, reason: 'Joining has closed for this booking.' };
   if (me.age != null && ((b.age_min != null && me.age < b.age_min) || (b.age_max != null && me.age > b.age_max))) return { ok: false, reason: "You're outside the age range." };
   if (b.male_slots != null || b.female_slots != null) {
     const open = me.gender === 'male' ? (b.male_slots ?? 0) > b.male_joined : me.gender === 'female' ? (b.female_slots ?? 0) > b.female_joined : false;
@@ -96,3 +97,23 @@ export function groupByDay<T extends { starts_at: string }>(rows: T[], now = new
   }
   return out;
 }
+
+/** The reliability levels a host can ask for, and the search filter offers. */
+export const SCORE_STEPS = [5, 6, 7, 8, 9] as const;
+export const SCORE_OPEN = 'Open to everyone';
+export const scoreLabel = (n: number) => `${n}+`;
+/** Search filter: "Open to everyone" keeps bookings with no minimum; "7+" keeps bookings that ask for 7 or more. */
+export function scoreMatches(min: number | null, choice: string | undefined): boolean {
+  if (!choice) return true;
+  if (choice === SCORE_OPEN) return min == null;
+  const n = Number(choice.replace('+', ''));
+  return min != null && min >= n;
+}
+
+/** "2 hours before", "1 day before"; the default is called out so a host sees what changing it means. */
+export function closeLabel(hours: number, isDefault = false): string {
+  const t = hours % 24 === 0 ? `${hours / 24} ${hours === 24 ? 'day' : 'days'}` : `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+  return `${t} before${isDefault ? ', usual' : ''}`;
+}
+/** When joining stops, from the booking's start and its close setting (hours before). */
+export const joinClosesAt = (startsAt: string, closeHours: number | null | undefined) => new Date(new Date(startsAt).getTime() - (closeHours ?? 0) * 3600000);

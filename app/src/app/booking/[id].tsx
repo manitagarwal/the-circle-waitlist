@@ -7,7 +7,7 @@ import { SectionLabel, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api } from '@/lib/auth';
-import { ageRange, bookingDay, freeLeaveUntil, joinCheck, spots, startsIn, timeRange } from '@/lib/bookings';
+import { ageRange, bookingDay, freeLeaveUntil, joinCheck, joinClosesAt, spots, startsIn, timeRange } from '@/lib/bookings';
 import { clock } from '@/lib/format';
 import { friendly } from '@/lib/messages';
 import { interestIndex, loadInterestGroups } from '@/lib/interests';
@@ -60,12 +60,13 @@ export default function BookingDetail() {
       <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}  ·  {b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
       <Text style={{ fontFamily: fonts.title, fontSize: 32, lineHeight: 39, color: colors.ink, marginTop: 6 }}>{b.title}</Text>
       <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 6 }}>
-        Hosted by <Text accessibilityRole="link" onPress={() => r.push({ pathname: '/member/[id]', params: { id: b.host_id } })} style={{ fontFamily: fonts.bodySemi, color: colors.ink, textDecorationLine: 'underline' }}>{b.host_username}</Text>{host ? `. ${host.bookings_hosted} ${host.bookings_hosted === 1 ? 'booking' : 'bookings'} hosted. Member since ${month(host.member_since)}.` : ''}
+        Hosted by <Text accessibilityRole="link" onPress={() => r.push({ pathname: '/member/[id]', params: { id: b.host_id } })} style={{ fontFamily: fonts.bodySemi, color: colors.ink, textDecorationLine: 'underline' }}>{b.host_username}</Text>{host ? `. ${host.bookings_hosted} ${host.bookings_hosted === 1 ? 'booking' : 'bookings'} hosted. ${host.member_since ? `Member since ${month(host.member_since)}.` : ''}` : ''}
       </Text>
       {b.status === 'cancelled' ? <Notice tone="error">This booking was cancelled by the host.</Notice> : null}
 
       <View style={{ marginTop: 16 }}>
         <Line k={`${bookingDay(b.starts_at)}, ${timeRange(b.starts_at, b.ends_at)}`} v={startsIn(b.starts_at)} />
+        {b.close_hours != null ? <Line k="Joining closes" v={`${bookingDay(joinClosesAt(b.starts_at, b.close_hours).toISOString())}, ${clock(joinClosesAt(b.starts_at, b.close_hours))}`} /> : null}
         <Line k={[b.venue_name, b.area].filter(Boolean).join(', ') || 'Location'} v={joined && b.address_outer ? b.address_outer : "Exact location appears once you've joined."} />
       </View>
 
@@ -84,7 +85,7 @@ export default function BookingDetail() {
 
       {age || b.min_score != null ? <SectionLabel>To join</SectionLabel> : null}
       {age ? <Line k={`Age ${age}`} v={me.age != null ? `You're ${me.age}` : ''} note={me.age != null && joinCheck({ ...b, is_host: false, my_status: null, male_slots: null, female_slots: null, joined_count: 0 }, me).ok ? 'You qualify' : null} /> : null}
-      {b.min_score != null ? <Line k="Reliable members only" v="Hosts can hide a booking from members with a low reliability score." note={qualifies === true ? 'You qualify' : qualifies === false ? 'Not yet' : null} /> : null}
+      {b.min_score != null ? <Line k="Minimum reliability" v={`${b.min_score} or higher`} note={qualifies === true ? 'You qualify' : qualifies === false ? 'Not yet' : null} /> : null}
 
       {b.description ? <Body style={{ marginTop: 16 }}>{b.description}</Body> : null}
       {err ? <Notice tone="error">{err}</Notice> : null}

@@ -117,3 +117,11 @@ Security definer. Caller must be in the public channel; invitee must be an activ
 
 ## Unread messages (migration 037a)
 `channel_members.last_read_at` (default now) is when a member last opened a chat. `mark_channel_read(channel)` sets it to now for the caller. `my_unread()` returns, per channel the caller is in (any kind, including DMs), the count of messages from others newer than `last_read_at` (deleted and blocked senders excluded).
+
+## Categories and booking rules (migrations 040a to 040f)
+`interest_groups.bookings_allowed` (false for Career & tech and Clubs). `group_rules(group_id, key, value)` holds category-level rules; `rule_int/rule_num(key, interest)` resolve activity rule, then category rule, then global. Keys: `booking.max_people`, `booking.window_min_hours`, `booking.window_max_hours`, `booking.close_hours`, `booking.max_duration_minutes`. `bookings.close_hours` is when joining stops (hours before start, host may only make it earlier). `bookings_overview` exposes it. `complete_profile` no longer removes Lobbies when interests change.
+
+## Migration 041a: privacy
+- `members.privacy jsonb` (field -> bool, missing = visible).
+- `member_profiles` view masks hidden fields as null.
+- Functions: `my_privacy()`, `set_privacy(field, shown)`.

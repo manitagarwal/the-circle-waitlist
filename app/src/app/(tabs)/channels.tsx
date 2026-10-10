@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
 import { Buckets } from '@/components/Buckets';
-import { ArchBadge, FilterBar, RingBadge, Row, Segmented, State, TabHeader } from '@/components/lists';
+import { ArchBadge, FilterBar, LetterBadge, RingBadge, Row, SectionLabel, Segmented, Sheet, State, TabHeader } from '@/components/lists';
 import { Body, Button, Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api } from '@/lib/auth';
@@ -12,6 +12,7 @@ import { applyFilters, channelFit, channelSummary, filterOptions, FITS_ME, GENDE
 import { bucket, loadInterestGroups } from '@/lib/interests';
 import { endsIn, listStamp } from '@/lib/format';
 import { useLoad } from '@/lib/useLoad';
+import { INTERESTS_MIN } from '@/lib/profile';
 import { useUnread } from '@/lib/unread';
 
 type Seg = 'lobby' | 'public' | 'booking';
@@ -21,11 +22,13 @@ export default function Channels() {
   const [seg, setSeg] = useState<Seg>('lobby');
   const [filters, setFilters] = useState<Filters>({});
   const [busy, setBusy] = useState<string | null>(null);
+  const [browse, setBrowse] = useState(false);
   const [actionErr, setActionErr] = useState<string | null>(null);
 
   const { data, error, loading, refreshing, pull, reload } = useLoad(async () => {
     const [channels, previews, expiry, groups, me] = await Promise.all([api.channels(), api.channelPreviews(), api.bookingChatExpiry(), loadInterestGroups(() => api.interestGroups()), api.myProfileBasics()]);
-    return { channels, previews: Object.fromEntries(previews.map((p) => [p.channel_id, p])), expiry, groups, me };
+    const interestCount = await api.myInterestCount().catch(() => 5);
+    return { interestCount, channels, previews: Object.fromEntries(previews.map((p) => [p.channel_id, p])), expiry, groups, me };
   });
 
   const act = async (id: string, fn: () => Promise<unknown>) => {
@@ -49,15 +52,23 @@ export default function Channels() {
 
   return (
     <Screen onRefresh={pull} refreshing={refreshing}>
-      <TabHeader title="Channels" right={
+      <TabHeader title="Chats" right={
         <Pressable accessibilityRole="button" accessibilityLabel="New channel" onPress={() => r.push('/channel/new')}
           style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}><Icon name="plus" color={colors.inkOn} strokeWidth={2.2} /></Pressable>} />
       <Segmented value={seg} onChange={setSeg} options={[{ value: 'lobby', label: 'Lobby' }, { value: 'public', label: 'Public' }, { value: 'booking', label: 'Booking' }]} />
       <State loading={loading} error={error} onRetry={reload} />
+      {data && data.interestCount < INTERESTS_MIN ? (
+        <View style={{ marginVertical: 8, padding: 16, borderRadius: radius.card, backgroundColor: colors.surface, gap: 10 }}>
+          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.ink }}>Our activities have changed. Choose at least {INTERESTS_MIN} that you like.</Text>
+          <Button label="Choose activities" onPress={() => r.push('/settings/interests')} style={{ height: 44 }} />
+        </View>) : null}
       {actionErr ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.error, marginVertical: 8 }}>{actionErr}</Text> : null}
 
       {data && seg === 'lobby' ? (<>
-        {lobby.length === 0 ? <State empty="No Lobbies yet. Pick interests in Settings and they appear here." /> : null}
+        <Pressable accessibilityRole="button" onPress={() => setBrowse(true)} style={{ alignSelf: 'flex-end', paddingVertical: 8 }}>
+          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink, textDecorationLine: 'underline' }}>Browse all lobbies</Text>
+        </Pressable>
+        {lobby.length === 0 ? <State empty="You haven't joined a lobby yet. Browse all lobbies and pick the ones you like." /> : null}
         <Buckets buckets={lobbyShown} render={(items) => (<>
             {items.map((c) => (
               <Row key={c.id} unread={unread.byChannel[c.id]} left={<RingBadge name={c.name} activity={c.interest_name} unread={!!unread.byChannel[c.id]} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
@@ -99,6 +110,19 @@ export default function Channels() {
         })}
       </>) : null}
 
+      <Sheet visible={browse} onClose={() => setBrowse(false)} title="Lobbies">
+        <ScrollView>
+          {data ? bucket(data.groups, data.channels.filter((c) => c.kind === 'lobby'), (c) => c.interest_id).map((b) => (
+            <View key={b.group.id}>
+              <SectionLabel>{b.group.name}</SectionLabel>
+              {b.items.map((c) => (
+                <Row key={c.id} left={<LetterBadge name={c.name} activity={c.interest_name} size={44} />} title={c.name}
+                  right={<Button label={c.is_member ? 'Leave' : 'Join'} variant={c.is_member ? 'secondary' : 'primary'} loading={busy === c.id} onPress={() => act(c.id, () => (c.is_member ? api.leaveChannel(c.id) : api.joinChannel(c.id)))} style={{ height: 38, paddingHorizontal: 16 }} />} />
+              ))}
+            </View>
+          )) : null}
+        </ScrollView>
+      </Sheet>
     </Screen>
   );
 }

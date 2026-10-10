@@ -44,8 +44,8 @@ export default function Settings() {
           <Row title="Password" right={<Chev />} onPress={() => r.push('/settings/password')} />
 
           <SectionLabel>Privacy</SectionLabel>
+          <Row title="What others see on your profile" right={<Chev />} onPress={() => r.push('/settings/privacy')} />
           <Row title="Blocked members" meta={String(data.blocked)} right={<Chev />} onPress={() => r.push('/settings/blocked')} />
-          <Info text={"Profiles aren't private here. Every member sees every profile. That's what keeps this room honest."} />
 
           <SectionLabel>Notifications</SectionLabel>
           {NOTIFICATION_SWITCHES.map((sw) => (

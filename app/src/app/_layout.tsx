@@ -81,6 +81,7 @@ function Routes() {
         <Stack.Screen name="booking/attendance/[id]" />
         <Stack.Screen name="settings/index" />
         <Stack.Screen name="settings/profile" />
+        <Stack.Screen name="settings/privacy" />
         <Stack.Screen name="settings/interests" />
         <Stack.Screen name="settings/password" />
         <Stack.Screen name="settings/blocked" />

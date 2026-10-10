@@ -4,11 +4,15 @@ import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
 import { Buckets } from '@/components/Buckets';
 import { LetterBadge } from '@/components/lists';
+import { toneFor } from '@/lib/tones';
+import { isDark } from '@/theme';
+/** The activity colour at about a third of its strength, for card backgrounds. */
+const tint = (hex: string) => `${hex}55`;
 import { FilterBar, Segmented, SectionLabel, State, TabHeader } from '@/components/lists';
 import { Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api } from '@/lib/auth';
-import { type BookingRow, genderWanted, groupByDay, joinCheck, spots, timeRange } from '@/lib/bookings';
+import { type BookingRow, genderWanted, groupByDay, joinCheck, SCORE_OPEN, SCORE_STEPS, scoreLabel, scoreMatches, spots, timeRange } from '@/lib/bookings';
 import { bucket, interestIndex, loadInterestGroups } from '@/lib/interests';
 import { useLoad } from '@/lib/useLoad';
 
@@ -16,7 +20,7 @@ function Card({ b, onPress, note, group }: { b: BookingRow; onPress: () => void;
   const sp = spots(b);
   const mix = genderWanted(b);
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: colors.surface, borderRadius: radius.card, padding: 16, marginBottom: 12, flexDirection: 'row', gap: 14, alignItems: 'center' })}>
+    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: toneFor(b.interest_name, isDark) ? tint(toneFor(b.interest_name, isDark)!) : colors.surface, borderRadius: radius.card, padding: 16, marginBottom: 12, flexDirection: 'row', gap: 14, alignItems: 'center' })}>
       <LetterBadge name={b.title} activity={b.interest_name} size={56} />
       <View style={{ flex: 1 }}>
         <Text style={{ fontFamily: fonts.title, fontSize: 21, color: colors.ink }}>{b.title}</Text>
@@ -45,6 +49,7 @@ export default function Bookings() {
   const shown = useMemo(() => (data?.upcoming ?? []).filter((b) =>
     (!f.area || b.area === f.area) && (!f.activity || b.interest_name === f.activity) &&
     (!f.mix || (f.mix === 'Open to men' ? (b.male_slots == null || b.male_slots > b.male_joined) : (b.female_slots == null || b.female_slots > b.female_joined)) && (b.male_slots != null || b.female_slots != null)) &&
+    scoreMatches(b.min_score, f.score) &&
     (!f.fit || joinCheck(b, data!.me).ok)), [data, f]);
   const uniq = (xs: (string | null)[]) => [...new Set(xs.filter((x): x is string => !!x))].sort();
   const open = (id: string) => r.push({ pathname: '/booking/[id]', params: { id } });
@@ -63,6 +68,7 @@ export default function Bookings() {
           { key: 'area', label: 'Area', options: uniq(data.upcoming.map((b) => b.area)) },
           { key: 'activity', label: 'Activity', options: uniq(data.upcoming.map((b) => b.interest_name)) },
           { key: 'mix', label: 'Gender mix', options: ['Open to men', 'Open to women'] },
+          { key: 'score', label: 'Reliability', options: [SCORE_OPEN, ...SCORE_STEPS.map(scoreLabel)] },
           { key: 'fit', label: 'Fits me', options: ['Only ones I can join'] },
         ]} />
         <State empty={shown.length === 0 && !loading ? (data.upcoming.length === 0 ? 'No bookings yet. Host the first one.' : 'Nothing matches those filters.') : null} />

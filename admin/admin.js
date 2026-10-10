@@ -46,6 +46,7 @@ const ERRORS = {
   ticket_invalid: 'Each ticket needs a name and a price (and a whole number for how many).', refund_rules_invalid: 'Refund rules need hours before the event (0 or more) and a percentage from 0 to 100.',
   promo_code_invalid: 'Promo codes are 3 to 20 letters, numbers, dash or underscore.', promo_exists: 'That promo code already exists.', promo_value_invalid: 'Enter a discount above 0 (percent up to 100).',
   refund_not_possible: 'That payment cannot be refunded.', refund_amount_invalid: 'The refund amount is not valid.', payment_not_found: 'No paid payment found.', payments_not_configured: 'Razorpay keys are not set up yet.',
+  rule_key_invalid: 'That setting does not exist.', rule_value_invalid: 'Enter a number, 0 or more.',
   already_resolved: 'That report was already resolved.', interest_exists: 'That activity already exists.', message_invalid: 'Title up to 80 characters, message up to 500 (2000 for a lobby message).', image_invalid: 'That image could not be used.', channel_not_found: 'No lobby found to post in.',
 };
 const friendlyError = (e) => ERRORS[e && e.message] || (e && e.message) || 'Something went wrong.';
@@ -601,7 +602,7 @@ renderers.bookings = async (main) => {
 /* ---------- settings: rules, activities, suggestions, blocked words ---------- */
 renderers.settings = async (main, sub) => {
   const tab = sub[0] || 'rules';
-  const bar = tabs([['rules', 'Rules'], ['interests', 'Activities'], ['suggestions', 'Suggestions'], ['words', 'Blocked words']], tab, (v) => { location.hash = '#/settings/' + v; });
+  const bar = tabs([['rules', 'Rules'], ['categories', 'Categories'], ['interests', 'Activities'], ['suggestions', 'Suggestions'], ['words', 'Blocked words']], tab, (v) => { location.hash = '#/settings/' + v; });
   const body = h('div');
   put(main, header('Settings'), bar, body);
   if (tab === 'rules') {
@@ -614,6 +615,18 @@ renderers.settings = async (main, sub) => {
           const n = Number(v); if (!Number.isFinite(n)) { toast('Enter a number.', true); return; }
           if (await act(async () => { const { error } = await sb.from('rules').update({ value: n, updated_at: new Date().toISOString() }).eq('id', r.id); if (error) throw error; }, 'Saved')) refresh();
         } } }, 'Edit')]))));
+  } else if (tab === 'categories') {
+    const cats = await rpc('admin_categories');
+    const KEYS = [['booking.max_people', 'Most people'], ['booking.window_min_hours', 'Post at least (hours ahead)'], ['booking.window_max_hours', 'Post at most (hours ahead)'], ['booking.close_hours', 'Joining closes (hours before)'], ['booking.max_duration_minutes', 'Longest (minutes)']];
+    const edit = (c, k, label) => async () => {
+      const v = await promptBox(c.name + ': ' + label, 'New number', { value: String((c.rules || {})[k] ?? ''), required: true }); if (v == null) return;
+      const n = Number(v); if (!Number.isFinite(n) || n < 0) { toast('Enter a number.', true); return; }
+      if (await act(() => rpc('admin_set_category', { p_group: c.id, p_bookings: null, p_key: k, p_value: n }), 'Saved')) refresh();
+    };
+    body.append(h('p', { class: 'muted' }, 'Each category sets how bookings work for its activities. An activity can have its own number in Rules, which beats the category. Categories without bookings can only have channels.'),
+      table(['Category', 'Activities', 'Bookings'].concat(KEYS.map((k) => k[1])), cats.map((c) => tr([c.name, c.activities,
+        h('button', { class: 'small', on: { click: async () => { if (await act(() => rpc('admin_set_category', { p_group: c.id, p_bookings: !c.bookings_allowed, p_key: null, p_value: null }), 'Saved')) refresh(); } } }, c.bookings_allowed ? 'On: switch off' : 'Off: switch on'),
+      ].concat(KEYS.map(([k, label]) => h('button', { class: 'small', disabled: !c.bookings_allowed, on: { click: edit(c, k, label) } }, (c.rules || {})[k] ?? '–'))))))); 
   } else if (tab === 'interests') {
     const ints = await rows(sb.from('interests').select('id,name,group_id,is_active').order('name'));
     const groups = await rows(sb.from('interest_groups').select('id,name').order('sort'));

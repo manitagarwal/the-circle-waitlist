@@ -3,6 +3,7 @@ import Svg, { Circle, Path } from 'react-native-svg';
 import { colors } from '@/theme';
 
 const PATHS: Record<string, string[]> = {
+  home: ['M4 11l8-7 8 7v9H4z', 'M10 20v-5h4v5'],
   channels: ['M4 5h16v11H9l-5 4V5z'],
   activity: ['M6 17V11a6 6 0 1 1 12 0v6l1.5 2h-15L6 17z', 'M10 21h4'],
   bookings: ['M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z', 'M4 10h16', 'M9 3v4', 'M15 3v4'],
