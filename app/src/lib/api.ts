@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { BookingRow } from './bookings';
-import { applicationCode, normalizeEmail, normalizePhone } from './validators.ts';
+import { applicationCode, normalizeEmail } from './validators.ts';
 
 export type Dupes = { phone?: boolean; personal_email?: boolean; work_email?: boolean };
 export type ApplicationInput = {
@@ -82,7 +82,7 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
   return {
     checkDuplicates: (p: { phone?: string; personalEmail?: string; workEmail?: string }) =>
       rpc<Dupes>('check_applicant_duplicates', {
-        p_phone: p.phone ? normalizePhone(p.phone) : null,
+        p_phone: p.phone || null, // already in the stored form, +<code><number>
         p_personal_email: p.personalEmail ? normalizeEmail(p.personalEmail) : null,
         p_work_email: p.workEmail ? normalizeEmail(p.workEmail) : null,
       }),
@@ -313,7 +313,7 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       let referred: string | null = null;
       if (a.referredByCode) referred = await rpc<string | null>('resolve_referral_code', { p_code: applicationCode(a.referredByCode) });
       const { error } = await sb.from('applicants').insert({
-        id: a.id, full_name: a.fullName.trim(), phone: normalizePhone(a.phone), personal_email: normalizeEmail(a.personalEmail),
+        id: a.id, full_name: a.fullName.trim(), phone: a.phone, personal_email: normalizeEmail(a.personalEmail),
         work_email: normalizeEmail(a.workEmail), linkedin_url: a.linkedin.trim(), city: a.city, referred_by_id: referred,
       });
       if (error) throw error;

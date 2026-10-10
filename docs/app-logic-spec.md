@@ -221,3 +221,9 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - "Already applied? Log in" on the page signs in with email and password and shows the application status (queue position, declined, accepted, or already a member). "Forgot, or haven't set a password?" uses the emailed code. This replaces the old status page; `status.html` now just redirects.
 - A referral link `/?ref=CODE` pre-fills the referral code on step 4.
 - Nothing typed on the page is ever inserted as HTML.
+
+## Phone numbers
+- The number box takes digits only, capped at the right length for the chosen country, with a separate country-code picker that defaults to +91. Pasting "+91 98765 43210" moves the code into the picker.
+- India: exactly 10 digits starting 6 to 9. Other listed countries: their own length rules (a leading 0 is dropped).
+- Stored as `+<code><number>` (for example `+919876543210`). The database enforces the format (`applicants_phone_format`), so a bad number is refused even if the app is bypassed. Duplicates are matched on the last 10 digits.
+- Same rules on the website form and in the app (`app/src/lib/phone.ts`).

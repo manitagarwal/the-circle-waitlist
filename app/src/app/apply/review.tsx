@@ -3,7 +3,8 @@ import { Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Body, Button, Notice, Screen, StepHeader, Title } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
-import { linkedInHandle, normalizePhone } from '@/lib/validators';
+import { linkedInHandle } from '@/lib/validators';
+import { formatPhone, validatePhone } from '@/lib/phone';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { cityValue, useApply } from './_layout';
@@ -21,12 +22,12 @@ export default function Review() {
   const { refresh } = useAuth();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const p = normalizePhone(s.phone) ?? s.phone;
+  const phone = validatePhone(s.dial, s.phone) ?? `+${s.dial}${s.phone}`;
 
   const submit = async () => {
     setBusy(true); setErr(null);
     try {
-      await api.submitApplication({ id: s.id, fullName: s.fullName, phone: s.phone, personalEmail: s.personalEmail, workEmail: s.workEmail, linkedin: s.linkedin, city: cityValue(s), referredByCode: s.referredByCode || undefined }, s.vouches);
+      await api.submitApplication({ id: s.id, fullName: s.fullName, phone, personalEmail: s.personalEmail, workEmail: s.workEmail, linkedin: s.linkedin, city: cityValue(s), referredByCode: s.referredByCode || undefined }, s.vouches);
       await refresh(); // the account now has an application, so routing moves to the status screen
     } catch (e: any) {
       const m = String(e?.message ?? '');
@@ -46,7 +47,7 @@ export default function Review() {
       <Body style={{ marginTop: 6, fontSize: 14 }}>Check it's all you. You can't edit after you submit.</Body>
       <View style={{ marginTop: 16, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 14, paddingVertical: 6 }}>
         <Row k="Name" v={s.fullName} />
-        <Row k="Phone" v={`${p.slice(0, 5)} ${p.slice(5)}`} />
+        <Row k="Phone" v={formatPhone(phone)} />
         <Row k="Login email" v={s.personalEmail} />
         <Row k="Work email" v={s.workEmail} />
         <Row k="LinkedIn" v={linkedInHandle(s.linkedin) ? `linkedin.com/in/${linkedInHandle(s.linkedin)}` : s.linkedin} />
