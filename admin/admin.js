@@ -43,7 +43,7 @@ const ERRORS = {
   min_score_invalid: 'The reliability score is between 0 and 10.', capacity_below_going: 'More people have already reserved than that capacity.',
   event_locked: 'A cancelled or completed event cannot be edited.', status_invalid: 'That change is not allowed for this event.', ticket_not_found: 'No ticket with that code for this event.',
   ticket_not_valid: 'That ticket is not valid (cancelled or on the waitlist).', not_joined: 'That member has not reserved a spot.', conflict_of_interest: 'You cannot act on your own case.',
-  already_resolved: 'That report was already resolved.', interest_exists: 'That activity already exists.', message_invalid: 'Title up to 80 characters, message up to 500 (2000 for a lobby message).', channel_not_found: 'No lobby found to post in.',
+  already_resolved: 'That report was already resolved.', interest_exists: 'That activity already exists.', message_invalid: 'Title up to 80 characters, message up to 500 (2000 for a lobby message).', image_invalid: 'That image could not be used.', channel_not_found: 'No lobby found to post in.',
 };
 const friendlyError = (e) => ERRORS[e && e.message] || (e && e.message) || 'Something went wrong.';
 
@@ -384,23 +384,61 @@ async function eventDetail(main, id) {
   code.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') checkIn(); });
 }
 
-/* ---------- announcements: a notification to members, or a message posted in lobbies ---------- */
+/* ---------- announcements: a notification (and phone alert), a message in lobbies, and what was sent ---------- */
+const IMG_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+
+// an image picker with a preview; image.path is set once the file is uploaded to the private announcement-images bucket
+function imagePicker() {
+  const image = { path: null };
+  const preview = h('img', { class: 'cover', alt: 'Chosen image', style: 'display:none;max-width:320px;margin-top:10px' });
+  const note = h('p', { class: 'faint' }, 'Optional. JPG, PNG or WebP, up to 5 MB.');
+  const clearBtn = h('button', { type: 'button', class: 'small', style: 'display:none;margin-top:8px', on: { click: () => { image.path = null; preview.style.display = 'none'; clearBtn.style.display = 'none'; file.value = ''; note.textContent = 'Optional. JPG, PNG or WebP, up to 5 MB.'; } } }, 'Remove image');
+  const file = h('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', 'aria-label': 'Image', on: { change: async () => {
+    const fl = file.files[0]; if (!fl) return;
+    if (!IMG_TYPES[fl.type]) { toast('Pick a JPG, PNG or WebP image.', true); file.value = ''; return; }
+    if (fl.size > 5 * 1024 * 1024) { toast('Pick an image under 5 MB.', true); file.value = ''; return; }
+    note.textContent = 'Uploading…';
+    const path = crypto.randomUUID() + '.' + IMG_TYPES[fl.type];
+    const { error } = await sb.storage.from('announcement-images').upload(path, fl, { contentType: fl.type });
+    if (error) { note.textContent = 'Upload failed: ' + error.message; image.path = null; return; }
+    image.path = path; preview.src = URL.createObjectURL(fl); preview.style.display = ''; clearBtn.style.display = ''; note.textContent = 'Image ready.';
+  } } });
+  return { image, node: h('div', null, h('label', { class: 'f', for: 'imgfile' }, 'Image'), h('div', { id: 'imgfile' }, file), note, preview, clearBtn) };
+}
+
 renderers.announce = async (main, sub) => {
   const tab = sub[0] || 'notify';
-  const bar = tabs([['notify', 'Notification'], ['lobbies', 'Lobby message']], tab, (v) => { location.hash = '#/announce/' + v; });
+  const bar = tabs([['notify', 'Notification'], ['lobbies', 'Lobby message'], ['sent', 'Sent']], tab, (v) => { location.hash = '#/announce/' + v; });
   if (tab === 'lobbies') return lobbyMessage(main, bar);
+  if (tab === 'sent') return sentList(main, bar);
   const interests = await rows(sb.from('interests').select('id,name').eq('is_active', true).order('name'));
   const title = h('input', { id: 'at', maxlength: '80' }), body = h('textarea', { id: 'ab', maxlength: '500', rows: '4' });
   const who = h('select', { id: 'aw' }, h('option', { value: '' }, 'Every active member'), interests.map((i) => h('option', { value: i.id }, 'Members into ' + i.name)));
+  const cityBoxes = CITIES.map((c) => [c, h('input', { type: 'checkbox', value: c })]);
+  const push = h('input', { type: 'checkbox', id: 'apush', checked: true });
+  const pic = imagePicker();
   const go = h('button', { class: 'primary', type: 'submit' }, 'Send');
-  put(main, header('Announcements', 'A notification inside the app. It cannot be recalled.'), bar, h('form', { class: 'panel', on: { submit: async (ev) => {
+  put(main, header('Announcements', 'Appears in each member\'s Activity list, and as a phone alert if you leave that on. It cannot be recalled.'), bar, h('form', { class: 'panel', on: { submit: async (ev) => {
     ev.preventDefault();
-    if (!(await confirmBox('Send to ' + (who.value ? who.selectedOptions[0].textContent : 'every active member') + '?', title.value, 'Send'))) return;
+    const cities = cityBoxes.filter((c) => c[1].checked).map((c) => c[0]);
+    const audience = (who.value ? who.selectedOptions[0].textContent : 'every active member') + (cities.length ? ' in ' + cities.join(', ') : '');
+    if (!(await confirmBox('Send to ' + audience + '?', title.value + (push.checked ? ' (with a phone alert)' : ' (in the app only)'), 'Send'))) return;
     go.disabled = true;
-    if (await act(() => rpc('send_broadcast', { p_title: title.value, p_body: body.value, p_interest_id: who.value ? Number(who.value) : null }), (n) => 'Sent to ' + n + ' members')) { title.value = ''; body.value = ''; }
+    let r = null;
+    const ok = await act(async () => { r = await rpc('admin_send_notification', { p_title: title.value, p_body: body.value, p_image_path: pic.image.path, p_interest_id: who.value ? Number(who.value) : null, p_cities: cities, p_send_push: push.checked }); }, () => 'Sent to ' + r.recipients + ' members');
+    if (ok) {
+      if (push.checked && r.recipients) { const d = await sb.functions.invoke('push-dispatch'); if (d.data && typeof d.data.sent === 'number') toast('Phone alerts sent to ' + d.data.sent + ' devices.'); }
+      title.value = ''; body.value = ''; location.hash = '#/announce/sent';
+    }
     go.disabled = false;
-  } } }, h('label', { class: 'f', for: 'aw' }, 'To'), who, h('label', { class: 'f', for: 'at' }, 'Title'), title, h('label', { class: 'f', for: 'ab' }, 'Message'), body, h('div', { style: 'margin-top:12px' }, go)));
-}
+  } } },
+    h('label', { class: 'f', for: 'aw' }, 'To'), who,
+    h('label', { class: 'f' }, 'Only members in these cities (none ticked = all)'), h('div', { class: 'checks' }, cityBoxes.map(([c, box]) => h('label', null, box, ' ' + c))),
+    h('label', { class: 'f', for: 'at' }, 'Title'), title, h('label', { class: 'f', for: 'ab' }, 'Message'), body, pic.node,
+    h('div', { class: 'checks', style: 'margin-top:14px' }, h('label', null, push, ' Also send as a phone alert')),
+    h('p', { class: 'faint' }, 'Members who switched off "Announcements from the team" get it in the app only. On iPhone the image shows in the app; Android phones also show it in the alert.'),
+    h('div', { style: 'margin-top:12px' }, go)));
+};
 
 async function lobbyMessage(main, bar) {
   const lobbies = await rpc('admin_lobbies');
@@ -410,6 +448,7 @@ async function lobbyMessage(main, bar) {
   const list = h('div', { class: 'checks', style: 'max-height:260px;overflow:auto' });
   const count = h('p', { class: 'faint' });
   const allBox = h('input', { type: 'checkbox', checked: true, id: 'lall' });
+  const pic = imagePicker();
   const paint = () => {
     allBox.checked = all;
     count.textContent = all ? 'Goes to all ' + lobbies.length + ' lobbies.' : picked.size + ' of ' + lobbies.length + ' lobbies picked.';
@@ -423,11 +462,22 @@ async function lobbyMessage(main, bar) {
     const where = all ? 'all ' + lobbies.length + ' lobbies' : picked.size + (picked.size === 1 ? ' lobby' : ' lobbies');
     if (!(await confirmBox('Post to ' + where + '?', body.value.slice(0, 200), 'Post'))) return;
     go.disabled = true;
-    if (await act(() => rpc('admin_post_to_lobbies', { p_body: body.value, p_channels: all ? null : [...picked] }), (n) => 'Posted in ' + n + ' lobbies')) body.value = '';
+    if (await act(() => rpc('admin_post_lobby_message', { p_body: body.value, p_channels: all ? null : [...picked], p_image_path: pic.image.path }), (n) => 'Posted in ' + n + ' lobbies')) { body.value = ''; location.hash = '#/announce/sent'; }
     go.disabled = false;
-  } } }, h('label', { class: 'f', for: 'lb' }, 'Message'), body,
+  } } }, h('label', { class: 'f', for: 'lb' }, 'Message'), body, pic.node,
     h('label', { class: 'f' }, 'Where'), h('div', { class: 'checks' }, h('label', null, allBox, ' All lobbies')), count, list, h('div', { style: 'margin-top:12px' }, go)));
   paint();
+}
+
+async function sentList(main, bar) {
+  const list = await rows(sb.from('announcements').select('*').order('created_at', { ascending: false }).limit(100));
+  const who = (a) => a.kind === 'lobby' ? (a.audience.channels === 'all' ? 'All lobbies' : (a.audience.channels || []).length + ' lobbies')
+    : [a.audience.interest_id ? 'one activity' : 'everyone', (a.audience.cities || []).length ? (a.audience.cities || []).join(', ') : null].filter(Boolean).join(', ');
+  put(main, header('Announcements', 'Everything sent from here, newest first.'), bar, list.length ? table(['When', 'Kind', 'Message', 'To', 'Reached', 'Alert', 'Image'], list.map((a) => tr([
+    fmtDate(a.created_at), badge(a.kind === 'lobby' ? 'lobby' : 'notification'),
+    h('div', { style: 'max-width:340px;white-space:pre-wrap' }, a.title ? h('strong', null, a.title + ' ') : null, a.body),
+    who(a), a.recipients, a.kind === 'notification' ? (a.send_push ? 'yes' : 'app only') : '', a.image_path ? 'yes' : ''
+  ]))) : h('p', { class: 'muted' }, 'Nothing sent yet.'));
 }
 
 /* ---------- bookings (read only) ---------- */

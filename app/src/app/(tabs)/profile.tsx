@@ -13,12 +13,12 @@ import { useLoad } from '@/lib/useLoad';
 
 const month = (iso: string) => new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date(iso)).toUpperCase();
 
-function Stat({ n, label }: { n: number | string; label: string }) {
+function Stat({ n, label, onPress }: { n: number | string; label: string; onPress?: () => void }) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', paddingVertical: 12, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line }}>
+    <Pressable accessibilityRole={onPress ? 'button' : undefined} disabled={!onPress} onPress={onPress} style={{ flex: 1, alignItems: 'center', paddingVertical: 12, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line }}>
       <Text style={{ fontFamily: fonts.title, fontSize: 24, color: colors.ink }}>{n}</Text>
       <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted }}>{label}</Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -56,7 +56,7 @@ export default function Profile() {
           <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 11, letterSpacing: 1.4, color: colors.faint, marginTop: 10 }}>MEMBER SINCE {month(p.member_since)}</Text>
         </View>
         <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
-          <Stat n={p.bookings_hosted} label="Hosted" /><Stat n={data!.friends} label="Friends" /><Stat n={data!.channels} label="Channels" />
+          <Stat n={p.bookings_hosted} label="Hosted" /><Stat n={data!.friends} label="Friends" onPress={() => r.push('/friends')} /><Stat n={data!.channels} label="Channels" />
         </View>
 
         {data!.score != null ? (<>

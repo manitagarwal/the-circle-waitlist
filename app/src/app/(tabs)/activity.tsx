@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { RemoteImage } from '@/components/RemoteImage';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Screen, Button } from '@/components/ui';
@@ -33,6 +34,7 @@ export default function Activity() {
         const open = () => {
           if (n.is_unread) void api.markRead(n.id).then(reload).catch(() => {});
           if (v.go?.to === 'booking' && v.go.id) r.push({ pathname: '/booking/[id]', params: { id: v.go.id } });
+          else if (v.go?.to === 'member' && v.go.id) r.push({ pathname: '/member/[id]', params: { id: v.go.id } });
           else if (v.go?.to === 'events' && v.go.id) r.push({ pathname: '/event/[id]', params: { id: v.go.id } });
           else if (v.go) r.push((`/${v.go.to === 'booking' ? 'bookings' : v.go.to}${v.go.tab ? `?tab=${v.go.tab}` : ''}`) as never);
         };
@@ -44,6 +46,7 @@ export default function Activity() {
               {v.from ? <Text style={{ fontFamily: fonts.bodySemi, fontSize: 12, color: colors.goldText, marginBottom: 2 }}>{v.from}</Text> : null}
               <Text style={{ fontFamily: n.is_unread ? fonts.bodySemi : fonts.body, fontSize: 15, lineHeight: 21, color: colors.ink }}>{v.title}</Text>
               {v.body ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{v.body}</Text> : null}
+              {v.image ? <RemoteImage path={v.image} height={170} label="Picture in the announcement" /> : null}
               {v.actions === 'friend' && v.fromId ? (
                 <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
                   <Button label="Accept" loading={busy === n.id} onPress={() => run(n.id, async () => { await api.respondFriend(v.fromId!, true); await api.markRead(n.id); })} style={{ flex: 1, height: 44 }} />

@@ -25,3 +25,11 @@ test('being added to a group opens the Groups tab', () => {
   assert.equal(v.title, 'aditi.s added you to Weekend crew.');
   assert.equal(v.go?.tab, 'groups');
 });
+
+test('an announcement can carry a picture, and a friend request opens the sender', () => {
+  assert.equal(describe(n('broadcast', { title: 'Hi', body: 'x', image_path: 'a/b.jpg' })).image, 'a/b.jpg');
+  assert.equal(describe(n('broadcast', { title: 'Hi' })).image, null);
+  const f = describe(n('friend_request', { from_username: 'aditi.s', from_id: 'u1' }));
+  assert.deepEqual(f.go, { to: 'member', id: 'u1' });
+  assert.equal(f.actions, 'friend');
+});

@@ -227,3 +227,18 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - India: exactly 10 digits starting 6 to 9. Other listed countries: their own length rules (a leading 0 is dropped).
 - Stored as `+<code><number>` (for example `+919876543210`). The database enforces the format (`applicants_phone_format`), so a bad number is refused even if the app is bypassed. Duplicates are matched on the last 10 digits.
 - Same rules on the website form and in the app (`app/src/lib/phone.ts`).
+
+## Looking at other members' profiles
+- A profile opens from: a member's name above their message in a channel (not in Lobbies), the title or "View profile" in a direct message, a name in a booking's "Who's in" list or the host's name, a member in a channel's member list, a friend request in Activity, and the Friends list (tap the Friends number on your own profile).
+- It shows: photo or avatar, name, username, age, area, field of work, bio, interests, bookings hosted, member since, upcoming bookings they host, and friends in common. It never shows phone, emails, date of birth, exact address, gender or LinkedIn.
+- Actions: Add friend (request, optional note), Message (one message until they accept), and the ... menu with Unfriend, Report and Block. Blocked members cannot see each other's profiles at all.
+
+## Legal pages and icon
+- Privacy policy at /privacy/ and terms at /terms/ on the website, linked from Settings in the app. They are marked noindex and not yet linked from the site footer; add the footer links and remove noindex once the bracketed parts are filled in. Bracketed highlighted parts (legal entity, address, dates, grievance officer, refund policy) must be filled in before launch.
+- App icon: the half-circle mark in gold on near-black (`app/assets/icon.png`, plus an Android adaptive icon, splash mark and favicon).
+
+## Announcements, lobby messages and phone alerts (admin portal)
+- Announcements page, three tabs. **Notification:** title, message, optional image, audience (everyone or one activity, optionally limited to cities), and a switch for "also send as a phone alert". It lands in every recipient's Activity list (with the image) and, if switched on, as a phone alert. **Lobby message:** a message with an optional image posted in all lobbies or chosen ones (members read, cannot reply). **Sent:** the history of everything sent, who it reached and whether it had an alert.
+- Images go to a private storage bucket (`announcement-images`, max 5 MB, JPG/PNG/WebP) and are shown to members through short-lived links. On iPhone the image shows in the app and not in the alert; Android alerts can show it too.
+- Phone alerts are sent for every notification the app creates (friend requests, bookings, events, announcements, account notices), not only announcements. A database job runs every minute and calls the `push-dispatch` function, which claims each new notification once, skips members who switched that kind off (account notices always go through), sends through Expo, and removes phone tokens that no longer work. Notifications older than two hours are never pushed.
+- Tapping a phone alert opens Activity. Alerts that arrive while the app is open show as a banner.

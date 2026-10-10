@@ -106,3 +106,8 @@ Scheduled jobs (pg_cron): every 10 min complete finished bookings and delete exp
 - Admin functions: `admin_events`, `admin_event_get`, `admin_save_event`, `admin_set_event_status`, `admin_event_attendees`, `admin_mark_rsvp`, `admin_check_in`, `admin_overview`, `send_broadcast`, `admin_lobbies`, `admin_post_to_lobbies`, `review_applicant`, `accept_applicant`, `apply_moderation`, `lift_moderation`, `resolve_report`, `approve_interest_suggestion`, `reject_interest_suggestion`.
 - Column `applicants.acceptance_emailed_at`. Edge function `send-acceptance` (admin-only, sends via Resend). Email templates live in `supabase/email-templates/`.
 - Admin views: `admin_applicants_queue`, `admin_members`, `admin_reports_queue`, `admin_interest_suggestions`, `admin_low_score_members`. Policy `admins read bookings` lets the portal list bookings.
+
+## Push and announcements
+- `notifications.send_push`, `notifications.pushed_at` (set once the alert has been sent or skipped). `messages.image_path` (lobby posts by admins). Table `announcements` (history of admin sends; admin read only). Private bucket `announcement-images` (admins write, active members read).
+- Admin functions: `admin_send_notification(title, body, image_path, interest_id, cities, send_push)`, `admin_post_lobby_message(body, channels, image_path)`, `admin_lobbies()`. `push_secret_ok(text)` (service role only) checks the vault secret `push_secret`.
+- Cron job `semicircle-push` (every minute) posts to the `push-dispatch` edge function with that secret, through `pg_net`.

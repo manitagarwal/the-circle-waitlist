@@ -57,7 +57,8 @@ export default function Settings() {
 
           <SectionLabel>More</SectionLabel>
           <Row title="Community guidelines" right={<Chev />} onPress={() => r.push('/settings/guidelines')} />
-          <Row title="Terms and privacy policy" right={<Chev />} onPress={() => void Linking.openURL(`${SITE_URL}/`)} />
+          <Row title="Terms of use" right={<Chev />} onPress={() => void Linking.openURL(`${SITE_URL}/terms/`)} />
+          <Row title="Privacy policy" right={<Chev />} onPress={() => void Linking.openURL(`${SITE_URL}/privacy/`)} />
           <Row title="Your data and account" right={<Chev />} onPress={() => r.push('/settings/account')} />
           <Row title="Sign out" onPress={signOut} />
         </>) : null}

@@ -13,7 +13,11 @@
     },
     "android": {
       "package": "in.thesemicircle.app",
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-foreground.png",
+        "backgroundColor": "#211c16"
+      }
     },
     "web": {
       "output": "single",
