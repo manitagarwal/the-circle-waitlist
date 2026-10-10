@@ -6,12 +6,12 @@ import { colors, fonts, radius } from '@/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from './ui';
 import { ChipRow } from './ChipRow';
-import { useReduceMotion } from './motion';
+import { FadeUp, useReduceMotion } from './motion';
 
 export function TabHeader({ title, right }: { title: string; right?: React.ReactNode }) {
   return (
     <View style={{ minHeight: 56, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-      <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 34, lineHeight: 38, letterSpacing: -1, color: colors.ink }}>{title}</Text>
+      <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 39, lineHeight: 44, color: colors.ink }}>{title}</Text>
       {right}
     </View>
   );
@@ -47,7 +47,9 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
 }
 
 export const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <Text accessibilityRole="header" style={{ fontFamily: fonts.bodySemi, fontSize: 12, letterSpacing: 1.4, textTransform: 'uppercase', color: colors.faint, marginTop: 24, marginBottom: 8 }}>{children}</Text>
+  <View style={{ marginTop: 36, marginBottom: 10, borderTopWidth: 1, borderTopColor: colors.line, paddingTop: 16 }}>
+    <Text accessibilityRole="header" style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 2, textTransform: 'uppercase', color: colors.goldText }}>{children}</Text>
+  </View>
 );
 
 /** A round badge with the first letter, used for channels. */
@@ -87,7 +89,7 @@ export function Row({ left, title, subtitle, meta, right, onPress, tag }: {
   left?: React.ReactNode; title: string; subtitle?: string | null; meta?: string | null; right?: React.ReactNode; onPress?: () => void; tag?: string | null;
 }) {
   const body = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, gap: 12, minHeight: 72 }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16, gap: 14, minHeight: 80 }}>
       {left}
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
@@ -99,9 +101,13 @@ export function Row({ left, title, subtitle, meta, right, onPress, tag }: {
       {right}
     </View>
   );
-  return onPress ? (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, borderBottomWidth: 1, borderBottomColor: colors.line })}>{body}</Pressable>
-  ) : <View style={{ borderBottomWidth: 1, borderBottomColor: colors.line }}>{body}</View>;
+  return (
+    <FadeUp distance={8}>
+      {onPress ? (
+        <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, borderBottomWidth: 1, borderBottomColor: colors.line })}>{body}</Pressable>
+      ) : <View style={{ borderBottomWidth: 1, borderBottomColor: colors.line }}>{body}</View>}
+    </FadeUp>
+  );
 }
 
 export function Chip({ label, on, onPress }: { label: string; on?: boolean; onPress: () => void }) {
@@ -133,7 +139,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
       <Pressable accessibilityLabel="Close" style={{ flex: 1, backgroundColor: 'rgba(22,18,14,0.45)', justifyContent: 'flex-end' }} onPress={onClose}>
         <Pressable accessible={false} style={{ backgroundColor: colors.ground, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 20, paddingTop: 12, paddingBottom: insets.bottom + 20, maxHeight: '82%' }}>
           <View style={{ alignSelf: 'center', width: 40, height: 5, borderRadius: 3, backgroundColor: colors.lineStrong, marginBottom: 14 }} />
-          {title ? <Text accessibilityRole="header" style={{ fontFamily: fonts.title, fontSize: 22, letterSpacing: -0.3, color: colors.ink, marginBottom: 8 }}>{title}</Text> : null}
+          {title ? <Text accessibilityRole="header" style={{ fontFamily: fonts.title, fontSize: 26, color: colors.ink, marginBottom: 8 }}>{title}</Text> : null}
           {children}
         </Pressable>
       </Pressable>

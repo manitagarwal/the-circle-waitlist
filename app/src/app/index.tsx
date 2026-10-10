@@ -21,7 +21,7 @@ export default function Welcome() {
         <FadeUp delay={120} distance={50}><View style={{ marginTop: 28, alignSelf: 'center' }}><ArchRings width={w} height={Math.round(w * 0.83)} /></View></FadeUp>
         <FadeUp delay={550}>
           <View style={{ marginTop: 28 }}>
-            <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 38, lineHeight: 40, letterSpacing: -1.1, color: colors.ink }}>Most people won't get in. That's the point.</Text>
+            <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 44, lineHeight: 46, color: colors.ink }}>Most people won't get in. That's the point.</Text>
             <Text style={{ marginTop: 10, fontFamily: fonts.body, fontSize: 16, lineHeight: 23, color: colors.muted }}>A private, hand-picked community.</Text>
           </View>
         </FadeUp>

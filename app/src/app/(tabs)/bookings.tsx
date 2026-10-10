@@ -20,7 +20,7 @@ function Card({ b, onPress, note, group }: { b: BookingRow; onPress: () => void;
         <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.3, color: colors.faint }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}</Text>
         <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.faint }}>{b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
       </View>
-      <Text style={{ fontFamily: fonts.title, fontSize: 20, letterSpacing: -0.2, color: colors.ink, marginTop: 4 }}>{b.title}</Text>
+      <Text style={{ fontFamily: fonts.title, fontSize: 23, color: colors.ink, marginTop: 4 }}>{b.title}</Text>
       <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{timeRange(b.starts_at, b.ends_at)}</Text>
       <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted }}>{[b.venue_name, b.area].filter(Boolean).join(', ')}</Text>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 10 }}>

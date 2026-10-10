@@ -52,7 +52,7 @@ export default function MemberProfile() {
         {p ? (<>
           <FadeUp distance={40}><View style={{ marginTop: 4 }}><ArchPhoto uri={photo} avatarId={p.avatar_id} maxWidth={350} /></View></FadeUp>
           <FadeUp delay={350}>
-            <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 32, lineHeight: 35, letterSpacing: -0.9, color: colors.ink, marginTop: 16 }}>{p.full_name ?? p.username}</Text>
+            <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 37, lineHeight: 41, color: colors.ink, marginTop: 16 }}>{p.full_name ?? p.username}</Text>
             <Text style={{ fontFamily: fonts.body, fontSize: 15, color: colors.muted, marginTop: 4 }}>{['@' + p.username, p.age, p.area, p.field_of_work].filter(Boolean).join(' · ')}</Text>
           </FadeUp>
           {p.bio ? <FadeUp delay={450}><Text style={{ fontFamily: fonts.body, fontSize: 16.5, lineHeight: 24, color: colors.ink, marginTop: 12 }}>{p.bio}</Text></FadeUp> : null}

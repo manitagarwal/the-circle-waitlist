@@ -1,33 +1,33 @@
-// The new look: white ground, near-black ink, soft grey surfaces and one yellow accent.
+// The refined look: warm ivory ground, deep charcoal ink, quiet stone surfaces and one muted brass accent.
 // Token names are unchanged so every screen picks the new look up from here.
 export const colors = {
-  ground: '#ffffff',
-  card: '#f4f2ee',          // fills for cards, fields and chips (no outline needed)
-  line: '#f0ece4',          // hairlines
-  lineStrong: '#e4dfd5',
-  ink: '#16120e',
-  muted: '#5b554c',
-  faint: '#6f685d',
-  gold: '#f7b32b',          // the accent: unread rings, markers, highlights
-  onGold: '#16120e',
-  goldText: '#16120e',      // links and small labels are ink with a yellow underline
-  goldTint: 'rgba(247,179,43,0.18)',
-  goldBorder: 'rgba(247,179,43,0.7)',
-  sage: '#2f7a4f',
+  ground: '#fbfaf7',
+  card: '#f2efe9',          // fills for cards, fields and chips (no outline needed)
+  line: '#ebe7df',          // hairlines
+  lineStrong: '#ddd7cb',
+  ink: '#1d1c1a',
+  muted: '#5d5953',
+  faint: '#756f66',
+  gold: '#b08a4a',          // the accent: unread rings, markers, highlights
+  onGold: '#ffffff',
+  goldText: '#8a6a30',      // links and small labels are ink with a yellow underline
+  goldTint: 'rgba(176,138,74,0.12)',
+  goldBorder: 'rgba(176,138,74,0.55)',
+  sage: '#3f6b52',
   error: '#b3261e',
-  clay: '#f7b32b',          // unread dots
-  terracotta: '#6f685d',
-  surface: '#f4f2ee',
-  accentSoft: '#fff6e0',
+  clay: '#b08a4a',          // unread dots
+  terracotta: '#756f66',
+  surface: '#f2efe9',
+  accentSoft: '#f6f0e4',
 } as const;
 
-export const radius = { control: 16, card: 22, bubble: 20, pill: 28 } as const;
+export const radius = { control: 12, card: 16, bubble: 18, pill: 28 } as const;
 
 export const fonts = {
-  display: 'BricolageGrotesque_800ExtraBold',
-  title: 'BricolageGrotesque_700Bold',
-  titleMedium: 'BricolageGrotesque_700Bold',
-  body: 'Figtree_400Regular',
-  bodyMedium: 'Figtree_500Medium',
-  bodySemi: 'Figtree_600SemiBold',
+  display: 'CormorantGaramond_600SemiBold',
+  title: 'CormorantGaramond_600SemiBold',
+  titleMedium: 'CormorantGaramond_500Medium',
+  body: 'Inter_400Regular',
+  bodyMedium: 'Inter_500Medium',
+  bodySemi: 'Inter_600SemiBold',
 } as const;

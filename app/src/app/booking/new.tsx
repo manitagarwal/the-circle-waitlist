@@ -96,7 +96,7 @@ export default function NewBooking() {
           <Pressable accessibilityRole="button" accessibilityLabel="Shorter" disabled={dur <= MIN_DURATION} onPress={() => setDur((d) => d - DURATION_STEP)}
             style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', opacity: dur <= MIN_DURATION ? 0.4 : 1 }}>
             <Text style={{ fontFamily: fonts.bodySemi, fontSize: 22, color: colors.ink }}>−</Text></Pressable>
-          <Text accessibilityLiveRegion="polite" style={{ fontFamily: fonts.titleMedium, fontSize: 20, color: colors.ink }}>{durationLabel(dur)}</Text>
+          <Text accessibilityLiveRegion="polite" style={{ fontFamily: fonts.titleMedium, fontSize: 23, color: colors.ink }}>{durationLabel(dur)}</Text>
           <Pressable accessibilityRole="button" accessibilityLabel="Longer" disabled={dur >= maxDur} onPress={() => setDur((d) => d + DURATION_STEP)}
             style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', opacity: dur >= maxDur ? 0.4 : 1 }}>
             <Text style={{ fontFamily: fonts.bodySemi, fontSize: 22, color: colors.ink }}>+</Text></Pressable>

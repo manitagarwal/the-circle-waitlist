@@ -18,7 +18,7 @@ export function Guidelines() {
     <View style={{ gap: 14 }}>
       {RULES.map(([t, b]) => (
         <View key={t}>
-          <Text style={{ fontFamily: fonts.titleMedium, fontSize: 17, color: colors.ink }}>{t}</Text>
+          <Text style={{ fontFamily: fonts.titleMedium, fontSize: 20, color: colors.ink }}>{t}</Text>
           <Text style={{ fontFamily: fonts.body, fontSize: 15, lineHeight: 22, color: colors.muted, marginTop: 2 }}>{b}</Text>
         </View>
       ))}

@@ -50,7 +50,7 @@ export default function EventDetail() {
         {cover ? <Image source={{ uri: cover }} style={{ width: '100%', height: '100%' }} accessibilityIgnoresInvertColors /> : <ArchRings />}
       </View>
       <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>{[group, e.interest_name].filter(Boolean).join(' · ').toUpperCase() || 'THE SEMI CIRCLE'}</Text>
-      <Text style={{ fontFamily: fonts.display, fontSize: 32, lineHeight: 35, letterSpacing: -0.9, color: colors.ink, marginTop: 6 }}>{e.title}</Text>
+      <Text style={{ fontFamily: fonts.display, fontSize: 37, lineHeight: 41, color: colors.ink, marginTop: 6 }}>{e.title}</Text>
       {e.status === 'cancelled' ? <Notice tone="error">This event was cancelled.</Notice> : null}
 
       <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: colors.line }}>
@@ -83,7 +83,7 @@ export default function EventDetail() {
         <View style={{ marginTop: 20, alignItems: 'center', padding: 20, backgroundColor: colors.surface, borderRadius: 24 }}>
           <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>YOUR TICKET</Text>
           <View style={{ marginTop: 10 }}><TicketQr code={ticket} /></View>
-          <Text selectable style={{ fontFamily: fonts.display, fontSize: 28, letterSpacing: 5, color: colors.ink, marginTop: 12 }}>{ticket}</Text>
+          <Text selectable style={{ fontFamily: fonts.display, fontSize: 32, letterSpacing: 5, color: colors.ink, marginTop: 12 }}>{ticket}</Text>
           <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 4, textAlign: 'center' }}>Show this at the door. Doors open at {clock(new Date(e.starts_at))}.</Text>
         </View>) : null}
 

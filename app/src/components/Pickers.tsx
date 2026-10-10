@@ -24,7 +24,7 @@ export function DatePickerSheet({ visible, value, onClose, onPick }: { visible: 
     <Sheet visible={visible} onClose={onClose} title="Pick a date">
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         {arrow(-1, atStart)}
-        <Text accessibilityRole="header" style={{ fontFamily: fonts.titleMedium, fontSize: 18, color: colors.ink }}>{monthName(view.m)} {view.y}</Text>
+        <Text accessibilityRole="header" style={{ fontFamily: fonts.titleMedium, fontSize: 21, color: colors.ink }}>{monthName(view.m)} {view.y}</Text>
         {arrow(1, false)}
       </View>
       <View style={{ flexDirection: 'row', marginTop: 4 }}>

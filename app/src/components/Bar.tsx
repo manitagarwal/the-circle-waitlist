@@ -15,7 +15,7 @@ export function Bar({ title, subtitle, left, right, onTitlePress }: {
     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
       {left}
       <View style={{ flex: 1 }}>
-        <Text accessibilityRole="header" numberOfLines={1} style={{ fontFamily: fonts.title, fontSize: 18, letterSpacing: -0.2, color: colors.ink }}>{title}</Text>
+        <Text accessibilityRole="header" numberOfLines={1} style={{ fontFamily: fonts.title, fontSize: 21, color: colors.ink }}>{title}</Text>
         {subtitle ? <Text numberOfLines={1} style={{ fontFamily: fonts.body, fontSize: 12, color: colors.faint }}>{subtitle}</Text> : null}
       </View>
     </View>

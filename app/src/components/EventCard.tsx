@@ -23,7 +23,7 @@ export function EventCard({ e, onPress }: { e: EventRow; onPress: () => void }) 
           <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>{(e.interest_name ?? 'The Semi Circle').toUpperCase()}</Text>
           <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.ink }}>{priceText(e.price_inr)}</Text>
         </View>
-        <Text style={{ fontFamily: fonts.title, fontSize: 22, letterSpacing: -0.3, color: colors.ink, marginTop: 4 }}>{e.title}</Text>
+        <Text style={{ fontFamily: fonts.title, fontSize: 26, color: colors.ink, marginTop: 4 }}>{e.title}</Text>
         <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{bookingDay(e.starts_at)}, {timeRange(e.starts_at, e.ends_at)}</Text>
         <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted }}>{[e.venue_name, e.area ?? e.city].filter(Boolean).join(', ')}</Text>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>

@@ -27,7 +27,7 @@ export default function Status() {
       ) : (
         <>
           <View style={{ alignItems: 'center', marginTop: 40 }}>
-            <Text style={{ fontFamily: fonts.display, fontSize: 88, lineHeight: 92, letterSpacing: -3.5, color: colors.ink }}>{a.queue_position != null ? `#${a.queue_position}` : '·'}</Text>
+            <Text style={{ fontFamily: fonts.display, fontSize: 102, lineHeight: 107, color: colors.ink }}>{a.queue_position != null ? `#${a.queue_position}` : '·'}</Text>
             <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.6, color: colors.faint }}>YOUR PLACE IN THE QUEUE</Text>
           </View>
           <View style={{ marginTop: 28 }}>
@@ -37,7 +37,7 @@ export default function Status() {
           <Button label="Check again" variant="secondary" onPress={check} loading={busy} style={{ marginTop: 20 }} />
           <View style={{ marginTop: 28, padding: 16, borderRadius: radius.card, backgroundColor: colors.surface }}>
             <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted }}>Know someone who belongs? Share your code. Vouching fast-tracks them.</Text>
-            <Text selectable style={{ fontFamily: fonts.display, fontSize: 30, letterSpacing: 4, color: colors.ink, marginTop: 6 }}>{a.referral_code}</Text>
+            <Text selectable style={{ fontFamily: fonts.display, fontSize: 35, letterSpacing: 4, color: colors.ink, marginTop: 6 }}>{a.referral_code}</Text>
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
               <Button label={copied ? 'Copied' : 'Copy link'} variant="secondary" style={{ flex: 1 }} onPress={async () => { await Clipboard.setStringAsync(link); setCopied(true); }} />
               <Button label="Share" variant="secondary" style={{ flex: 1 }} onPress={() => Share.share({ message: `I've applied to The Semi Circle - a private community that's by invitation only. I can vouch for you: ${link}` })} />

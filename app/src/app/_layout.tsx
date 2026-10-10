@@ -5,8 +5,8 @@ import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
-import { BricolageGrotesque_700Bold, BricolageGrotesque_800ExtraBold } from '@expo-google-fonts/bricolage-grotesque';
-import { Figtree_400Regular, Figtree_500Medium, Figtree_600SemiBold } from '@expo-google-fonts/figtree';
+import { CormorantGaramond_500Medium, CormorantGaramond_600SemiBold } from '@expo-google-fonts/cormorant-garamond';
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { colors } from '@/theme';
 
@@ -88,7 +88,7 @@ function Routes() {
 }
 
 export default function RootLayout() {
-  const [loaded] = useFonts({ BricolageGrotesque_700Bold, BricolageGrotesque_800ExtraBold, Figtree_400Regular, Figtree_500Medium, Figtree_600SemiBold });
+  const [loaded] = useFonts({ CormorantGaramond_500Medium, CormorantGaramond_600SemiBold, Inter_400Regular, Inter_500Medium, Inter_600SemiBold });
   useEffect(() => { if (loaded) SplashScreen.hideAsync().catch(() => {}); }, [loaded]);
   if (!loaded) return null;
   return (

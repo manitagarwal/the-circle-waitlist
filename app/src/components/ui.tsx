@@ -36,7 +36,7 @@ export const Body = ({ children, style }: { children: React.ReactNode; style?: o
 );
 /** The big headline. `italic` is kept for older callers and now means the same display size. */
 export const Title = ({ children }: { children: React.ReactNode; italic?: boolean }) => (
-  <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 32, lineHeight: 35, letterSpacing: -0.9, color: colors.ink }}>{children}</Text>
+  <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 37, lineHeight: 41, color: colors.ink }}>{children}</Text>
 );
 
 export function BackButton({ onPress }: { onPress?: () => void }) {
@@ -85,7 +85,7 @@ export function Logo({ size = 'lg' }: { size?: 'lg' | 'md' }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
       <Svg width={w} height={w * 0.6} viewBox="0 0 40 24" fill="none"><Path d="M4 21A16 16 0 0 1 36 21Z" stroke={colors.ink} strokeWidth={3.2} strokeLinejoin="round" /></Svg>
-      <Text style={{ fontFamily: fonts.title, fontSize: fs, letterSpacing: -0.2, color: colors.ink }}>The Semi Circle</Text>
+      <Text style={{ fontFamily: fonts.title, fontSize: fs, color: colors.ink }}>The Semi Circle</Text>
     </View>
   );
 }
@@ -94,15 +94,15 @@ export function Button({ label, onPress, variant = 'primary', loading, disabled,
   label: string; onPress: () => void; variant?: 'primary' | 'secondary' | 'accent' | 'link'; loading?: boolean; disabled?: boolean; style?: ViewStyle;
 }) {
   const off = disabled || loading;
-  const base: ViewStyle = { height: variant === 'link' ? 48 : 56, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', opacity: off ? 0.35 : 1 };
+  const base: ViewStyle = { height: variant === 'link' ? 48 : 54, borderRadius: 14, alignItems: 'center', justifyContent: 'center', opacity: off ? 0.35 : 1 };
   const v: ViewStyle = variant === 'primary' ? { backgroundColor: colors.ink }
     : variant === 'accent' ? { backgroundColor: colors.gold }
-    : variant === 'secondary' ? { backgroundColor: colors.ground, borderWidth: 1.5, borderColor: colors.ink } : {};
+    : variant === 'secondary' ? { backgroundColor: colors.ground, borderWidth: 1, borderColor: colors.lineStrong } : {};
   const fg = variant === 'primary' ? '#ffffff' : colors.ink;
   return (
     <PressScale accessibilityRole="button" accessibilityState={{ disabled: !!off }} disabled={off} onPress={onPress} style={[base, v, style]}>
       {loading ? <ActivityIndicator color={fg} /> : (
-        <Text style={{ fontFamily: variant === 'link' ? fonts.bodySemi : fonts.bodySemi, fontSize: 17, color: fg, textDecorationLine: variant === 'link' ? 'underline' : 'none' }}>{label}</Text>
+        <Text style={{ fontFamily: variant === 'link' ? fonts.bodySemi : fonts.bodySemi, fontSize: 15.5, letterSpacing: 0.3, color: fg, textDecorationLine: variant === 'link' ? 'underline' : 'none' }}>{label}</Text>
       )}
     </PressScale>
   );
@@ -150,7 +150,7 @@ export function Stepper({ label, value, min, max, onChange }: { label: string; v
       <Text style={{ fontFamily: fonts.body, fontSize: 15, color: colors.ink }}>{label}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         {btn('−', value <= min, () => onChange(value - 1), `Fewer ${label}`)}
-        <Text accessibilityLiveRegion="polite" style={{ minWidth: 28, textAlign: 'center', fontFamily: fonts.display, fontSize: 22, color: colors.ink }}>{value}</Text>
+        <Text accessibilityLiveRegion="polite" style={{ minWidth: 28, textAlign: 'center', fontFamily: fonts.display, fontSize: 26, color: colors.ink }}>{value}</Text>
         {btn('+', value >= max, () => onChange(value + 1), `More ${label}`)}
       </View>
     </View>

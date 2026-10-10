@@ -24,7 +24,7 @@ function PollCard({ p, onVote, busy }: { p: Poll; onVote: (optionId: string) => 
   return (
     <View style={{ backgroundColor: colors.surface, borderRadius: radius.card, padding: 16, marginVertical: 6 }}>
       <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>POLL</Text>
-      <Text style={{ fontFamily: fonts.title, fontSize: 19, letterSpacing: -0.2, color: colors.ink, marginTop: 4, marginBottom: 10 }}>{p.question}</Text>
+      <Text style={{ fontFamily: fonts.title, fontSize: 22, color: colors.ink, marginTop: 4, marginBottom: 10 }}>{p.question}</Text>
       {p.options.map((o) => {
         const mine = p.my_option_id === o.id;
         const share = pct(o.votes, p.total_votes);

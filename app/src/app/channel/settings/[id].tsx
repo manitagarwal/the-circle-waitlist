@@ -58,7 +58,7 @@ export default function ChannelSettings() {
             <TextField label="Channel name" value={name ?? data.channel.name} onChangeText={setName} maxLength={50} />
             {name !== null && name.trim() !== data.channel.name && name.trim().length >= 3 ? (
               <Button label="Save name" variant="secondary" loading={busy} onPress={() => run(() => api.renameChannel(id, name.trim()), () => { setName(null); void reload(); })} style={{ marginTop: 12 }} />) : null}
-          </>) : <Text style={{ fontFamily: fonts.title, fontSize: 24, color: colors.ink }}>{data.channel.name}</Text>}
+          </>) : <Text style={{ fontFamily: fonts.title, fontSize: 28, color: colors.ink }}>{data.channel.name}</Text>}
 
           <SectionLabel>{isGroup ? `Members, ${data.entries.length} of ${GROUP_MAX_MEMBERS}` : `Members, ${data.entries.length}`}</SectionLabel>
           {data.channel.kind === 'public' ? <Button label="Invite people" variant="secondary" onPress={() => r.push({ pathname: '/people', params: { channel: id, name: data.channel!.name } })} style={{ marginBottom: 8 }} /> : null}

@@ -63,7 +63,7 @@ export default function Attendance() {
 
           {b.channel_id ? (
             <View style={{ marginTop: 24, padding: 14, backgroundColor: colors.surface, borderRadius: radius.card }}>
-              <Text style={{ fontFamily: fonts.titleMedium, fontSize: 18, color: colors.ink }}>Keep the chat going?</Text>
+              <Text style={{ fontFamily: fonts.titleMedium, fontSize: 21, color: colors.ink }}>Keep the chat going?</Text>
               <Body style={{ fontSize: 14, marginTop: 4 }}>The booking chat closes a day after the game. Keep it and it becomes a private channel for this group. Only the host can keep it. It counts toward your 2 channels.</Body>
               <View style={{ flexDirection: 'row', marginTop: 12 }}>
                 <Chip label="Keep this chat" on={keep === true} onPress={() => setKeep(true)} />

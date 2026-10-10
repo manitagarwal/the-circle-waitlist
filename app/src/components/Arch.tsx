@@ -7,7 +7,7 @@ import { useReduceMotion } from './motion';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-/** A yellow arch with three half-rings that draw themselves in, one after another. */
+/** A stone arch with three half-rings that draw themselves in, one after another. */
 export function ArchRings({ width: fixed, height: fixedH }: { width?: number; height?: number }) {
   const reduce = useReduceMotion();
   const [measured, setMeasured] = React.useState(0);
@@ -18,15 +18,15 @@ export function ArchRings({ width: fixed, height: fixedH }: { width?: number; he
   const vals = useRef(radii.map(() => new Animated.Value(0))).current;
   useEffect(() => {
     if (reduce) { vals.forEach((v) => v.setValue(1)); return; }
-    Animated.stagger(300, vals.map((v) => Animated.timing(v, { toValue: 1, duration: 1300, easing: Easing.bezier(0.4, 0, 0.2, 1), useNativeDriver: false }))).start();
+    Animated.stagger(380, vals.map((v) => Animated.timing(v, { toValue: 1, duration: 1800, easing: Easing.bezier(0.4, 0, 0.2, 1), useNativeDriver: false }))).start();
   }, [reduce, vals]);
   return (
     <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" onLayout={fixed ? undefined : (e) => setMeasured(e.nativeEvent.layout.width)}
-      style={fixed ? { width, height, borderTopLeftRadius: half, borderTopRightRadius: half, backgroundColor: colors.gold, overflow: 'hidden' } : { width: '100%', height: '100%', backgroundColor: colors.gold, overflow: 'hidden' }}>
+      style={fixed ? { width, height, borderTopLeftRadius: half, borderTopRightRadius: half, backgroundColor: '#ebe5d8', overflow: 'hidden' } : { width: '100%', height: '100%', backgroundColor: '#ebe5d8', overflow: 'hidden' }}>
       {width > 0 ? <Svg width={width} height={height} style={fixed ? undefined : { position: 'absolute', bottom: 0 }}>
         {radii.map((r, i) => {
           const len = Math.PI * r;
-          return <AnimatedPath key={i} d={`M${half - r} ${height}A${r} ${r} 0 0 1 ${half + r} ${height}`} stroke={colors.ink} strokeWidth={3} fill="none"
+          return <AnimatedPath key={i} d={`M${half - r} ${height}A${r} ${r} 0 0 1 ${half + r} ${height}`} stroke={colors.gold} strokeWidth={1.6} fill="none"
             strokeDasharray={[len, len]} strokeDashoffset={vals[i].interpolate({ inputRange: [0, 1], outputRange: [len, 0] })} />;
         })}
       </Svg> : null}
@@ -52,7 +52,7 @@ export function ArchEmblem({ kind }: { kind: 'pause' | 'close' }) {
   return (
     <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
       style={{ width: 96, height: 96, borderTopLeftRadius: 48, borderTopRightRadius: 48, backgroundColor: kind === 'pause' ? colors.gold : colors.surface, alignItems: 'center', justifyContent: 'center' }}>
-      <Svg width={36} height={36} viewBox="0 0 24 24" fill="none" stroke={colors.ink} strokeWidth={3} strokeLinecap="round">
+      <Svg width={36} height={36} viewBox="0 0 24 24" fill="none" stroke={colors.gold} strokeWidth={1.6} strokeLinecap="round">
         {kind === 'pause' ? <Path d="M9 6v12M15 6v12" /> : <Path d="M6 6l12 12M18 6L6 18" />}
       </Svg>
     </View>

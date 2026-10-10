@@ -22,7 +22,7 @@ export function AppBar({ unread }: { unread: number }) {
     <View style={{ paddingTop: insets.top, backgroundColor: colors.ground }}>
       <View style={{ height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 8 }}>
         {btn('activity', 'Activity', 'activity', unread)}
-        <Text accessibilityRole="header" style={{ fontFamily: fonts.title, fontSize: 19, letterSpacing: -0.2, color: colors.ink }}>The Semi Circle</Text>
+        <Text accessibilityRole="header" style={{ fontFamily: fonts.title, fontSize: 22, color: colors.ink }}>The Semi Circle</Text>
         {btn('messages', 'Messages', 'messages')}
       </View>
     </View>
