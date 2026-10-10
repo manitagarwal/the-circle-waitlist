@@ -213,5 +213,5 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 
 ## Admin portal (thesemicircle.in/admin)
 - Email and password only. The authenticator-app step is built but switched off (`REQUIRE_MFA` in admin.js). Only accounts that pass `is_admin()` get in.
-- Pages: Dashboard, Applicants (shortlist, accept, reject), Members (warn, suspend, ban, lift), Reports (dismiss, minor, severe), Events (create, edit, publish, cancel, complete, attendees, check-in, CSV, cover image), Announcements (a notification to all or by activity, or a message posted in chosen lobbies), Bookings (read only), Settings (rules, activities, suggestions, blocked words), Activity log.
+- Pages: Dashboard, Applicants (shortlist, accept, reject), Members (warn, suspend, ban, lift), Reports (dismiss, minor, severe), Events (create, edit, publish, cancel, complete, attendees, check-in, CSV, cover image), Applicants: accepting also emails them (send-acceptance function, needs the Resend key as a Supabase secret). Announcements (a notification to all or by activity, or a message posted in chosen lobbies), Bookings (read only), Settings (rules, activities, suggestions, blocked words), Activity log.
 - Every action calls an admin-only database function or a table with an admin-only policy.
