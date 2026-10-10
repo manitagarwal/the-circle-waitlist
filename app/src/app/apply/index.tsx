@@ -6,6 +6,7 @@ import { colors, fonts, radius } from '@/theme';
 import { CITIES } from '@/lib/config';
 import { isEmail, isLinkedIn } from '@/lib/validators';
 import { phoneError, validatePhone } from '@/lib/phone';
+import { Pill } from '@/components/Pill';
 import { PhoneField } from '@/components/PhoneField';
 import { api } from '@/lib/auth';
 import { cityValue, useApply } from './_layout';
@@ -54,10 +55,7 @@ export default function Details() {
           {CITIES.map((c) => {
             const on = s.city === c;
             return (
-              <Pressable key={c} accessibilityRole="radio" accessibilityState={{ selected: on }} onPress={() => set({ city: c })}
-                style={{ minHeight: 44, paddingHorizontal: 14, justifyContent: 'center', borderRadius: radius.control, borderWidth: 1, borderColor: on ? colors.goldText : colors.line, backgroundColor: on ? colors.goldTint : colors.card }}>
-                <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.body, fontSize: 14, color: colors.ink }}>{c}</Text>
-              </Pressable>
+              <Pill key={c} label={c} on={on} onPress={() => set({ city: c })} />
             );
           })}
         </View>

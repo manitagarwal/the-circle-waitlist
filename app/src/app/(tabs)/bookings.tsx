@@ -15,12 +15,12 @@ function Card({ b, onPress, note, group }: { b: BookingRow; onPress: () => void;
   const sp = spots(b);
   const mix = genderWanted(b);
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: 14, marginBottom: 10 })}>
+    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: colors.surface, borderRadius: radius.card, padding: 14, marginBottom: 10 })}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}</Text>
+        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.3, color: colors.faint }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}</Text>
         <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.faint }}>{b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
       </View>
-      <Text style={{ fontFamily: fonts.titleMedium, fontSize: 19, color: colors.ink, marginTop: 4 }}>{b.title}</Text>
+      <Text style={{ fontFamily: fonts.title, fontSize: 20, letterSpacing: -0.2, color: colors.ink, marginTop: 4 }}>{b.title}</Text>
       <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{timeRange(b.starts_at, b.ends_at)}</Text>
       <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted }}>{[b.venue_name, b.area].filter(Boolean).join(', ')}</Text>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 10 }}>
@@ -54,8 +54,8 @@ export default function Bookings() {
   return (
     <Screen onRefresh={pull} refreshing={refreshing}>
       <TabHeader title="Bookings" right={
-        <Pressable accessibilityRole="button" onPress={() => r.push('/booking/new')} style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 4 }}>
-          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.goldText }}>Host one</Text></Pressable>} />
+        <Pressable accessibilityRole="button" accessibilityLabel="Host a booking" onPress={() => r.push('/booking/new')} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="plus" color="#ffffff" strokeWidth={2.2} /></Pressable>} />
       <Segmented value={seg} onChange={setSeg} options={[{ value: 'browse', label: 'Browse' }, { value: 'mine', label: 'Mine' }]} />
       <State loading={loading} error={error} onRetry={reload} />
 

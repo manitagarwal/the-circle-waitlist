@@ -10,14 +10,14 @@ export function PhoneField({ dial, number, onChange, error, label = 'Phone numbe
 }) {
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(false);
-  const border = error ? colors.error : focus ? colors.goldText : colors.line;
-  const box = { height: 48, borderRadius: radius.control, backgroundColor: colors.card, borderWidth: 1, borderColor: border } as const;
+  const border = error ? colors.error : focus ? colors.ink : 'transparent';
+  const box = { height: 56, borderRadius: radius.control, backgroundColor: colors.surface, borderWidth: 1.5, borderColor: border } as const;
   return (
     <View style={{ marginTop: 16 }}>
       <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginBottom: 6 }}>{label}</Text>
       <View style={{ flexDirection: 'row', gap: 8 }}>
         <Pressable accessibilityRole="button" accessibilityLabel={`Country code, plus ${dial}. Change`} onPress={() => setOpen(true)}
-          style={[box, { minWidth: 84, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }]}>
+          style={[box, { minWidth: 92, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }]}>
           <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 16, color: colors.ink }}>+{dial}</Text>
           <Text style={{ fontSize: 11, color: colors.faint }}>▼</Text>
         </Pressable>

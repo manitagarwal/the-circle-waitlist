@@ -45,7 +45,7 @@ export default function Review() {
       <StepHeader step={5} of={5} />
       <Title italic>Last look.</Title>
       <Body style={{ marginTop: 6, fontSize: 14 }}>Check it's all you. You can't edit after you submit.</Body>
-      <View style={{ marginTop: 16, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 14, paddingVertical: 6 }}>
+      <View style={{ marginTop: 16, backgroundColor: colors.surface, borderRadius: radius.card, paddingHorizontal: 14, paddingVertical: 6 }}>
         <Row k="Name" v={s.fullName} />
         <Row k="Phone" v={formatPhone(phone)} />
         <Row k="Login email" v={s.personalEmail} />

@@ -15,16 +15,16 @@ export function Bar({ title, subtitle, left, right, onTitlePress }: {
     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
       {left}
       <View style={{ flex: 1 }}>
-        <Text accessibilityRole="header" numberOfLines={1} style={{ fontFamily: fonts.titleMedium, fontSize: 18, color: colors.ink }}>{title}</Text>
+        <Text accessibilityRole="header" numberOfLines={1} style={{ fontFamily: fonts.title, fontSize: 18, letterSpacing: -0.2, color: colors.ink }}>{title}</Text>
         {subtitle ? <Text numberOfLines={1} style={{ fontFamily: fonts.body, fontSize: 12, color: colors.faint }}>{subtitle}</Text> : null}
       </View>
     </View>
   );
   return (
-    <View style={{ paddingTop: insets.top, backgroundColor: colors.ground, borderBottomWidth: 1, borderBottomColor: colors.line }}>
+    <View style={{ paddingTop: insets.top, backgroundColor: colors.ground }}>
       <View style={{ minHeight: 56, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8 }}>
         <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={() => (r.canGoBack() ? r.back() : r.replace('/channels'))}
-          style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="back" /></Pressable>
+          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', marginLeft: 4, marginRight: 4 }}><Icon name="back" /></Pressable>
         {onTitlePress ? <Pressable accessibilityRole="button" onPress={onTitlePress} style={{ flex: 1, flexDirection: 'row' }}>{titleBlock}</Pressable> : titleBlock}
         {right}
       </View>

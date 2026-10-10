@@ -3,7 +3,7 @@ import { Pressable, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { PersonAvatar } from '@/components/Avatar';
 import { Icon } from '@/components/Icon';
-import { LetterBadge, Row, Segmented, State, TabHeader } from '@/components/lists';
+import { ArchBadge, Row, Segmented, State, TabHeader } from '@/components/lists';
 import { Screen } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api } from '@/lib/auth';
@@ -30,14 +30,14 @@ export default function Messages() {
   return (
     <Screen onRefresh={pull} refreshing={refreshing}>
       <TabHeader title="Messages" right={seg === 'groups' ? (
-        <Pressable accessibilityRole="button" accessibilityLabel="New group" onPress={() => r.push('/group/new')} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name="plus" color={colors.goldText} /></Pressable>) : undefined} />
+        <Pressable accessibilityRole="button" accessibilityLabel="New group" onPress={() => r.push('/group/new')} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="plus" color="#ffffff" strokeWidth={2.2} /></Pressable>) : undefined} />
       <Segmented value={seg} onChange={setSeg} options={[{ value: 'friends', label: 'Friends' }, { value: 'groups', label: 'Groups' }, { value: 'strangers', label: 'Strangers' }]} />
       <State loading={loading} error={error} onRetry={reload}
         empty={data && seg !== 'groups' && dmRows.length === 0 ? (seg === 'friends' ? 'No conversations with friends yet.' : 'No messages from strangers.') : data && seg === 'groups' && data.groups.length === 0 ? 'No groups yet. Start one with the plus button and add your friends.' : null} />
 
       {seg === 'groups' ? data?.groups.map((g) => (
-        <Row key={g.id} left={<LetterBadge name={g.name} />} title={g.name} meta={data.prev[g.id] ? listStamp(data.prev[g.id].last_at) : null}
+        <Row key={g.id} left={<ArchBadge name={g.name} />} title={g.name} meta={data.prev[g.id] ? listStamp(data.prev[g.id].last_at) : null}
           subtitle={data.prev[g.id] ? `${data.prev[g.id].from_me ? 'You' : data.prev[g.id].sender_username ?? 'Someone'}: ${data.prev[g.id].body}` : `${g.member_count} members`}
           onPress={() => r.push({ pathname: '/channel/[id]', params: { id: g.id } })} />
       )) : dmRows.map((d) => (

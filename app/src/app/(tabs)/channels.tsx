@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
 import { Collapsible } from '@/components/Collapsible';
-import { FilterBar, LetterBadge, Row, Segmented, State, TabHeader } from '@/components/lists';
+import { ArchBadge, FilterBar, RingBadge, Row, Segmented, State, TabHeader } from '@/components/lists';
 import { Body, Button, Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { api } from '@/lib/auth';
@@ -14,6 +14,8 @@ import { endsIn, listStamp } from '@/lib/format';
 import { useLoad } from '@/lib/useLoad';
 
 type Seg = 'lobby' | 'public' | 'booking';
+/** A yellow ring means something was posted in the last day. */
+const isFresh = (iso?: string) => !!iso && Date.now() - new Date(iso).getTime() < 86400000;
 export default function Channels() {
   const r = useRouter();
   const [seg, setSeg] = useState<Seg>('lobby');
@@ -49,7 +51,7 @@ export default function Channels() {
     <Screen onRefresh={pull} refreshing={refreshing}>
       <TabHeader title="Channels" right={
         <Pressable accessibilityRole="button" accessibilityLabel="New channel" onPress={() => r.push('/channel/new')}
-          style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="plus" color={colors.goldText} /></Pressable>} />
+          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center' }}><Icon name="plus" color="#ffffff" strokeWidth={2.2} /></Pressable>} />
       <Segmented value={seg} onChange={setSeg} options={[{ value: 'lobby', label: 'Lobby' }, { value: 'public', label: 'Public' }, { value: 'booking', label: 'Booking' }]} />
       <State loading={loading} error={error} onRetry={reload} />
       {actionErr ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.error, marginVertical: 8 }}>{actionErr}</Text> : null}
@@ -60,7 +62,7 @@ export default function Channels() {
         {lobbyShown.map((b) => (
           <Collapsible key={b.group.id} title={b.group.name} count={b.items.length}>
             {b.items.map((c) => (
-              <Row key={c.id} left={<LetterBadge name={c.name} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
+              <Row key={c.id} left={<RingBadge name={c.name} unread={isFresh(data.previews[c.id]?.last_at)} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
             ))}
           </Collapsible>
         ))}
@@ -82,7 +84,7 @@ export default function Channels() {
             {b.items.map((c) => {
               const why = c.is_member ? null : channelFit(c, data.me);
               return (
-                <Row key={c.id} left={<LetterBadge name={c.name} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
+                <Row key={c.id} left={<ArchBadge name={c.name} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
                   right={c.is_member ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.sage }}>Joined</Text>
                     : why ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.faint, maxWidth: 70, textAlign: 'center' }}>Not for you</Text>
                     : <Button label="Join" variant="secondary" loading={busy === c.id} onPress={() => act(c.id, () => api.joinChannel(c.id))} style={{ height: 40, paddingHorizontal: 16 }} />} />
@@ -98,7 +100,7 @@ export default function Channels() {
         {mine.map((c) => {
           const ends = endsIn(data.expiry[c.id] ?? null);
           return (
-            <Row key={c.id} left={<LetterBadge name={c.name} />} title={c.name} subtitle={preview(c.id) ?? 'Booking chat'}
+            <Row key={c.id} left={<ArchBadge name={c.name} />} title={c.name} subtitle={preview(c.id) ?? 'Booking chat'}
               meta={ends ? ends.toUpperCase() : data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} tag={ends} onPress={() => open(c.id)} />
           );
         })}

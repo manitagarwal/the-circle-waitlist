@@ -14,20 +14,15 @@ export function AppBar({ unread }: { unread: number }) {
   const btn = (name: 'activity' | 'messages', label: string, icon: string, badge?: number) => (
     <Pressable accessibilityRole="button" accessibilityLabel={badge ? `${label}, ${badge} unread` : label} accessibilityState={{ selected: on(name) }} onPress={() => r.navigate(`/${name}` as never)}
       style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center' }}>
-      <Icon name={icon} size={24} color={on(name) ? colors.goldText : colors.ink} />
-      {badge ? (
-        <View style={{ position: 'absolute', top: 6, right: 4, minWidth: 18, height: 18, borderRadius: 9, backgroundColor: colors.clay, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 }}>
-          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, color: '#ffffff' }}>{badge > 99 ? '99+' : badge}</Text>
-        </View>) : null}
+      <Icon name={icon} size={26} color={colors.ink} />
+      {badge ? <View style={{ position: 'absolute', top: 9, right: 9, width: 11, height: 11, borderRadius: 6, backgroundColor: colors.gold, borderWidth: 2, borderColor: colors.ground }} /> : null}
     </Pressable>
   );
   return (
-    <View style={{ paddingTop: insets.top, backgroundColor: colors.ground, borderBottomWidth: 1, borderBottomColor: colors.line }}>
+    <View style={{ paddingTop: insets.top, backgroundColor: colors.ground }}>
       <View style={{ height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 8 }}>
         {btn('activity', 'Activity', 'activity', unread)}
-        <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 22, color: colors.ink }}>
-          The Semi <Text style={{ fontFamily: fonts.title }}>Circle</Text>
-        </Text>
+        <Text accessibilityRole="header" style={{ fontFamily: fonts.title, fontSize: 19, letterSpacing: -0.2, color: colors.ink }}>The Semi Circle</Text>
         {btn('messages', 'Messages', 'messages')}
       </View>
     </View>

@@ -50,7 +50,7 @@ export default function Settings() {
           {NOTIFICATION_SWITCHES.map((sw) => (
             <View key={sw.key} style={{ flexDirection: 'row', alignItems: 'center', minHeight: 56, borderBottomWidth: 1, borderBottomColor: colors.line }}>
               <Text style={{ flex: 1, fontFamily: fonts.body, fontSize: 15, color: colors.ink, paddingRight: 12 }}>{sw.label}</Text>
-              <Switch accessibilityLabel={sw.label} value={isOn(sw.categories)} onValueChange={(v) => toggle(sw.categories, v)} trackColor={{ true: colors.gold, false: colors.line }} thumbColor="#ffffff" />
+              <Switch accessibilityLabel={sw.label} value={isOn(sw.categories)} onValueChange={(v) => toggle(sw.categories, v)} trackColor={{ true: colors.ink, false: colors.lineStrong }} thumbColor="#ffffff" />
             </View>))}
           {err ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.error, marginTop: 8 }}>{err}</Text> : null}
           <Body style={{ fontSize: 13, marginTop: 8 }}>Notices about your account, like a warning, always come through.</Body>

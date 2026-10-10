@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Bar } from '@/components/Bar';
+import { ArchRings } from '@/components/Arch';
 import { PersonAvatar } from '@/components/Avatar';
 import { SectionLabel, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice } from '@/components/ui';
@@ -45,9 +46,11 @@ export default function EventDetail() {
     const why = e.my_status ? null : eventFit(e, me);
     const late = new Date(e.starts_at).getTime() - Date.now() < 3 * 3600000;
     body = (<>
-      {cover ? <Image source={{ uri: cover }} style={{ width: '100%', height: 180, borderRadius: radius.card, backgroundColor: colors.line, marginBottom: 14 }} accessibilityIgnoresInvertColors /> : null}
-      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{[group, e.interest_name].filter(Boolean).join(' · ').toUpperCase() || 'THE SEMI CIRCLE'}</Text>
-      <Text style={{ fontFamily: fonts.title, fontSize: 28, lineHeight: 34, color: colors.ink, marginTop: 6 }}>{e.title}</Text>
+      <View style={{ width: '100%', aspectRatio: 2, borderTopLeftRadius: 999, borderTopRightRadius: 999, overflow: 'hidden', backgroundColor: colors.gold, marginBottom: 16 }}>
+        {cover ? <Image source={{ uri: cover }} style={{ width: '100%', height: '100%' }} accessibilityIgnoresInvertColors /> : <ArchRings />}
+      </View>
+      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>{[group, e.interest_name].filter(Boolean).join(' · ').toUpperCase() || 'THE SEMI CIRCLE'}</Text>
+      <Text style={{ fontFamily: fonts.display, fontSize: 32, lineHeight: 35, letterSpacing: -0.9, color: colors.ink, marginTop: 6 }}>{e.title}</Text>
       {e.status === 'cancelled' ? <Notice tone="error">This event was cancelled.</Notice> : null}
 
       <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: colors.line }}>
@@ -70,17 +73,17 @@ export default function EventDetail() {
       {roster.length ? (<><SectionLabel>Who's going</SectionLabel>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           {roster.slice(0, 24).map((p) => (
-            <View key={p.member_id} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 12, backgroundColor: colors.card, borderRadius: 24, borderWidth: 1, borderColor: colors.line }}>
+            <View key={p.member_id} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 12, backgroundColor: colors.surface, borderRadius: 24 }}>
               <PersonAvatar person={p} size={32} /><Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink }}>{p.username}</Text>
             </View>))}
         </View>
         {roster.length > 24 ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>and {roster.length - 24} more</Text> : null}</>) : null}
 
       {ticket ? (
-        <View style={{ marginTop: 20, alignItems: 'center', padding: 16, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.goldBorder }}>
-          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>YOUR TICKET</Text>
+        <View style={{ marginTop: 20, alignItems: 'center', padding: 20, backgroundColor: colors.surface, borderRadius: 24 }}>
+          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>YOUR TICKET</Text>
           <View style={{ marginTop: 10 }}><TicketQr code={ticket} /></View>
-          <Text selectable style={{ fontFamily: fonts.title, fontSize: 24, letterSpacing: 4, color: colors.ink, marginTop: 10 }}>{ticket}</Text>
+          <Text selectable style={{ fontFamily: fonts.display, fontSize: 28, letterSpacing: 5, color: colors.ink, marginTop: 12 }}>{ticket}</Text>
           <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 4, textAlign: 'center' }}>Show this at the door. Doors open at {clock(new Date(e.starts_at))}.</Text>
         </View>) : null}
 

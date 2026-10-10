@@ -94,11 +94,11 @@ export default function NewBooking() {
         {label('How long')}
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <Pressable accessibilityRole="button" accessibilityLabel="Shorter" disabled={dur <= MIN_DURATION} onPress={() => setDur((d) => d - DURATION_STEP)}
-            style={{ width: 48, height: 48, borderRadius: 6, borderWidth: 1, borderColor: colors.lineStrong, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', opacity: dur <= MIN_DURATION ? 0.4 : 1 }}>
+            style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', opacity: dur <= MIN_DURATION ? 0.4 : 1 }}>
             <Text style={{ fontFamily: fonts.bodySemi, fontSize: 22, color: colors.ink }}>−</Text></Pressable>
           <Text accessibilityLiveRegion="polite" style={{ fontFamily: fonts.titleMedium, fontSize: 20, color: colors.ink }}>{durationLabel(dur)}</Text>
           <Pressable accessibilityRole="button" accessibilityLabel="Longer" disabled={dur >= maxDur} onPress={() => setDur((d) => d + DURATION_STEP)}
-            style={{ width: 48, height: 48, borderRadius: 6, borderWidth: 1, borderColor: colors.lineStrong, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', opacity: dur >= maxDur ? 0.4 : 1 }}>
+            style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', opacity: dur >= maxDur ? 0.4 : 1 }}>
             <Text style={{ fontFamily: fonts.bodySemi, fontSize: 22, color: colors.ink }}>+</Text></Pressable>
         </View>
         <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>In 30-minute steps, up to {durationLabel(maxDur)}{interest ? ` for ${interest.name}` : ''}.</Text>
@@ -121,7 +121,7 @@ export default function NewBooking() {
             <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.ink }}>Reliable members only</Text>
             <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted }}>Hides your booking from members with a low reliability score.</Text>
           </View>
-          <Switch accessibilityLabel="Reliable members only" value={reliable} onValueChange={setReliable} trackColor={{ true: colors.gold, false: colors.line }} thumbColor="#ffffff" />
+          <Switch accessibilityLabel="Reliable members only" value={reliable} onValueChange={setReliable} trackColor={{ true: colors.ink, false: colors.lineStrong }} thumbColor="#ffffff" />
         </View>
         <TextField label="Anything else? (optional)" value={desc} onChangeText={setDesc} multiline maxLength={500} style={{ height: 88, paddingTop: 12, textAlignVertical: 'top' }} />
 

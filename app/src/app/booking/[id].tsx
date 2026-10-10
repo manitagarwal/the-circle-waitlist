@@ -73,7 +73,7 @@ export default function BookingDetail() {
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
         {roster.map((p) => (
           <Pressable key={p.member_id} accessibilityRole="button" accessibilityLabel={`View ${p.username}'s profile`} onPress={() => r.push({ pathname: '/member/[id]', params: { id: p.member_id } })}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 12, backgroundColor: colors.card, borderRadius: 24, borderWidth: 1, borderColor: colors.line }}>
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 12, backgroundColor: colors.surface, borderRadius: 24 }}>
             <PersonAvatar person={p} size={36} /><Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink }}>{p.username}</Text>
           </Pressable>
         ))}

@@ -242,3 +242,10 @@ Numbers 1-6 block the schema; 7-12 can be answered later but I will build the de
 - Images go to a private storage bucket (`announcement-images`, max 5 MB, JPG/PNG/WebP) and are shown to members through short-lived links. On iPhone the image shows in the app and not in the alert; Android alerts can show it too.
 - Phone alerts are sent for every notification the app creates (friend requests, bookings, events, announcements, account notices), not only announcements. A database job runs every minute and calls the `push-dispatch` function, which claims each new notification once, skips members who switched that kind off (account notices always go through), sends through Expo, and removes phone tokens that no longer work. Notifications older than two hours are never pushed.
 - Tapping a phone alert opens Activity. Alerts that arrive while the app is open show as a banner.
+
+## Design (the new look)
+- White ground, near-black ink, soft grey surfaces for cards, fields and chips, and one yellow accent used sparingly (unread rings, the active-tab marker, the new-activity dot, highlights). Buttons are black pills.
+- Type: Bricolage Grotesque for headlines (bold, tight), Figtree for body text.
+- Signature shape: the half-circle. Photos sit in arch frames, channel avatars are arch-topped or carry a half-ring (yellow when something was posted in the last day), the active tab has a yellow half-circle marker.
+- Motion: content fades up in sequence, the welcome rings draw themselves, the Lobby/Public/Booking switch slides, poll bars and the reliability bar fill, buttons shrink slightly when pressed. All of it is switched off when the phone has "reduce motion" on.
+- Shared pieces live in `src/theme.ts`, `src/components/ui.tsx`, `motion.tsx`, `Arch.tsx`, `Pill.tsx`, `lists.tsx`. The design canvas ("New look" page) is the reference.

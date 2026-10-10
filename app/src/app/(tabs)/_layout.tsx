@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import { Tabs } from 'expo-router';
 import { AppBar } from '@/components/AppBar';
-import { Icon } from '@/components/Icon';
+import { TabIcon } from '@/components/TabIcon';
 import { colors, fonts } from '@/theme';
 import { api, useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
@@ -26,14 +26,14 @@ function useUnread(memberId: string | undefined) {
 export default function TabsLayout() {
   const { member } = useAuth();
   const unread = useUnread(member?.id);
-  const icon = (name: string) => ({ color }: { color: unknown }) => <Icon name={name} size={24} color={String(color)} />;
+  const icon = (name: string) => ({ color, focused }: { color: unknown; focused: boolean }) => <TabIcon name={name} focused={focused} color={String(color)} />;
   return (
     <Tabs screenOptions={{
       headerShown: true,
       header: () => <AppBar unread={unread} />,
-      tabBarActiveTintColor: colors.goldText, tabBarInactiveTintColor: colors.faint,
-      tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.line, height: 72, paddingTop: 8, paddingBottom: 16 },
-      tabBarLabelStyle: { fontFamily: fonts.bodyMedium, fontSize: 11 },
+      tabBarActiveTintColor: colors.ink, tabBarInactiveTintColor: colors.faint,
+      tabBarStyle: { backgroundColor: colors.ground, borderTopColor: colors.line, height: 84, paddingTop: 14, paddingBottom: 14 },
+      tabBarLabelStyle: { fontFamily: fonts.bodySemi, fontSize: 11 },
       sceneStyle: { backgroundColor: colors.ground },
     }}>
       <Tabs.Screen name="channels" options={{ title: 'Channels', tabBarIcon: icon('channels') }} />

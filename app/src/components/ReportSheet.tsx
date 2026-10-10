@@ -47,7 +47,7 @@ export function ReportSheet({ member, context, onClose, onBlock }: {
               <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.ink }}>This is a safety concern.</Text>
               <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted }}>Something happened at a meetup. We'll treat it as urgent.</Text>
             </View>
-            <Switch accessibilityLabel="This is a safety concern" value={safety} onValueChange={setSafety} trackColor={{ true: colors.gold, false: colors.line }} thumbColor="#ffffff" />
+            <Switch accessibilityLabel="This is a safety concern" value={safety} onValueChange={setSafety} trackColor={{ true: colors.ink, false: colors.lineStrong }} thumbColor="#ffffff" />
           </View>
           {err ? <Notice tone="error">{err}</Notice> : null}
           <Button label="Send report" onPress={send} loading={busy} disabled={!cat || !reason.trim()} style={{ marginTop: 16 }} />

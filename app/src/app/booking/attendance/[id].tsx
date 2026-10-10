@@ -62,7 +62,7 @@ export default function Attendance() {
           <Body style={{ fontSize: 13, marginTop: 12 }}>Skip anyone and they count as showed up after 48 hours. A no-show costs a member their reliability score, so mark it only if it's true.</Body>
 
           {b.channel_id ? (
-            <View style={{ marginTop: 24, padding: 14, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line }}>
+            <View style={{ marginTop: 24, padding: 14, backgroundColor: colors.surface, borderRadius: radius.card }}>
               <Text style={{ fontFamily: fonts.titleMedium, fontSize: 18, color: colors.ink }}>Keep the chat going?</Text>
               <Body style={{ fontSize: 14, marginTop: 4 }}>The booking chat closes a day after the game. Keep it and it becomes a private channel for this group. Only the host can keep it. It counts toward your 2 channels.</Body>
               <View style={{ flexDirection: 'row', marginTop: 12 }}>

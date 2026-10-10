@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Location from 'expo-location';
+import { Pill } from '@/components/Pill';
 import { Body, Button, Screen, StepHeader, TextField, Title } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { ageOn, GENDERS, MIN_AGE, parseDob } from '@/lib/profile';
@@ -77,10 +78,7 @@ export default function About() {
         {GENDERS.map((g) => {
           const on = s.gender === g.value;
           return (
-            <Pressable key={g.value} accessibilityRole="radio" accessibilityState={{ selected: on }} onPress={() => set({ gender: g.value })}
-              style={{ minHeight: 44, paddingHorizontal: 14, justifyContent: 'center', borderRadius: radius.control, borderWidth: 1, borderColor: on ? colors.goldText : colors.line, backgroundColor: on ? colors.goldTint : colors.card }}>
-              <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.body, fontSize: 14, color: colors.ink }}>{g.label}</Text>
-            </Pressable>
+            <Pill key={g.value} label={g.label} on={on} onPress={() => set({ gender: g.value })} />
           );
         })}
       </View>

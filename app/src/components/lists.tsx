@@ -1,27 +1,43 @@
-import React from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Animated, Easing, Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { colors, fonts, radius } from '@/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from './ui';
 import { ChipRow } from './ChipRow';
+import { useReduceMotion } from './motion';
 
 export function TabHeader({ title, right }: { title: string; right?: React.ReactNode }) {
   return (
     <View style={{ minHeight: 56, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-      <Text accessibilityRole="header" style={{ fontFamily: fonts.title, fontSize: 28, color: colors.ink }}>{title}</Text>
+      <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 34, lineHeight: 38, letterSpacing: -1, color: colors.ink }}>{title}</Text>
       {right}
     </View>
   );
 }
 
 export function Segmented<T extends string>({ value, options, onChange }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void }) {
+  const reduce = useReduceMotion();
+  const [w, setW] = useState(0);
+  const n = options.length;
+  const idx = Math.max(0, options.findIndex((o) => o.value === value));
+  const x = useRef(new Animated.Value(idx)).current;
+  useEffect(() => {
+    if (reduce) { x.setValue(idx); return; }
+    Animated.timing(x, { toValue: idx, duration: 380, easing: Easing.bezier(0.3, 0.8, 0.3, 1), useNativeDriver: true }).start();
+  }, [idx, reduce, x]);
+  const seg = w / n;
   return (
-    <View accessibilityRole="tablist" style={{ flexDirection: 'row', backgroundColor: colors.card, borderRadius: radius.control, borderWidth: 1, borderColor: colors.line, padding: 3, marginVertical: 8 }}>
+    <View accessibilityRole="tablist" onLayout={(e) => setW(e.nativeEvent.layout.width - 8)}
+      style={{ flexDirection: 'row', backgroundColor: colors.surface, borderRadius: 24, padding: 4, height: 48, marginVertical: 8 }}>
+      {w > 0 ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: 4, left: 4, width: seg, height: 40, borderRadius: 20, backgroundColor: colors.ink,
+        transform: [{ translateX: x.interpolate({ inputRange: [0, Math.max(1, n - 1)], outputRange: [0, seg * Math.max(1, n - 1)] }) }] }} /> : null}
       {options.map((o) => {
         const on = o.value === value;
         return (
           <Pressable key={o.value} accessibilityRole="tab" accessibilityState={{ selected: on }} onPress={() => onChange(o.value)}
-            style={{ flex: 1, minHeight: 40, borderRadius: 4, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? colors.gold : 'transparent' }}>
-            <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.bodyMedium, fontSize: 14, color: on ? colors.onGold : colors.muted }}>{o.label}</Text>
+            style={{ flex: 1, height: 40, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: on ? '#ffffff' : colors.muted }}>{o.label}</Text>
           </Pressable>
         );
       })}
@@ -30,14 +46,36 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
 }
 
 export const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <Text accessibilityRole="header" style={{ fontFamily: fonts.bodySemi, fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', color: colors.faint, marginTop: 20, marginBottom: 8 }}>{children}</Text>
+  <Text accessibilityRole="header" style={{ fontFamily: fonts.bodySemi, fontSize: 12, letterSpacing: 1.4, textTransform: 'uppercase', color: colors.faint, marginTop: 24, marginBottom: 8 }}>{children}</Text>
 );
 
 /** A round badge with the first letter, used for channels. */
 export function LetterBadge({ name, size = 44 }: { name: string; size?: number }) {
   return (
-    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.goldTint, borderWidth: 1, borderColor: colors.goldBorder, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontFamily: fonts.title, fontSize: size * 0.42, color: colors.goldText }}>{(name[0] ?? '?').toUpperCase()}</Text>
+    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontFamily: fonts.display, fontSize: size * 0.43, color: colors.ink }}>{(name[0] ?? '?').toUpperCase()}</Text>
+    </View>
+  );
+}
+
+/** The signature shape: a half-circle top on a flat base. */
+export function ArchBadge({ name, size = 52 }: { name: string; size?: number }) {
+  return (
+    <View style={{ width: size, height: size, borderTopLeftRadius: size / 2, borderTopRightRadius: size / 2, backgroundColor: colors.lineStrong, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontFamily: fonts.display, fontSize: size * 0.4, color: colors.ink }}>{(name[0] ?? '?').toUpperCase()}</Text>
+    </View>
+  );
+}
+
+/** A letter avatar with a half-ring over the top: yellow when there is something new. */
+export function RingBadge({ name, unread, size = 56 }: { name: string; unread?: boolean; size?: number }) {
+  const r = size / 2 - 3;
+  return (
+    <View style={{ width: size, height: size }}>
+      <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none" style={{ position: 'absolute' }}>
+        <Path d={`M3 ${size / 2}A${r} ${r} 0 0 1 ${size - 3} ${size / 2}`} stroke={unread ? colors.gold : colors.lineStrong} strokeWidth={3.5} strokeLinecap="round" />
+      </Svg>
+      <View style={{ position: 'absolute', left: 6, top: 6 }}><LetterBadge name={name} size={size - 12} /></View>
     </View>
   );
 }
@@ -46,12 +84,12 @@ export function Row({ left, title, subtitle, meta, right, onPress, tag }: {
   left?: React.ReactNode; title: string; subtitle?: string | null; meta?: string | null; right?: React.ReactNode; onPress?: () => void; tag?: string | null;
 }) {
   const body = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, gap: 12, minHeight: 64 }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, gap: 12, minHeight: 72 }}>
       {left}
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
           <Text numberOfLines={1} style={{ flexShrink: 1, fontFamily: fonts.bodySemi, fontSize: 16, color: colors.ink }}>{title}</Text>
-          {meta ? <Text style={{ fontFamily: fonts.body, fontSize: 12, color: tag ? colors.goldText : colors.faint }}>{meta}</Text> : null}
+          {meta ? <Text style={{ fontFamily: fonts.body, fontSize: 12.5, color: colors.faint }}>{meta}</Text> : null}
         </View>
         {subtitle ? <Text numberOfLines={2} style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{subtitle}</Text> : null}
       </View>
@@ -66,14 +104,14 @@ export function Row({ left, title, subtitle, meta, right, onPress, tag }: {
 export function Chip({ label, on, onPress }: { label: string; on?: boolean; onPress: () => void }) {
   return (
     <Pressable accessibilityRole="button" accessibilityState={{ selected: !!on }} onPress={onPress}
-      style={{ minHeight: 40, paddingHorizontal: 14, justifyContent: 'center', borderRadius: 20, borderWidth: 1, borderColor: on ? colors.goldText : colors.line, backgroundColor: on ? colors.goldTint : colors.card, marginRight: 8 }}>
-      <Text style={{ fontFamily: on ? fonts.bodySemi : fonts.body, fontSize: 14, color: colors.ink }}>{label}</Text>
+      style={{ minHeight: 40, paddingHorizontal: 16, justifyContent: 'center', borderRadius: 20, backgroundColor: on ? colors.ink : colors.surface, marginRight: 8 }}>
+      <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14.5, color: on ? '#ffffff' : colors.ink }}>{label}</Text>
     </Pressable>
   );
 }
 
 export function State({ loading, error, empty, onRetry }: { loading?: boolean; error?: string | null; empty?: string | null; onRetry?: () => void }) {
-  if (loading) return <ActivityIndicator color={colors.goldText} style={{ marginTop: 40 }} />;
+  if (loading) return <ActivityIndicator color={colors.ink} style={{ marginTop: 40 }} />;
   if (error) return (
     <View style={{ marginTop: 32, alignItems: 'center', gap: 12 }}>
       <Text style={{ fontFamily: fonts.body, fontSize: 15, color: colors.error, textAlign: 'center' }}>{error}</Text>
@@ -84,17 +122,15 @@ export function State({ loading, error, empty, onRetry }: { loading?: boolean; e
   return null;
 }
 
-import { Modal } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-/** A bottom sheet over a dimmed background. */
+/** A bottom sheet that slides up over a dimmed background. */
 export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title?: string; children: React.ReactNode }) {
   const insets = useSafeAreaInsets();
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable accessibilityLabel="Close" style={{ flex: 1, backgroundColor: 'rgba(33,28,22,0.4)', justifyContent: 'flex-end' }} onPress={onClose}>
-        <Pressable accessible={false} style={{ backgroundColor: colors.ground, borderTopLeftRadius: 16, borderTopRightRadius: 16, padding: 20, paddingBottom: insets.bottom + 20, maxHeight: '80%' }}>
-          {title ? <Text accessibilityRole="header" style={{ fontFamily: fonts.title, fontSize: 20, color: colors.ink, marginBottom: 8 }}>{title}</Text> : null}
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <Pressable accessibilityLabel="Close" style={{ flex: 1, backgroundColor: 'rgba(22,18,14,0.45)', justifyContent: 'flex-end' }} onPress={onClose}>
+        <Pressable accessible={false} style={{ backgroundColor: colors.ground, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 20, paddingTop: 12, paddingBottom: insets.bottom + 20, maxHeight: '82%' }}>
+          <View style={{ alignSelf: 'center', width: 40, height: 5, borderRadius: 3, backgroundColor: colors.lineStrong, marginBottom: 14 }} />
+          {title ? <Text accessibilityRole="header" style={{ fontFamily: fonts.title, fontSize: 22, letterSpacing: -0.3, color: colors.ink, marginBottom: 8 }}>{title}</Text> : null}
           {children}
         </Pressable>
       </Pressable>

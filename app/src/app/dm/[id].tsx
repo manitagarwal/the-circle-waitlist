@@ -62,14 +62,14 @@ export default function DmThread() {
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <Bar title={name} subtitle={data?.rel?.status === 'accepted' ? 'Friends' : 'Not friends yet'} left={data?.person ? <PersonAvatar person={data.person} size={36} /> : undefined}
         onTitlePress={() => r.push({ pathname: '/member/[id]', params: { id: other } })}
-        right={<Pressable accessibilityRole="button" accessibilityLabel="More" onPress={() => setMenu(true)} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="dots" /></Pressable>} />
+        right={<Pressable accessibilityRole="button" accessibilityLabel="More" onPress={() => setMenu(true)} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', marginRight: 8 }}><Icon name="dots" /></Pressable>} />
       {loading || error ? <View style={{ paddingHorizontal: 20 }}><State loading={loading} error={error} onRetry={reload} /></View> : (<>
         {data?.rel?.status !== 'accepted' && mode !== 'accept' ? (
-          <View style={{ margin: 16, padding: 12, borderRadius: radius.control, backgroundColor: colors.goldTint, borderWidth: 1, borderColor: colors.goldBorder }}>
-            <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted }}>Your first message to a stranger also sends a friend request. You get one message until {name} accepts.</Text>
+          <View style={{ margin: 16, padding: 12, borderRadius: radius.control, backgroundColor: colors.accentSoft }}>
+            <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.ink }}>Your first message to a stranger also sends a friend request. You get one message until {name} accepts.</Text>
           </View>) : null}
         {mode === 'accept' ? (
-          <View style={{ margin: 16, padding: 14, borderRadius: radius.card, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.goldBorder }}>
+          <View style={{ margin: 16, padding: 16, borderRadius: radius.card, backgroundColor: colors.surface }}>
             <Text style={{ fontFamily: fonts.bodySemi, fontSize: 15, color: colors.ink }}>{name} wants to be friends.</Text>
             {data?.rel?.message ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{data.rel.message}</Text> : null}
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
@@ -84,9 +84,9 @@ export default function DmThread() {
             return (
               <View>
                 {!older || !sameDay(m.created_at, older.created_at) ? <Text style={{ alignSelf: 'center', fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.faint, marginVertical: 12 }}>{dayLabel(m.created_at)}</Text> : null}
-                <View style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%', marginVertical: 3, backgroundColor: mine ? colors.goldTint : colors.card, borderWidth: 1, borderColor: mine ? colors.goldBorder : colors.line,
-                  paddingVertical: 8, paddingHorizontal: 12, borderRadius: radius.bubble, borderBottomRightRadius: mine ? 3 : radius.bubble, borderTopLeftRadius: mine ? radius.bubble : 3 }}>
-                  <Text style={{ fontFamily: fonts.body, fontSize: 15, lineHeight: 21, color: colors.ink }}>{m.body}</Text>
+                <View style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '82%', marginVertical: 3, backgroundColor: mine ? colors.ink : colors.surface,
+                  paddingVertical: 10, paddingHorizontal: 14, borderRadius: radius.bubble, borderBottomRightRadius: mine ? 6 : radius.bubble, borderBottomLeftRadius: mine ? radius.bubble : 6 }}>
+                  <Text style={{ fontFamily: fonts.body, fontSize: 15.5, lineHeight: 21, color: mine ? '#ffffff' : colors.ink }}>{m.body}</Text>
                 </View>
               </View>
             );
@@ -100,9 +100,9 @@ export default function DmThread() {
         ) : (
           <View style={{ paddingHorizontal: 12, paddingTop: 8, paddingBottom: insets.bottom + 8, borderTopWidth: 1, borderTopColor: colors.line, flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
             <TextInput accessibilityLabel="Message" value={text} onChangeText={setText} placeholder="Message" placeholderTextColor={colors.faint} multiline maxLength={2000}
-              style={{ flex: 1, minHeight: 44, maxHeight: 120, borderRadius: 22, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card, paddingHorizontal: 16, paddingVertical: 11, fontSize: 16, fontFamily: fonts.body, color: colors.ink }} />
+              style={{ flex: 1, minHeight: 48, maxHeight: 120, borderRadius: 24, backgroundColor: colors.surface, paddingHorizontal: 18, paddingVertical: 13, fontSize: 16, fontFamily: fonts.body, color: colors.ink }} />
             <Pressable accessibilityRole="button" accessibilityLabel="Send" disabled={!text.trim() || sending} onPress={send}
-              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.gold, alignItems: 'center', justifyContent: 'center', opacity: !text.trim() || sending ? 0.5 : 1 }}><Icon name="send" color={colors.onGold} size={20} /></Pressable>
+              style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', opacity: !text.trim() || sending ? 0.35 : 1 }}><Icon name="send" color="#ffffff" size={20} /></Pressable>
           </View>)}
       </>)}
 
