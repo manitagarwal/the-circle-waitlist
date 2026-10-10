@@ -22,16 +22,6 @@ export function CountBadge({ n }: { n: number }) {
   );
 }
 
-/** A half circle resting on a short line: the quiet mark under a heading. */
-function Dome() {
-  return (
-    <Svg width={44} height={12} viewBox="0 0 44 12" style={{ marginTop: 2 }}>
-      <Path d="M0 11.5H44" stroke={colors.lineStrong} strokeWidth={1.5} />
-      <Path d="M3 11.5A6 6 0 0 1 15 11.5Z" fill={colors.ink} />
-    </Svg>
-  );
-}
-
 /** The top of a main screen: the name and quick actions (find people, messages, activity), then a large heading. */
 export function TabHeader({ title, right, info }: { title: string; right?: React.ReactNode; info?: string }) {
   const r = useRouter();
@@ -61,7 +51,6 @@ export function TabHeader({ title, right, info }: { title: string; right?: React
         </View>
         {right}
       </View>
-      <Dome />
     </View>
   );
 }
@@ -78,7 +67,6 @@ export function PageHeader({ title, right, info }: { title: string; right?: Reac
         <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 42, lineHeight: 48, letterSpacing: -1, color: colors.ink }}>{title}</Text>
         {info ? <Info text={info} title={title} style={{ marginTop: 10 }} /> : null}
       </View>
-      <Dome />
     </View>
   );
 }
