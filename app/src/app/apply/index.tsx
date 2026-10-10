@@ -4,7 +4,9 @@ import { useRouter } from 'expo-router';
 import { Body, Button, Screen, StepHeader, TextField, Title } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
 import { CITIES } from '@/lib/config';
-import { isEmail, isLinkedIn, isPersonalEmail, normalizePhone } from '@/lib/validators';
+import { isEmail, isLinkedIn } from '@/lib/validators';
+import { phoneError, validatePhone } from '@/lib/phone';
+import { PhoneField } from '@/components/PhoneField';
 import { api } from '@/lib/auth';
 import { cityValue, useApply } from './_layout';
 
@@ -19,7 +21,8 @@ export default function Details() {
   const next = async () => {
     const e: Errs = {};
     if (s.fullName.trim().length < 2) e.fullName = 'Enter your full name.';
-    if (!normalizePhone(s.phone)) e.phone = 'Enter a 10-digit Indian mobile number.';
+    const pe = phoneError(s.dial, s.phone);
+    if (pe) e.phone = pe;
     if (!s.city) e.city = 'Pick your city.';
     else if (!cityValue(s)) e.city = 'Type your city.';
     if (!isEmail(s.personalEmail)) e.personalEmail = 'Enter a valid email address.';
@@ -28,7 +31,7 @@ export default function Details() {
     if (Object.keys(e).length) return;
     setBusy(true);
     try {
-      const d = await api.checkDuplicates({ phone: s.phone, personalEmail: s.personalEmail });
+      const d = await api.checkDuplicates({ phone: validatePhone(s.dial, s.phone)!, personalEmail: s.personalEmail });
       const dup: Errs = {};
       if (d.phone) dup.phone = 'This phone number has already applied.';
       if (d.personal_email && !s.personalVerified) dup.personalEmail = 'This email has already applied. Go back and log in, or tap "Forgot, or haven\'t set a password?".';
@@ -44,7 +47,7 @@ export default function Details() {
       <Title italic>Request an invitation.</Title>
       <Body style={{ marginTop: 6, fontSize: 14 }}>Five short steps. Read by people, not a model.</Body>
       <TextField label="Full name" value={s.fullName} onChangeText={(v) => set({ fullName: v })} autoComplete="name" error={errs.fullName} />
-      <TextField label="Phone number" value={s.phone} onChangeText={(v) => set({ phone: v })} keyboardType="phone-pad" autoComplete="tel" error={errs.phone} />
+      <PhoneField dial={s.dial} number={s.phone} onChange={(v) => set({ dial: v.dial, phone: v.number })} error={errs.phone} />
       <View style={{ marginTop: 16 }}>
         <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginBottom: 6 }}>City</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>

@@ -543,6 +543,8 @@
   .chips{display:flex; flex-wrap:wrap; gap:8px;}
   .chip{background:var(--bg-2); border:1px solid var(--panel-border); color:var(--ink); padding:11px 14px; font-size:0.92rem; border-radius:2px; min-height:44px;}
   .chip[aria-checked="true"]{border-color:var(--accent); background:var(--accent-soft); font-weight:500;}
+  .phone-row{display:grid; grid-template-columns:minmax(0,9.5rem) 1fr; gap:10px;}
+  @media (max-width:420px){.phone-row{grid-template-columns:minmax(0,7.5rem) 1fr;}}
   .field .ok-line{font-size:0.82rem; color:var(--good); margin-top:6px;}
   .pw-checks{font-size:0.82rem; color:var(--ink-dimmer); margin:6px 0 18px; line-height:1.7;}
   .pw-checks .on{color:var(--good);}
@@ -841,6 +843,50 @@
     else if(d.length === 11 && d.startsWith('0')) d = d.slice(1);
     return /^[6-9]\d{9}$/.test(d) ? d : null;
   }
+  // ---- mobile numbers with a country code (same rules as the app: app/src/lib/phone.ts) ----
+  const COUNTRIES = [
+    ['India','91',10,10],['United States / Canada','1',10,10],['United Kingdom','44',10,10],['United Arab Emirates','971',9,9],['Singapore','65',8,8],
+    ['Australia','61',9,9],['Germany','49',10,11],['France','33',9,9],['Netherlands','31',9,9],['Switzerland','41',9,9],['Italy','39',9,10],['Spain','34',9,9],
+    ['Saudi Arabia','966',9,9],['Qatar','974',8,8],['Kuwait','965',8,8],['Oman','968',8,8],['Bahrain','973',8,8],['Nepal','977',10,10],['Bangladesh','880',10,10],
+    ['Sri Lanka','94',9,9],['Malaysia','60',9,10],['Hong Kong','852',8,8],['New Zealand','64',8,10],['Japan','81',10,10]
+  ].map(([name, dial, min, max]) => ({name, dial, min, max}));
+  const DIALS_LONGEST_FIRST = [...new Set(COUNTRIES.map(c => c.dial))].sort((a, b) => b.length - a.length);
+  const digitsOf = (v) => v.replace(/\D/g, '');
+  const maxLen = (dial) => { const r = COUNTRIES.filter(c => c.dial === dial); return r.length ? Math.max(...r.map(c => c.max)) : 15; };
+  // typed or pasted text -> country code + digits. "+91 98765 43210" moves the code to the picker.
+  function readPhone(dial, raw){
+    const t = raw.trim();
+    if(t.startsWith('+') || t.startsWith('00')){
+      const all = digitsOf(t.startsWith('00') ? t.slice(2) : t);
+      const hit = DIALS_LONGEST_FIRST.find(d => all.startsWith(d));
+      if(hit) return {dial: hit, national: all.slice(hit.length).slice(0, maxLen(hit)), resolved: true};
+      return {dial, national: all.slice(0, maxLen(dial)), resolved: false}; // still typing the code
+    }
+    let n = digitsOf(t);
+    if(dial === '91' && n.length === 12 && n.startsWith('91')) n = n.slice(2);
+    return {dial, national: n.slice(0, maxLen(dial)), resolved: true};
+  }
+  // the stored form: +<code><number>, or null when it isn't a valid number for that country
+  function validPhone(dial, national){
+    let n = digitsOf(national);
+    if(dial === '91'){ n = n.replace(/^0(?=\d{10}$)/, ''); return /^[6-9]\d{9}$/.test(n) ? '+91' + n : null; }
+    n = n.replace(/^0+/, '');
+    const rows = COUNTRIES.filter(c => c.dial === dial);
+    return rows.some(c => n.length >= c.min && n.length <= c.max) ? '+' + dial + n : null;
+  }
+  function phoneErr(dial, national){
+    if(validPhone(dial, national)) return null;
+    if(dial === '91') return 'Enter a 10-digit Indian mobile number.';
+    const c = COUNTRIES.find(x => x.dial === dial);
+    const len = c ? (c.min === c.max ? `${c.min}-digit` : `${c.min} to ${c.max}-digit`) : '';
+    return `Enter a valid ${len} mobile number for ${c ? c.name : 'that country'}.`;
+  }
+  function showPhone(stored){
+    const m = stored.match(/^\+(\d+)$/); if(!m) return stored;
+    const dial = DIALS_LONGEST_FIRST.find(d => m[1].startsWith(d)); if(!dial) return stored;
+    const n = m[1].slice(dial.length);
+    return `+${dial} ${n.length === 10 ? n.slice(0,5) + ' ' + n.slice(5) : n}`;
+  }
   const isLinkedIn = (v) => /linkedin\.com\/.+/i.test(v.trim());
   const linkedInHandle = (v) => (v.match(/linkedin\.com\/in\/([^/?\s]+)/i) || [])[1] || null;
   const isOtp = (v) => /^\d{6}$/.test(v);
@@ -887,7 +933,7 @@
 
   const refFromUrl = appCode(urlParams.get('ref') || '');
   const state = {
-    step: 1, fullName: '', phone: '', city: '', cityOther: '', personalEmail: '', linkedin: '',
+    step: 1, fullName: '', dial: '91', phone: '', city: '', cityOther: '', personalEmail: '', linkedin: '',
     workEmail: '', personalVerified: false, passwordSet: false, workVerified: false,
     referredByCode: refFromUrl, vouches: [], id: crypto.randomUUID()
   };
@@ -921,7 +967,7 @@
   // ---- the numbers the old form also fed ----
   async function checkDuplicates(p){
     const { data, error } = await sb.rpc('check_applicant_duplicates', {
-      p_phone: p.phone ? normPhone(p.phone) : null,
+      p_phone: p.phone || null,
       p_personal_email: p.personalEmail ? normEmail(p.personalEmail) : null,
       p_work_email: p.workEmail ? normEmail(p.workEmail) : null });
     if(error || !data) throw new Error('network');
@@ -943,7 +989,16 @@
     const e = {};
     const draw = () => {
       const fn = input('fullName', {type:'text', autocomplete:'name', value: state.fullName, on:{input: (ev) => { state.fullName = ev.target.value; updateCard(); }}});
-      const ph = input('phone', {type:'tel', autocomplete:'tel', placeholder:'90000 00000', value: state.phone, on:{input: (ev) => { state.phone = ev.target.value; }}});
+      const dialSel = h('select', {id:'dial', 'aria-label':'Country code', on:{change: (ev) => { state.dial = ev.target.value; state.phone = state.phone.slice(0, maxLen(state.dial)); draw(); }}},
+        COUNTRIES.map(c => h('option', {value: c.dial, selected: c.dial === state.dial}, `+${c.dial} ${c.name}`)));
+      const ph = input('phone', {type:'tel', inputmode:'tel', autocomplete:'tel-national', placeholder:'98765 43210', value: state.phone, 'aria-label':'Phone number',
+        on:{input: (ev) => {
+          const r = readPhone(state.dial, ev.target.value);
+          if(!r.resolved) return; // still typing "+9…": leave the text alone until the code is complete
+          state.phone = r.national; ev.target.value = r.national;
+          if(r.dial !== state.dial){ state.dial = r.dial; dialSel.value = r.dial; }
+        }}});
+      const phoneRow = h('div', {class:'phone-row'}, dialSel, ph);
       const cityChips = h('div', {class:'chips', role:'radiogroup', 'aria-label':'City'}, CITIES.map(c => h('button', {type:'button', class:'chip', role:'radio', 'aria-checked': String(state.city === c), on:{click: () => { state.city = c; updateCard(); draw(); }}}, c)));
       const other = state.city === 'Other' ? field('cityOther', 'Your city', input('cityOther', {type:'text', value: state.cityOther, on:{input: (ev) => { state.cityOther = ev.target.value; updateCard(); }}}), null, e.city) : null;
       const em = input('personalEmail', {type:'email', autocomplete:'email', value: state.personalEmail, disabled: state.personalVerified, on:{input: (ev) => { state.personalEmail = ev.target.value; }}});
@@ -952,14 +1007,14 @@
         const b = ev.currentTarget;
         Object.keys(e).forEach(k => delete e[k]);
         if(state.fullName.trim().length < 2) e.fullName = 'Enter your full name.';
-        if(!normPhone(state.phone)) e.phone = 'Enter a 10-digit Indian mobile number.';
+        { const pe = phoneErr(state.dial, state.phone); if(pe) e.phone = pe; }
         if(!state.city) e.cityPick = 'Pick your city.'; else if(!cityValue()) e.city = 'Type your city.';
         if(!isEmail(state.personalEmail)) e.personalEmail = 'Enter a valid email address.';
         if(!isLinkedIn(state.linkedin)) e.linkedin = 'Paste your LinkedIn profile link.';
         if(Object.keys(e).length){ draw(); return; }
         b.disabled = true;
         try{
-          const d = await checkDuplicates({phone: state.phone, personalEmail: state.personalEmail});
+          const d = await checkDuplicates({phone: validPhone(state.dial, state.phone), personalEmail: state.personalEmail});
           if(d.phone) e.phone = 'This phone number has already applied.';
           if(d.personal_email && !state.personalVerified) e.personalEmail = 'This email has already applied. Use "Log in" above, or choose "Forgot password" there.';
         }catch{ e.fullName = "Can't reach the server. Check your connection."; }
@@ -970,7 +1025,7 @@
       put(panel, 
         h('h3', {class:'flow-title'}, 'Request an invitation.'), h('p', {class:'flow-body'}, 'Five short steps. Read by people, not a model.'),
         field('fullName', 'Full name', fn, null, e.fullName),
-        field('phone', 'Phone number', ph, null, e.phone),
+        field('phone', 'Phone number', phoneRow, null, e.phone),
         h('div', {class:'field' + (e.cityPick ? ' invalid' : '')}, h('label', null, 'City'), cityChips,
           h('div', {class: e.cityPick ? 'err' : 'hint'}, e.cityPick || "Delhi NCR only for now. Elsewhere? Pick Other and we'll tell you when we reach you.")),
         other,
@@ -1149,8 +1204,8 @@
   // ---------------------------------------------------------------- step 5: review + submit
   steps[5] = () => {
     let busy = false, err = null;
-    const p = normPhone(state.phone) || state.phone;
-    const rowsData = [['Name', state.fullName.trim()], ['Phone', `${p.slice(0,5)} ${p.slice(5)}`], ['Login email', state.personalEmail], ['Work email', state.workEmail],
+    const phoneStored = validPhone(state.dial, state.phone) || `+${state.dial}${state.phone}`;
+    const rowsData = [['Name', state.fullName.trim()], ['Phone', showPhone(phoneStored)], ['Login email', state.personalEmail], ['Work email', state.workEmail],
       ['LinkedIn', linkedInHandle(state.linkedin) ? `linkedin.com/in/${linkedInHandle(state.linkedin)}` : state.linkedin], ['City', cityValue()]];
     if(state.referredByCode) rowsData.push(['Referral code', state.referredByCode]);
     if(state.vouches.length) rowsData.push(['Vouching for', `${state.vouches.length} ${state.vouches.length === 1 ? 'person' : 'people'}`]);
@@ -1166,7 +1221,7 @@
       try{
         let referred = null;
         if(state.referredByCode){ const { data } = await sb.rpc('resolve_referral_code', { p_code: appCode(state.referredByCode) }); referred = data || null; }
-        const { error } = await sb.from('applicants').insert({ id: state.id, full_name: state.fullName.trim(), phone: normPhone(state.phone), personal_email: normEmail(state.personalEmail),
+        const { error } = await sb.from('applicants').insert({ id: state.id, full_name: state.fullName.trim(), phone: validPhone(state.dial, state.phone), personal_email: normEmail(state.personalEmail),
           work_email: normEmail(state.workEmail), linkedin_url: state.linkedin.trim(), city: cityValue(), referred_by_id: referred });
         if(error) throw error;
         if(state.vouches.length) await sb.from('referrals').insert(state.vouches.map(v => ({ applicant_id: state.id, name: v.name || null, email: v.email || null, phone: v.phone || null }))); // non-fatal
