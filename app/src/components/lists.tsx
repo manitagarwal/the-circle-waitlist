@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Easing, Modal, Pressable, ScrollView, Text, View } from 'react-native';
-import Svg, { Path, SvgXml } from 'react-native-svg';
+import { SvgXml } from 'react-native-svg';
 import { activityIcon } from '@/lib/activityIcons';
 import { colors, fonts, radius } from '@/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -74,15 +74,12 @@ export function ArchBadge({ name, size = 52, activity }: { name: string; size?: 
   );
 }
 
-/** A letter avatar with a half-ring over the top: yellow when there is something new. */
+/** A round badge for lobbies; unread is a small ink dot on the corner. */
 export function RingBadge({ name, unread, size = 56, activity }: { name: string; unread?: boolean; size?: number; activity?: string | null }) {
-  const r = size / 2 - 3;
   return (
     <View style={{ width: size, height: size }}>
-      <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none" style={{ position: 'absolute' }}>
-        <Path d={`M3 ${size / 2}A${r} ${r} 0 0 1 ${size - 3} ${size / 2}`} stroke={unread ? colors.gold : colors.lineStrong} strokeWidth={3.5} strokeLinecap="round" />
-      </Svg>
-      <View style={{ position: 'absolute', left: 6, top: 6 }}><LetterBadge name={name} size={size - 12} activity={activity} /></View>
+      <LetterBadge name={name} size={size} activity={activity} />
+      {unread ? <View accessibilityLabel="New messages" style={{ position: 'absolute', top: 1, right: 1, width: 12, height: 12, borderRadius: 6, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.ground }} /> : null}
     </View>
   );
 }
