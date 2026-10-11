@@ -362,3 +362,4 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Booking lists show a dry one-line aside after every third card.
 - Activity rows swipe to mark read. The event ticket tilts as you drag it.
 - Hosts can upload their own photo for a booking (when creating it, or later with "Change photo" until it ends). "Use ours" goes back to the automatic one. Admin can remove a photo from storage if needed.
+- "Report this photo" on someone else's booking that has an uploaded photo. It goes to the normal Reports queue. In Admin > Reports the photo is shown with a "Remove photo" button that puts the booking back on our photo and deletes the file.

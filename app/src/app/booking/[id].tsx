@@ -5,6 +5,7 @@ import { Bar } from '@/components/Bar';
 import { HoldButton } from '@/components/HoldButton';
 import { PhotoCard } from '@/components/PhotoCard';
 import { pickBookingPhoto } from '@/lib/photo';
+import { ReportSheet } from '@/components/ReportSheet';
 import { PersonAvatar } from '@/components/Avatar';
 import { SectionLabel, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice } from '@/components/ui';
@@ -35,6 +36,7 @@ export default function BookingDetail() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<'leave' | 'cancel' | null>(null);
+  const [reportPhoto, setReportPhoto] = useState(false);
 
   const { data, error, loading, reload } = useLoad(async () => {
     const booking = await api.booking(id);
@@ -65,6 +67,7 @@ export default function BookingDetail() {
         <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.4, color: 'rgba(250,248,244,0.85)' }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}  ·  {b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
         <Text style={{ fontFamily: fonts.title, fontSize: 32, lineHeight: 38, color: '#faf8f4', marginTop: 6 }}>{b.title}</Text>
       </PhotoCard>
+      {!b.is_host && b.upload_path ? <Text accessibilityRole="button" onPress={() => setReportPhoto(true)} style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, textDecorationLine: 'underline', paddingVertical: 8, alignSelf: 'flex-start' }}>Report this photo</Text> : null}
       {b.is_host && new Date(b.ends_at).getTime() > Date.now() ? (
         <View style={{ flexDirection: 'row', gap: 18, marginTop: 8 }}>
           <Text accessibilityRole="button" onPress={() => act(async () => { const p = await pickBookingPhoto(); if (!p || !member) return; await api.setBookingUpload(id, await api.uploadBookingPhoto(member.id, p.bytes)); })} style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink, textDecorationLine: 'underline', paddingVertical: 8 }}>Change photo</Text>
@@ -121,6 +124,7 @@ export default function BookingDetail() {
     <View style={{ flex: 1, backgroundColor: colors.ground }}>
       <Bar title="Booking" />
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }}>{body}</ScrollView>
+      <ReportSheet member={reportPhoto && b ? { id: b.host_id, username: b.host_username } : null} context={b ? { booking_id: b.id } : undefined} onClose={() => setReportPhoto(false)} />
       <Sheet visible={!!confirm} onClose={() => setConfirm(null)} title={confirm === 'cancel' ? 'Cancel this booking?' : 'Leave this booking?'}>
         <Body style={{ marginBottom: 16 }}>{confirm === 'cancel' ? "Everyone who joined is told. Its chat closes tomorrow." : b && Date.now() > freeLeaveUntil(b.starts_at).getTime() ? 'It starts soon, so leaving now counts against your reliability score.' : 'Leaving now is free. After the cut-off it would count against you.'}</Body>
         <View style={{ gap: 8 }}>

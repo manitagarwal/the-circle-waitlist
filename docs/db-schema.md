@@ -150,3 +150,4 @@ Security definer. Caller must be in the public channel; invitee must be an activ
 ## Host photo upload (Oct 2026)
 - Public bucket `booking-photos` (5 MB, jpeg/png/webp). Members can write and delete only inside their own folder `<member id>/`; admins can delete any. File names are timestamps, so links are not guessable.
 - `bookings.upload_path`: the host's own photo. `set_booking_upload(booking, path|null)`: host only, booking not over, path must be inside the host's folder. Null goes back to the library photo. `bookings_overview.upload_path` exposes it; the app shows it before the library photo.
+- Reports about a photo: the app sends the usual report about the host with `context.booking_id`. `admin_reports_queue` now shows `booking_id` and `booking_photo`. `admin_clear_booking_photo(booking)` (admin only) clears the upload and returns its path; the admin page then removes the file from storage (SQL cannot delete storage files).
