@@ -143,3 +143,6 @@ Security definer. Caller must be in the public channel; invitee must be an activ
 - `bookings.photo_id`. Trigger `bookings_set_photo` picks `pick_photo(interest)`: the least-used active photo tagged to the activity, else one tagged to its category; stored, so everyone sees the same photo. `photo_pool`, `booking_photo_options`, `set_booking_photo` (host can change within the pool).
 - `bookings_overview` gains `photo_path`, `photo_credit`. Admin RPCs: `admin_photos`, `admin_add_photo`, `admin_tag_photo`, `admin_set_photo_status`.
 - Edge function `photo-import` (admin only): downloads image links into our storage and tags them. No third-party API is used at runtime.
+
+## Event photos (Oct 2026)
+- `events.photo_id` points at `photo_library`. A trigger fills it with the least-used photo for the activity when an event is created (same as bookings). `events_overview.photo_path` exposes it. An uploaded cover still wins over the library photo.

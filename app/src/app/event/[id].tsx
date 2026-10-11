@@ -76,7 +76,7 @@ export default function EventDetail() {
     const why = e.my_status ? null : eventFit(e, me);
     const late = new Date(e.starts_at).getTime() - Date.now() < 3 * 3600000;
     body = (<>
-      <PhotoCard uri={cover} activity={e.interest_name} height={320} radius={28}>
+      <PhotoCard uri={cover} photoPath={e.photo_path} activity={e.interest_name} height={320} radius={28}>
         <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: 'rgba(250,248,244,0.85)' }}>{[group, e.interest_name].filter(Boolean).join(' · ').toUpperCase() || 'THE SEMI CIRCLE'}</Text>
         <Text style={{ fontFamily: fonts.display, fontSize: 37, lineHeight: 41, color: '#faf8f4', marginTop: 6 }}>{e.title}</Text>
       </PhotoCard>

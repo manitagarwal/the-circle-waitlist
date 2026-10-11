@@ -14,7 +14,7 @@ export function EventCard({ e, onPress }: { e: EventRow; onPress: () => void }) 
   const mine = e.status === 'cancelled' ? 'Cancelled' : e.my_status ? (e.my_status === 'waitlist' && e.my_position ? `Waitlist #${e.my_position}` : STATUS[e.my_status]) : null;
   return (
     <View style={{ marginBottom: 16 }}>
-      <PhotoCard uri={cover} activity={e.interest_name} height={250} onPress={onPress} label={e.title}
+      <PhotoCard uri={cover} photoPath={e.photo_path} activity={e.interest_name} height={250} onPress={onPress} label={e.title}
         top={<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View style={{ backgroundColor: 'rgba(250,248,244,0.92)', borderRadius: 14, paddingHorizontal: 11, height: 28, justifyContent: 'center' }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 12.5, color: '#1b1a18' }}>{priceText(e.price_inr)}</Text></View>
           {mine ? <View style={{ backgroundColor: 'rgba(27,26,24,0.85)', borderRadius: 14, paddingHorizontal: 11, height: 28, justifyContent: 'center' }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 12.5, color: '#faf8f4' }}>{mine}</Text></View> : null}

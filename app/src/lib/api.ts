@@ -62,7 +62,7 @@ export type OwnRow = {
   lat: number | null; lng: number | null; area: string; field_of_work: string;
 };
 export type EventRow = {
-  id: string; title: string; description: string | null; interest_id: number | null; interest_name: string | null; cover_path: string | null;
+  id: string; title: string; description: string | null; interest_id: number | null; interest_name: string | null; cover_path: string | null; photo_path?: string | null;
   venue_name: string | null; area: string | null; city: string | null; address_text: string | null; starts_at: string; ends_at: string;
   capacity: number | null; price_inr: number; age_min: number | null; age_max: number | null; genders: string[]; cities: string[]; min_score: number | null;
   status: 'published' | 'cancelled'; going_count: number; waitlist_count: number; my_status: 'going' | 'waitlist' | 'cancelled' | 'attended' | 'no_show' | null; my_position: number | null;
