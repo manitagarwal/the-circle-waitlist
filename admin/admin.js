@@ -155,7 +155,7 @@ async function gate() {
 }
 
 /* ---------- shell and routing ---------- */
-const PAGES = [['dashboard', 'Dashboard'], ['applicants', 'Applicants'], ['members', 'Members'], ['reports', 'Reports'], ['events', 'Events'], ['payments', 'Payments'], ['promos', 'Promo codes'], ['announce', 'Announcements'], ['bookings', 'Bookings'], ['settings', 'Settings'], ['log', 'Activity log']];
+const PAGES = [['dashboard', 'Dashboard'], ['applicants', 'Applicants'], ['members', 'Members'], ['reports', 'Reports'], ['events', 'Events'], ['payments', 'Payments'], ['promos', 'Promo codes'], ['cities', 'Cities'], ['announce', 'Announcements'], ['bookings', 'Bookings'], ['settings', 'Settings'], ['log', 'Activity log']];
 let counts = {};
 
 async function startShell(user) {
@@ -472,6 +472,21 @@ renderers.payments = async (main, sub) => {
     ]))) : h('p', { class: 'muted' }, 'No payments yet.'),
     all.length ? h('p', null, h('button', { on: { click: () => csv('payments.csv', ['Paid at', 'Member', 'Username', 'Event', 'Ticket', 'Promo', 'List price', 'Discount', 'Paid', 'Refunded', 'Status', 'Method', 'Razorpay payment'],
       all.map((x) => [x.paid_at || x.created_at, x.full_name, x.username, x.event_title, x.ticket_name, x.promo_code, x.list_price_inr, x.discount_inr, x.amount_inr, x.refund_inr, x.status, x.method, x.razorpay_payment_id])) } }, 'Download (CSV)')) : null);
+};
+
+/* ---------- cities: which are live, who is waiting ---------- */
+renderers.cities = async (main) => {
+  const list = await rpc('admin_cities');
+  const name = h('input', { placeholder: 'City name', 'aria-label': 'New city', maxlength: '40', style: 'max-width:220px' });
+  const add = async () => { if (await act(() => rpc('admin_add_city', { p_name: name.value }), 'City added')) refresh(); };
+  const open = (c) => async () => {
+    if (!window.confirm('Open ' + c.name + '? Members there will see bookings and lobbies. A lobby is created for every activity.')) return;
+    if (await act(() => rpc('admin_open_city', { p_city: c.id }), (n) => c.name + ' is live. ' + n + ' lobbies created')) refresh();
+  };
+  put(main, header('Cities', 'Everything members see is tied to a city. A city that is not live shows "We\'re not live here yet" and a notify button; its waiting list builds up here.'),
+    h('div', { class: 'panel' }, h('h3', null, 'Add a city'), h('div', { class: 'row', style: 'gap:8px' }, name, h('button', { class: 'primary', on: { click: add } }, 'Add'))),
+    table(['City', 'Status', 'Waiting for it', 'Members based here', 'Areas listed', ''], list.map((c) => tr([c.name, badge(c.is_live ? 'live' : 'not live', c.is_live ? 'ok' : null), String(c.waiting), String(c.members), String(c.areas),
+      c.is_live ? '' : h('button', { class: 'small', on: { click: open(c) } }, 'Open city')]))));
 };
 
 /* ---------- promo codes ---------- */

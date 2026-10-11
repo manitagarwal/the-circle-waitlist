@@ -130,3 +130,10 @@ Security definer. Caller must be in the public channel; invitee must be an activ
 - `my_application()` queue_position = 432 + count.
 - `is_ncr_city(text)`, trigger `applicants_ncr_only` on applicants (insert / city update) raising `outside_area`.
 - `city_interest(email, city)` with RLS on and no policies; written only through `register_city_interest(email, city)`.
+
+## Migrations 043-045: cities
+- `cities(id, name, is_live, sort)`; `members.home_city_id`, `members.current_city_id`; `home_city_changes` (limit 2 per 60 days).
+- `bookings.city_id`, `channels.city_id` (lobby and public). Triggers set the city from the poster's current city and refuse non-live cities; `channel_members` and `booking_participants` triggers refuse joining another city (`wrong_city`).
+- `can_view_channel`, `bookings_overview` (and the bookings policy) filter by `current_city_id()`, but always allow your own, hosted or joined rows.
+- Functions: `set_current_city`, `change_home_city`, `my_city`, `notify_city`, `admin_open_city`, `admin_cities`, `admin_add_city`. `member_profiles` gains `home_city_id`, `home_city`.
+- `areas(city_id, name, place, sort)` seeded for Delhi NCR (Gurugram sectors 1-115, Noida, Faridabad, named Gurugram/Delhi/Ghaziabad areas).
