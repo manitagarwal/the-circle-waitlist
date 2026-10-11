@@ -6,7 +6,7 @@ export type BookingRow = {
   starts_at: string; ends_at: string; headcount_min: number | null; headcount_max: number | null; male_slots: number | null; female_slots: number | null;
   min_score: number | null; close_hours?: number | null; age_min: number | null; age_max: number | null; created_at: string; host_id: string; host_username: string;
   joined_count: number; male_joined: number; female_joined: number; my_status: string | null; is_host: boolean; channel_id: string | null;
-  city_id?: number; city_name?: string;
+  city_id?: number; city_name?: string; photo_path?: string | null;
 };
 
 const IST = 'Asia/Kolkata';

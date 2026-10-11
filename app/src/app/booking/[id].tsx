@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Bar } from '@/components/Bar';
+import { HoldButton } from '@/components/HoldButton';
+import { PhotoCard } from '@/components/PhotoCard';
 import { PersonAvatar } from '@/components/Avatar';
 import { SectionLabel, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice } from '@/components/ui';
@@ -57,9 +59,11 @@ export default function BookingDetail() {
     const qualifies = b.min_score == null || score == null ? null : score >= b.min_score;
     const menWanted = Math.max(0, (b.male_slots ?? 0) - b.male_joined), womenWanted = Math.max(0, (b.female_slots ?? 0) - b.female_joined);
     body = (<>
-      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}  ·  {b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
-      <Text style={{ fontFamily: fonts.title, fontSize: 32, lineHeight: 39, color: colors.ink, marginTop: 6 }}>{b.title}</Text>
-      <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 6 }}>
+      <PhotoCard photoPath={b.photo_path} activity={b.interest_name} height={300} radius={28}>
+        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.4, color: 'rgba(250,248,244,0.85)' }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}  ·  {b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
+        <Text style={{ fontFamily: fonts.title, fontSize: 32, lineHeight: 38, color: '#faf8f4', marginTop: 6 }}>{b.title}</Text>
+      </PhotoCard>
+      <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 14 }}>
         Hosted by <Text accessibilityRole="link" onPress={() => r.push({ pathname: '/member/[id]', params: { id: b.host_id } })} style={{ fontFamily: fonts.bodySemi, color: colors.ink, textDecorationLine: 'underline' }}>{b.host_username}</Text>{host ? `. ${host.bookings_hosted} ${host.bookings_hosted === 1 ? 'booking' : 'bookings'} hosted. ${host.member_since ? `Member since ${month(host.member_since)}.` : ''}` : ''}
       </Text>
       {b.status === 'cancelled' ? <Notice tone="error">This booking was cancelled by the host.</Notice> : null}
@@ -97,7 +101,7 @@ export default function BookingDetail() {
           {b.is_host && !over && (b.status === 'open' || b.status === 'full') ? <Button label="Cancel booking" variant="secondary" onPress={() => setConfirm('cancel')} /> : null}
           {!b.is_host && !over ? <Button label="Leave booking" variant="secondary" onPress={() => setConfirm('leave')} /> : null}
         </>) : (
-          <Button label="Join booking" onPress={() => act(() => api.joinBooking(id))} loading={busy} disabled={!check.ok} />
+          <HoldButton label="Hold to join" holdingLabel="Keep holding…" doneLabel="You're in" onComplete={() => act(() => api.joinBooking(id))} loading={busy} disabled={!check.ok} />
         )}
         {!joined && !check.ok && check.reason ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.error, textAlign: 'center' }}>{check.reason}</Text> : null}
       </View>

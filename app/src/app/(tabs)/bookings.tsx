@@ -5,11 +5,7 @@ import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
 import { Buckets } from '@/components/Buckets';
-import { LetterBadge } from '@/components/lists';
-import { toneFor } from '@/lib/tones';
-import { isDark } from '@/theme';
-/** The activity colour at about a third of its strength, for card backgrounds. */
-const tint = (hex: string) => `${hex}55`;
+import { PhotoCard } from '@/components/PhotoCard';
 import { FilterBar, Segmented, SectionLabel, State, TabHeader } from '@/components/lists';
 import { Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
@@ -18,24 +14,19 @@ import { type BookingRow, genderWanted, groupByDay, joinCheck, SCORE_OPEN, score
 import { bucket, interestIndex, loadInterestGroups } from '@/lib/interests';
 import { useLoad } from '@/lib/useLoad';
 
-function Card({ b, onPress, note, group }: { b: BookingRow; onPress: () => void; note?: string | null; group?: string }) {
+function Card({ b, onPress, note }: { b: BookingRow; onPress: () => void; note?: string | null; group?: string }) {
   const sp = spots(b);
   const mix = genderWanted(b);
+  const tail = note ?? sp.left;
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, backgroundColor: toneFor(b.interest_name, isDark) ? tint(toneFor(b.interest_name, isDark)!) : colors.surface, borderRadius: radius.card, padding: 16, marginBottom: 12, flexDirection: 'row', gap: 14, alignItems: 'center' })}>
-      <LetterBadge name={b.title} activity={b.interest_name} size={56} />
-      <View style={{ flex: 1 }}>
-        <Text style={{ fontFamily: fonts.title, fontSize: 21, color: colors.ink }}>{b.title}</Text>
-        <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{timeRange(b.starts_at, b.ends_at)}</Text>
-        <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted }}>{[b.venue_name, b.area].filter(Boolean).join(', ')}</Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 8 }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13.5, color: colors.ink }}>{sp.count}{mix ? `, ${mix}` : ''}</Text>
-          </View>
-          {note ? <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.ink }}>{note}</Text> : sp.left ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted }}>{sp.left}</Text> : null}
-        </View>
-      </View>
-    </Pressable>
+    <View style={{ marginBottom: 14 }}>
+      <PhotoCard photoPath={b.photo_path} activity={b.interest_name} height={236} onPress={onPress} label={`${b.title}, ${timeRange(b.starts_at, b.ends_at)}`}
+        top={tail ? <View style={{ alignSelf: 'flex-start', backgroundColor: 'rgba(250,248,244,0.92)', borderRadius: 14, paddingHorizontal: 11, height: 28, justifyContent: 'center' }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 12.5, color: '#1b1a18' }}>{tail}</Text></View> : null}>
+        <Text numberOfLines={2} style={{ fontFamily: fonts.title, fontSize: 26, lineHeight: 31, color: '#faf8f4' }}>{b.title}</Text>
+        <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: 'rgba(250,248,244,0.9)', marginTop: 4 }}>{timeRange(b.starts_at, b.ends_at)}  ·  {[b.venue_name, b.area].filter(Boolean).join(', ')}</Text>
+        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: 'rgba(250,248,244,0.8)', marginTop: 4 }}>{sp.count}{mix ? `, ${mix}` : ''}</Text>
+      </PhotoCard>
+    </View>
   );
 }
 
