@@ -13,3 +13,9 @@ test('past only, newest first, with outcomes', () => {
 test('cancelled booking is labelled', () => {
   assert.equal(buildHistory([b({ status: 'cancelled' })], [], now)[0].outcome, 'Cancelled');
 });
+
+test('counts per activity, most first', async () => {
+  const { byActivity } = await import('./history.ts');
+  const mk = (activity: string | null) => ({ key: Math.random() + '', kind: 'booking' as const, id: 'x', title: 't', when: '2026-01-01', place: null, outcome: 'Hosted', activity });
+  assert.deepEqual(byActivity([mk('Padel'), mk('Running'), mk('Padel'), mk(null)]), [{ activity: 'Padel', n: 2 }, { activity: 'Running', n: 1 }]);
+});

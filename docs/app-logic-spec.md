@@ -349,3 +349,8 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Every screen uses normal stack navigation and leaves the system back enabled. Every pushed screen also shows a visible back control, so button users are never stuck.
 - Screens respect the safe areas, so bottom bars and hold buttons are never under the gesture bar or nav buttons.
 - Our own swipes (swipe-to-dismiss rows, swipe cards) must not start at the very left edge, which belongs to the system back gesture.
+
+## Design build status (Oct 2026)
+- Built in the app: full-photo booking and event cards, photo heroes on booking and event pages, hold-to-confirm (join, reserve, waitlist, pay with a "Pay ₹X?" step, post a booking, open a channel, submit the application), History "By activity" view.
+- Still on the canvas only: welcome photo columns, setup finale, fun interludes, playfulness dial, scenes, reliability simulator, swipe rows, tilting ticket.
+- Idea to discuss: a "Nearby" feature (what is around me now). Not designed yet.
