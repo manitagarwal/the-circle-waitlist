@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Body, Button, Notice, Screen, StepHeader, Title } from '@/components/ui';
+import { HoldButton } from '@/components/HoldButton';
 import { colors, fonts, radius } from '@/theme';
 import { linkedInHandle } from '@/lib/validators';
 import { formatPhone, validatePhone } from '@/lib/phone';
@@ -41,7 +42,7 @@ export default function Review() {
   return (
     <Screen footer={<View style={{ flexDirection: 'row', gap: 10 }}>
       <Button label="Back" variant="secondary" onPress={() => r.back()} style={{ flexBasis: 112 }} />
-      <Button label="Submit application" onPress={submit} loading={busy} style={{ flex: 1 }} />
+      <View style={{ flex: 1 }}><HoldButton label="Hold to submit" doneLabel="Sent" onComplete={submit} loading={busy} /></View>
     </View>}>
       <StepHeader step={5} of={5} />
       <Title italic>Last look.</Title>

@@ -7,6 +7,7 @@ import { ChipRow } from '@/components/ChipRow';
 import { Chip } from '@/components/lists';
 import { DatePickerSheet, TimePickerSheet } from '@/components/Pickers';
 import { Body, Button, Notice, Stepper, TextField } from '@/components/ui';
+import { HoldButton } from '@/components/HoldButton';
 import { colors, fonts } from '@/theme';
 import { api } from '@/lib/auth';
 import { closeLabel } from '@/lib/bookings';
@@ -142,7 +143,7 @@ export default function NewBooking() {
 
         {mine.data ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 20 }}>{mine.data.open} of 2 bookings open. {Math.max(0, 3 - mine.data.today)} of 3 left to post today.</Text> : null}
         {err ? <Notice tone="error">{err}</Notice> : null}
-        <Button label="Post booking" onPress={post} loading={busy} disabled={!ready} style={{ marginTop: 16 }} />
+        <View style={{ marginTop: 16 }}><HoldButton label="Hold to post" doneLabel="Posted" onComplete={post} loading={busy} disabled={!ready} /></View>
       </ScrollView>
 
       <DatePickerSheet visible={pickDate} value={date} onClose={() => setPickDate(false)} onPick={setDate} />
