@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Body, Button, Screen, StepHeader, TextField, Title } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
-import { CITIES } from '@/lib/config';
+import type { City } from '@/lib/api';
 import { isEmail, isLinkedIn } from '@/lib/validators';
 import { phoneError, validatePhone } from '@/lib/phone';
 import { Pill } from '@/components/Pill';
@@ -20,9 +20,13 @@ export default function Details() {
   const [errs, setErrs] = useState<Errs>({});
   const [busy, setBusy] = useState(false);
   const [noted, setNoted] = useState(false);
+  const [list, setList] = useState<City[]>([]);
+  useEffect(() => { api.cities().then(setList).catch(() => {}); }, []);
+  const names: string[] = [...(list.length ? list.map((c) => c.name) : ['Delhi NCR']), 'Other'];
+  const notLive = s.city === 'Other' || (!!s.city && list.find((c) => c.name === s.city)?.is_live === false);
 
   const next = async () => {
-    if (s.city === 'Other') {
+    if (notLive) {
       const e: Errs = {};
       if (!cityValue(s)) e.city = 'Type your city.';
       if (!isEmail(s.personalEmail)) e.personalEmail = 'Enter a valid email address.';
@@ -64,7 +68,7 @@ export default function Details() {
   );
 
   return (
-    <Screen footer={<Button label={s.city === 'Other' ? 'Notify me' : 'Continue'} onPress={next} loading={busy} />}>
+    <Screen footer={<Button label={notLive ? 'Notify me' : 'Continue'} onPress={next} loading={busy} />}>
       <StepHeader step={1} of={5} />
       <Title italic>Request an invitation.</Title>
       <Info text={"Five short steps. Read by people, not a model."} />
@@ -73,10 +77,10 @@ export default function Details() {
       <View style={{ marginTop: 16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
           <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted }}>City</Text>
-          <Info text="Delhi NCR only for now. Elsewhere? Pick Other and we'll email you when we reach your city. You won't join the queue." title="City" size={18} style={{ marginTop: 0 }} />
+          <Info text="Delhi NCR only for now. Elsewhere? Pick your city and we'll email you when we reach it. You won't join the queue." title="City" size={18} style={{ marginTop: 0 }} />
         </View>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {CITIES.map((c) => {
+          {names.map((c) => {
             const on = s.city === c;
             return (
               <Pill key={c} label={c} on={on} onPress={() => set({ city: c })} />
@@ -86,10 +90,10 @@ export default function Details() {
         {errs.city ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.error, marginTop: 6 }}>{errs.city}</Text> : null}
       </View>
       {s.city === 'Other' ? <TextField label="Your city" value={s.cityOther} onChangeText={(v) => set({ cityOther: v })} autoComplete="off" /> : null}
-      {s.city === 'Other' ? <Body style={{ marginTop: 12 }}>We're only in Delhi NCR for now. Add your email below and we'll tell you when we open in your city.</Body> : null}
+      {notLive ? <Body style={{ marginTop: 12 }}>We're only in Delhi NCR for now. Add your email below and we'll tell you when we open in your city.</Body> : null}
       <TextField label="Personal email" value={s.personalEmail} onChangeText={(v) => set({ personalEmail: v })} keyboardType="email-address" autoCapitalize="none" autoComplete="email"
         editable={!s.personalVerified} error={errs.personalEmail} hint="This is your login. We'll check it's yours in the next step." />
-      {s.city === 'Other' ? null : <TextField label="LinkedIn URL" value={s.linkedin} onChangeText={(v) => set({ linkedin: v })} keyboardType="url" autoCapitalize="none" placeholder="https://linkedin.com/in/yourname" error={errs.linkedin} />}
+      {notLive ? null : <TextField label="LinkedIn URL" value={s.linkedin} onChangeText={(v) => set({ linkedin: v })} keyboardType="url" autoCapitalize="none" placeholder="https://linkedin.com/in/yourname" error={errs.linkedin} />}
     </Screen>
   );
 }

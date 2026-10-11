@@ -2,10 +2,12 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { FloatingTabBar, type BarProps } from '@/components/FloatingTabBar';
 import { colors } from '@/theme';
+import { useCity } from '@/lib/city';
 
 export default function TabsLayout() {
+  const { epoch } = useCity();
   return (
-      <Tabs tabBar={(p) => <FloatingTabBar {...(p as unknown as BarProps)} />} screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.ground } }}>
+      <Tabs key={epoch} tabBar={(p) => <FloatingTabBar {...(p as unknown as BarProps)} />} screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.ground } }}>
         <Tabs.Screen name="home" options={{ title: 'Home' }} />
         <Tabs.Screen name="events" options={{ title: 'Events' }} />
         <Tabs.Screen name="bookings" options={{ title: 'Bookings' }} />

@@ -22,11 +22,11 @@ export function channelAge(c: Pick<ChannelRow, 'tags'>): { min: number | null; m
   return { min: lo ? Number(lo) : null, max: hi ? Number(hi) : null };
 }
 
-/** "128 members. Gurgaon, Noida. Sector 43. 25 to 35. Women." No city means Pan India. */
+/** "128 members. Gurgaon, Noida. Sector 43. 25 to 35. Women." Older channels may name a city. */
 export function channelSummary(c: ChannelRow): string {
   const parts = [`${c.member_count} ${c.member_count === 1 ? 'member' : 'members'}`];
   const cities = tagValues(c, 'city');
-  parts.push(cities.length ? cities.join(', ') : 'Pan India');
+  if (cities.length) parts.push(cities.join(', '));
   const area = tagValue(c, 'area'); if (area) parts.push(area);
   const { min, max } = channelAge(c);
   parts.push(ageText(min, max) ?? tagValue(c, 'age_group') ?? 'All ages');

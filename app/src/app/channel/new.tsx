@@ -8,7 +8,8 @@ import { Body, Button, Notice, TextField } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
-import { ageError, CHANNEL_CITIES } from '@/lib/channels';
+import { ageError } from '@/lib/channels';
+import { AreaPicker } from '@/components/AreaPicker';
 import { GENDERS } from '@/lib/profile';
 import { useLoad } from '@/lib/useLoad';
 import { Info } from '@/components/Info';
@@ -21,8 +22,6 @@ export default function NewChannel() {
   const [name, setName] = useState('');
   const [interest, setInterest] = useState<{ id: number; name: string } | null>(null);
   const [pickActivity, setPickActivity] = useState(false);
-  const [cities, setCities] = useState<string[]>([]);
-  const [pickCity, setPickCity] = useState(false);
   const [area, setArea] = useState('');
   const [ageMin, setAgeMin] = useState('');
   const [ageMax, setAgeMax] = useState('');
@@ -42,7 +41,7 @@ export default function NewChannel() {
       const id = await api.createChannel({
         kind: 'public', name: name.trim(), interestId: interest?.id ?? null,
         tags: isPublic ? {
-          ...(cities.length ? { city: cities } : {}), ...(area.trim() ? { area: area.trim() } : {}),
+          ...(area.trim() ? { area: area.trim() } : {}),
           ...(ageMin.trim() ? { age_min: ageMin.trim() } : {}), ...(ageMax.trim() ? { age_max: ageMax.trim() } : {}), ...(genders.length ? { gender: genders } : {}),
         } : {},
       });
@@ -66,9 +65,7 @@ export default function NewChannel() {
           {heading('Who can join')}
           <Info text={"These are rules. Someone who doesn't match can see the channel but can't join. Leave a rule empty to let everyone in."} />
 
-          {label('City')}
-          <Button label={cities.length ? cities.join(', ') : 'Pan India (any city)'} variant="secondary" onPress={() => setPickCity(true)} />
-          <TextField label="Area (optional, just a label)" value={area} onChangeText={setArea} maxLength={60} placeholder="For example: Sector 43" />
+          <AreaPicker label="Area (optional, just a label)" value={area} onChange={setArea} />
 
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <View style={{ flex: 1 }}><TextField label="Youngest" value={ageMin} onChangeText={(v) => setAgeMin(v.replace(/\D/g, '').slice(0, 2))} keyboardType="number-pad" maxLength={2} placeholder="18" /></View>
@@ -90,16 +87,6 @@ export default function NewChannel() {
       </ScrollView>
 
       <ActivityPicker visible={pickActivity} onClose={() => setPickActivity(false)} selectedId={interest?.id} onPick={(a) => { setInterest(a); setPickActivity(false); }} />
-      <Sheet visible={pickCity} onClose={() => setPickCity(false)} title="Cities">
-        <ScrollView style={{ flexGrow: 0, flexShrink: 1 }}>
-          <Info text={"Pick one or more cities. Pick none for Pan India."} />
-          {CHANNEL_CITIES.map((c) => <Row key={c} title={c} right={cities.includes(c) ? <Text style={{ color: colors.sage, fontFamily: fonts.bodySemi, fontSize: 18 }}>✓</Text> : undefined} onPress={() => setCities((x) => toggle(x, c))} />)}
-        </ScrollView>
-        <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
-          <Button label="Pan India" variant="secondary" onPress={() => setCities([])} style={{ flex: 1 }} />
-          <Button label="Done" onPress={() => setPickCity(false)} style={{ flex: 1 }} />
-        </View>
-      </Sheet>
     </View>
   );
 }

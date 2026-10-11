@@ -1,3 +1,5 @@
+import { useCity } from '@/lib/city';
+import { NotLive } from '@/components/NotLive';
 import React, { useMemo } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -63,10 +65,11 @@ function FeaturedEvent({ e, onPress }: { e: { id: string; title: string; cover_p
   );
 }
 
-export default function Home() {
+function HomeInner() {
   const r = useRouter();
   const { member } = useAuth();
   const unread = useUnread();
+  const city = useCity();
   const { data, error, loading, refreshing, pull, reload } = useLoad(async () => {
     const [profile, mine, upcoming, events, channels, dms, previews] = await Promise.all([
       api.profile(member!.id).catch(() => null), api.bookingsMine().catch(() => []), api.bookingsUpcoming().catch(() => []), api.events().catch(() => []),
@@ -78,7 +81,7 @@ export default function Home() {
   const first = (data?.profile?.full_name ?? data?.profile?.username ?? member?.username ?? '').split(' ')[0];
   const plans = useMemo(() => (data ? comingUp(data.mine, data.events) : []), [data]);
   const soon = useMemo(() => (data ? startingSoon(data.upcoming, data.profile?.interests ?? []) : []), [data]);
-  const lobbies = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'lobby' && c.is_member).sort((a, b) => (unread.byChannel[b.id] ?? 0) - (unread.byChannel[a.id] ?? 0) || a.name.localeCompare(b.name)).slice(0, 12), [data, unread.byChannel]);
+  const lobbies = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'lobby' && c.is_member && c.city_id === city.id).sort((a, b) => (unread.byChannel[b.id] ?? 0) - (unread.byChannel[a.id] ?? 0) || a.name.localeCompare(b.name)).slice(0, 12), [data, unread.byChannel]);
   const featured = useMemo(() => (data?.events ?? []).filter((e) => e.status === 'published' && !e.my_status && new Date(e.ends_at) > new Date()).sort((a, b) => a.starts_at.localeCompare(b.starts_at))[0] ?? null, [data]);
   const chats = useMemo(() => {
     if (!data) return [];
@@ -146,4 +149,9 @@ export default function Home() {
       </>) : null}
     </Screen>
   );
+}
+
+export default function Home() {
+  const city = useCity();
+  return city.live ? <HomeInner /> : <NotLive />;
 }

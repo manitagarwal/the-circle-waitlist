@@ -6,11 +6,11 @@ import type { ChannelRow } from './api.ts';
 const mk = (o: Partial<ChannelRow>): ChannelRow => ({ id: 'x', kind: 'public', name: 'N', photo_path: null, interest_id: 1, interest_name: 'Badminton', created_by: null, created_at: '', member_count: 3, is_member: false, my_role: null, tags: [], ...o });
 const t = (type: string, value: string) => ({ type, value });
 
-test('summary: several cities, Pan India, genders', () => {
+test('summary: several cities, no city, genders', () => {
   assert.equal(channelSummary(mk({ member_count: 128, tags: [t('city', 'Gurgaon'), t('city', 'Noida'), t('area', 'Sector 43'), t('age_min', '25'), t('age_max', '35'), t('gender', 'female')] })), '128 members. Gurgaon, Noida. Sector 43. 25 to 35. Women.');
-  assert.equal(channelSummary(mk({ member_count: 1 })), '1 member. Pan India. All ages.');
-  assert.equal(channelSummary(mk({ tags: [t('gender', 'male'), t('gender', 'non_binary')] })), '3 members. Pan India. All ages. Men, Non-binary members.');
-  assert.equal(channelSummary(mk({ tags: [t('age_group', '25 to 35')] })), '3 members. Pan India. 25 to 35.'); // older channels
+  assert.equal(channelSummary(mk({ member_count: 1 })), '1 member. All ages.');
+  assert.equal(channelSummary(mk({ tags: [t('gender', 'male'), t('gender', 'non_binary')] })), '3 members. All ages. Men, Non-binary members.');
+  assert.equal(channelSummary(mk({ tags: [t('age_group', '25 to 35')] })), '3 members. 25 to 35.'); // older channels
 });
 test('age text', () => {
   assert.equal(ageText(25, null), '25 and over');

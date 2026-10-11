@@ -14,6 +14,7 @@ import { useSignedUrl } from '@/lib/media';
 import { PRIVACY_FIELDS } from '@/lib/privacy';
 import { toneFor } from '@/lib/tones';
 import { useLoad } from '@/lib/useLoad';
+import { useCity } from '@/lib/city';
 
 const month = (iso: string) => new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date(iso));
 
@@ -34,6 +35,7 @@ export default function Profile() {
   const r = useRouter();
   const { member } = useAuth();
   const [copied, setCopied] = useState(false);
+  const city = useCity();
   const { data, error, loading, refreshing, pull, reload } = useLoad(async () => {
     const me = member!.id;
     const [profile, score, code, friends, channels, privacy] = await Promise.all([api.profile(me), api.myScore().catch(() => null), api.referralCode().catch(() => null), api.friends(me).catch(() => []), api.channels().catch(() => []), api.myPrivacy().catch(() => ({}))]);
@@ -61,6 +63,7 @@ export default function Profile() {
           <View style={{ alignItems: 'center', marginTop: 16 }}>
             <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 36, lineHeight: 42, color: colors.ink, textAlign: 'center' }}>{p.full_name ?? p.username}</Text>
             <Text style={{ fontFamily: fonts.body, fontSize: 15, color: colors.muted, marginTop: 2 }}>@{p.username}{member?.role === 'admin' ? ' · Admin' : ''}</Text>
+            {city.home ? <Pressable accessibilityRole="button" onPress={() => r.push('/settings/city')}><Text style={{ fontFamily: fonts.body, fontSize: 13.5, color: colors.faint, marginTop: 2 }}>Based in {city.home.home_name}</Text></Pressable> : null}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 12 }}>
               {[p.age != null ? `${p.age}` : null, p.area, p.field_of_work].filter((x): x is string => !!x).map((t) => <Tag key={t}>{t}</Tag>)}
             </View>

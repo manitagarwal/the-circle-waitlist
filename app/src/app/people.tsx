@@ -10,11 +10,13 @@ import { colors, fonts } from '@/theme';
 import type { FoundPerson } from '@/lib/api';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
+import { useCity } from '@/lib/city';
 
 /** Find members by name. With a channel it picks people to invite; without, it opens profiles and chats. */
 export default function People() {
   const { channel, name } = useLocalSearchParams<{ channel?: string; name?: string }>();
   const r = useRouter();
+  const city = useCity();
   const { member } = useAuth();
   const inviting = !!channel;
   const [q, setQ] = useState('');
@@ -43,10 +45,10 @@ export default function People() {
     if (q.trim().length < 2) { setFound([]); setSearching(false); return; }
     setSearching(true);
     const t = setTimeout(() => {
-      api.searchMembers(q).then((x) => { setFound(x); setErr(null); }).catch((e) => setErr(friendly(e))).finally(() => setSearching(false));
+      api.searchMembers(q, city.id).then((x) => { setFound(x); setErr(null); }).catch((e) => setErr(friendly(e))).finally(() => setSearching(false));
     }, 300);
     return () => clearTimeout(t);
-  }, [q]);
+  }, [q, city.id]);
 
   const typed = q.trim().length >= 2;
   const list = (typed ? found : friends).filter((p) => p.id !== member?.id);

@@ -1,3 +1,5 @@
+import { useCity } from '@/lib/city';
+import { NotLive } from '@/components/NotLive';
 import React, { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -37,7 +39,7 @@ function Card({ b, onPress, note, group }: { b: BookingRow; onPress: () => void;
   );
 }
 
-export default function Bookings() {
+function BookingsInner() {
   const r = useRouter();
   const [seg, setSeg] = useState<'browse' | 'mine'>('browse');
   const [f, setF] = useState<Record<string, string | undefined>>({});
@@ -102,4 +104,9 @@ export default function Bookings() {
       </>) : null}
     </Screen>
   );
+}
+
+export default function Bookings() {
+  const city = useCity();
+  return city.live ? <BookingsInner /> : <NotLive />;
 }

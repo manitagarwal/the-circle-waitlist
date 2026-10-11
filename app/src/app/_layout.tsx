@@ -9,6 +9,7 @@ import { Fraunces_400Regular, Fraunces_500Medium } from '@expo-google-fonts/frau
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { UnreadProvider } from '@/lib/unread';
+import { CityProvider } from '@/lib/city';
 import { colors, isDark } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -83,6 +84,7 @@ function Routes() {
         <Stack.Screen name="settings/profile" />
         <Stack.Screen name="settings/privacy" />
         <Stack.Screen name="history" />
+        <Stack.Screen name="settings/city" />
         <Stack.Screen name="settings/interests" />
         <Stack.Screen name="settings/password" />
         <Stack.Screen name="settings/blocked" />
@@ -101,7 +103,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <AuthProvider>
-        <UnreadProvider><Routes /></UnreadProvider>
+        <CityProvider><UnreadProvider><Routes /></UnreadProvider></CityProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

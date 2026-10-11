@@ -16,6 +16,7 @@ import { clock } from '@/lib/format';
 import { friendly } from '@/lib/messages';
 import { useLoad } from '@/lib/useLoad';
 import { Info } from '@/components/Info';
+import { AreaPicker } from '@/components/AreaPicker';
 
 export default function NewBooking() {
   const r = useRouter();
@@ -112,7 +113,7 @@ export default function NewBooking() {
         {start && end ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: colors.ink, marginTop: 8 }}>{clock(new Date(start))} to {clock(new Date(end))}{ymdLabel(todayIST(new Date(end))) !== ymdLabel(todayIST(new Date(start))) ? ', next day' : ''}</Text> : null}
 
         <TextField label="Where: venue" value={venue} onChangeText={setVenue} placeholder="For example: Play-A-Shot" />
-        <TextField label="Area" value={area} onChangeText={setArea} placeholder="For example: Sector 43, Gurgaon" hint="Everyone sees the venue and area." />
+        <AreaPicker value={area} onChange={setArea} hint="Everyone sees the venue and area." />
         <TextField label="Exact address" value={address} onChangeText={setAddress} hint="Only people who join see this." />
 
         {label(limits ? `People, up to ${limits.max_people} for ${interest?.name ?? 'this activity'}` : 'People')}
