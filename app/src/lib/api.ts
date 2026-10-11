@@ -18,7 +18,7 @@ export type Ticket = { id: string; name: string; price_inr: number; left: number
 export type ChannelRow = {
   id: string; kind: 'lobby' | 'public' | 'private' | 'booking' | 'dm'; name: string; photo_path: string | null;
   interest_id: number | null; interest_name: string | null; created_by: string | null; created_at: string;
-  member_count: number; is_member: boolean; my_role: string | null; tags: { type: string; value: string }[]; city_id?: number | null;
+  member_count: number; is_member: boolean; my_role: string | null; tags: { type: string; value: string }[]; city_id?: number | null; library_photo?: string | null;
 };
 export type City = { id: number; name: string; is_live: boolean; sort: number };
 export type Area = { id: number; name: string; place: string | null; sort: number };

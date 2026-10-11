@@ -167,7 +167,7 @@ function HomeInner() {
             {lobbies.map((c) => (
               <PressScale key={c.id} accessibilityRole="button" accessibilityLabel={c.name} onPress={() => r.push({ pathname: '/channel/[id]', params: { id: c.id } })} style={{ alignItems: 'center', width: 76 }}>
                 <View>
-                  <RingBadge name={c.name} activity={c.interest_name} unread={!!unread.byChannel[c.id]} size={64} />
+                  <RingBadge name={c.name} activity={c.interest_name} photo={c.library_photo} unread={!!unread.byChannel[c.id]} size={64} />
                   {unread.byChannel[c.id] ? <View style={{ position: 'absolute', top: -4, right: -6, minWidth: 20, height: 20, borderRadius: 10, paddingHorizontal: 5, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.ground, alignItems: 'center', justifyContent: 'center' }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 10.5, color: colors.inkOn }}>{unread.byChannel[c.id]}</Text></View> : null}
                 </View>
                 <Text numberOfLines={1} style={{ fontFamily: fonts.bodySemi, fontSize: 12.5, color: colors.ink, marginTop: 6 }}>{c.name.split(/[ /&]/)[0]}</Text>
@@ -197,7 +197,7 @@ function HomeInner() {
         {chats.length ? (<>
           <Heading title="Pick up where you left off" action="All chats" onAction={() => r.navigate('/channels' as never)} />
           {chats.map((c) => (
-            <Row key={c.key} unread={c.n} left={c.dm ? <WithDot on><PersonAvatar person={c.dm} size={52} /></WithDot> : <RingBadge name={c.ch!.name} activity={c.ch!.interest_name} unread size={52} />}
+            <Row key={c.key} unread={c.n} left={c.dm ? <WithDot on><PersonAvatar person={c.dm} size={52} /></WithDot> : <RingBadge name={c.ch!.name} activity={c.ch!.interest_name} photo={c.ch!.library_photo} unread size={52} />}
               title={c.title} subtitle={c.sub} meta={c.at ? listStamp(c.at) : null} onPress={c.go} />
           ))}
         </>) : null}
