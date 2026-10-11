@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image, View } from 'react-native';
+import { View } from 'react-native';
+import { Image } from 'expo-image';
 import { SvgXml } from 'react-native-svg';
 import { Arcs } from './Arch';
 import { activityIcon } from '@/lib/activityIcons';
@@ -11,7 +12,7 @@ export function Cover({ uri, activity, height = 170 }: { uri?: string | null; ac
   const icon = activityIcon(activity);
   return (
     <View style={{ height, borderRadius: 24, overflow: 'hidden', backgroundColor: toneFor(activity, isDark) ?? colors.plate, alignItems: 'center', justifyContent: 'center' }}>
-      {uri ? <Image source={{ uri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors /> : (<>
+      {uri ? <Image source={{ uri }} style={{ width: '100%', height: '100%' }} contentFit="cover" transition={350} accessibilityIgnoresInvertColors /> : (<>
         <Arcs width={Math.min(300, height * 1.8)} color={isDark ? colors.lineStrong : '#ffffff'} stroke={2} style={{ position: 'absolute', bottom: 0 }} delay={100} />
         {icon ? <SvgXml xml={icon} width={height * 0.46} height={height * 0.46} color={colors.ink} /> : null}
       </>)}

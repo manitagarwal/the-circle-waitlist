@@ -332,3 +332,9 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Booking and channel forms do not ask for a city. They use an **area picker**: search the city's list (e.g. "sec 56" finds "Sector 56, Gurugram") or type your own.
 - Admin portal > Cities: add a city, see who is waiting, Open city (creates a lobby for every activity).
 - Not yet built: pre-filled venues (courts etc.), by decision.
+
+## Motion and feel (Oct 2026)
+- Toolkit: react-native-reanimated, gesture-handler, expo-haptics, expo-image, expo-linear-gradient, expo-blur. Shared effects live in `components/fx.tsx` (Enter, Skeleton, PulseDot, useCountdown, tap) and `lib/haptic.ts`.
+- Every `PressScale` (cards, rows, buttons) now gives a light haptic tap on press.
+- Home: greeting recedes as you scroll, Up next is a large card with a live countdown ("in 2h 14m", pulsing dot when under 3 hours), further plans in a snapping carousel where the centred card grows, sections rise in one after another, shimmer skeleton while loading, "N spots" pulses when 2 or fewer are left.
+- Event covers use expo-image (cached, fades in).
