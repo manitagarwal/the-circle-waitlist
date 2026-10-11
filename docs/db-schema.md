@@ -137,3 +137,9 @@ Security definer. Caller must be in the public channel; invitee must be an activ
 - `can_view_channel`, `bookings_overview` (and the bookings policy) filter by `current_city_id()`, but always allow your own, hosted or joined rows.
 - Functions: `set_current_city`, `change_home_city`, `my_city`, `notify_city`, `admin_open_city`, `admin_cities`, `admin_add_city`. `member_profiles` gains `home_city_id`, `home_city`.
 - `areas(city_id, name, place, sort)` seeded for Delhi NCR (Gurugram sectors 1-115, Noida, Faridabad, named Gurugram/Delhi/Ghaziabad areas).
+
+## Migration 046: our own photo library
+- `photo_library(id, path, source, source_url, credit, status active|retired)`, `photo_tags(photo_id, interest_id | group_id)`, public storage bucket `activity-photos` (admins write).
+- `bookings.photo_id`. Trigger `bookings_set_photo` picks `pick_photo(interest)`: the least-used active photo tagged to the activity, else one tagged to its category; stored, so everyone sees the same photo. `photo_pool`, `booking_photo_options`, `set_booking_photo` (host can change within the pool).
+- `bookings_overview` gains `photo_path`, `photo_credit`. Admin RPCs: `admin_photos`, `admin_add_photo`, `admin_tag_photo`, `admin_set_photo_status`.
+- Edge function `photo-import` (admin only): downloads image links into our storage and tags them. No third-party API is used at runtime.

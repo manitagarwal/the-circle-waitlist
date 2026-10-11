@@ -338,3 +338,8 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Every `PressScale` (cards, rows, buttons) now gives a light haptic tap on press.
 - Home: greeting recedes as you scroll, Up next is a large card with a live countdown ("in 2h 14m", pulsing dot when under 3 hours), further plans in a snapping carousel where the centred card grows, sections rise in one after another, shimmer skeleton while loading, "N spots" pulses when 2 or fewer are left.
 - Event covers use expo-image (cached, fades in).
+
+## Photos (Oct 2026)
+- Booking and event cards use a full-bleed photo with a tone-coloured fallback. Each booking has one saved photo, the same for every viewer, picked automatically from our own library (least-used for the activity). The host can change it from the activity's pool.
+- The library lives in our storage (admin portal > Photos): upload, import from links, tag to activities or whole categories, retire. Starter set of free-to-use photos included.
+- App display is not built yet; the design is being settled on the canvas.

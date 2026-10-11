@@ -155,7 +155,7 @@ async function gate() {
 }
 
 /* ---------- shell and routing ---------- */
-const PAGES = [['dashboard', 'Dashboard'], ['applicants', 'Applicants'], ['members', 'Members'], ['reports', 'Reports'], ['events', 'Events'], ['payments', 'Payments'], ['promos', 'Promo codes'], ['cities', 'Cities'], ['announce', 'Announcements'], ['bookings', 'Bookings'], ['settings', 'Settings'], ['log', 'Activity log']];
+const PAGES = [['dashboard', 'Dashboard'], ['applicants', 'Applicants'], ['members', 'Members'], ['reports', 'Reports'], ['events', 'Events'], ['payments', 'Payments'], ['promos', 'Promo codes'], ['cities', 'Cities'], ['photos', 'Photos'], ['announce', 'Announcements'], ['bookings', 'Bookings'], ['settings', 'Settings'], ['log', 'Activity log']];
 let counts = {};
 
 async function startShell(user) {
@@ -487,6 +487,76 @@ renderers.cities = async (main) => {
     h('div', { class: 'panel' }, h('h3', null, 'Add a city'), h('div', { class: 'row', style: 'gap:8px' }, name, h('button', { class: 'primary', on: { click: add } }, 'Add'))),
     table(['City', 'Status', 'Waiting for it', 'Members based here', 'Areas listed', ''], list.map((c) => tr([c.name, badge(c.is_live ? 'live' : 'not live', c.is_live ? 'ok' : null), String(c.waiting), String(c.members), String(c.areas),
       c.is_live ? '' : h('button', { class: 'small', on: { click: open(c) } }, 'Open city')]))));
+};
+
+/* ---------- photos: our own library of activity pictures ---------- */
+const PHOTO_BASE = SUPABASE_URL + '/storage/v1/object/public/activity-photos/';
+const STARTER_PHOTOS = [{"url": "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1626224583764", "activities": ["Badminton"], "groups": ["Sports"]}, {"url": "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1554068865", "activities": ["Tennis & Squash", "Pickleball & Padel"], "groups": ["Sports"]}, {"url": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1431324155629", "activities": ["Football/Futsal"], "groups": ["Sports"]}, {"url": "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1531415074968", "activities": ["Cricket"], "groups": ["Sports"]}, {"url": "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1530549387789", "activities": ["Swimming"], "groups": ["Clubs"]}, {"url": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1517836357463", "activities": ["Gym"], "groups": ["Clubs"]}, {"url": "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1552674605", "activities": ["Running"], "groups": ["Clubs"]}, {"url": "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1476480862126", "activities": ["Running"], "groups": ["Clubs"]}, {"url": "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1517649763962", "activities": ["Cycling"], "groups": ["Clubs"]}, {"url": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1544367567", "activities": ["Yoga & Pilates", "Meditation"], "groups": ["Clubs"]}, {"url": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1481627834876", "activities": ["Book Club"], "groups": ["Clubs"]}, {"url": "https://images.unsplash.com/photo-1551632811-561732d1e306?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1551632811", "activities": ["Treks & Hikes"], "groups": ["Outdoors & travel"]}, {"url": "https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1501555088652", "activities": ["Treks & Hikes", "Weekend Getaways"], "groups": ["Outdoors & travel"]}, {"url": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1464822759023", "activities": ["Road Trips", "Weekend Getaways"], "groups": ["Outdoors & travel"]}, {"url": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1567188040759", "activities": ["Street Food Walks", "Lunch & Dinner"], "groups": ["Food, drinks & nightlife"]}, {"url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1495474472287", "activities": ["Cafe Hopping", "Breakfast & Brunch"], "groups": ["Food, drinks & nightlife"]}, {"url": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1414235077428", "activities": ["Lunch & Dinner"], "groups": ["Food, drinks & nightlife"]}, {"url": "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1556910103", "activities": ["Cooking & Baking"], "groups": ["Food, drinks & nightlife"]}, {"url": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1517457373958", "activities": ["Pub & Bar Nights"], "groups": ["Food, drinks & nightlife"]}, {"url": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1459749411175", "activities": ["Concert & Gig"], "groups": ["Music & performance"]}, {"url": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1470229722913", "activities": ["Concert & Gig"], "groups": ["Music & performance"]}, {"url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1511671782779", "activities": ["Open Mic", "Karaoke"], "groups": ["Music & performance"]}, {"url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1470225620780", "activities": ["Clubbing"], "groups": ["Music & performance", "Food, drinks & nightlife"]}, {"url": "https://images.unsplash.com/photo-1527224857830-43a7acc85260?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1527224857830", "activities": ["Stand-up Comedy"], "groups": ["Music & performance"]}, {"url": "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1610890716171", "activities": ["Board Games", "Card Games"], "groups": ["Games & watch parties"]}, {"url": "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1529699211952", "activities": ["Chess"], "groups": ["Games & watch parties"]}, {"url": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1522071820081", "activities": ["Startups & Networking", "Coding & Tech Meetups"], "groups": ["Career & tech"]}, {"url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1497366216548", "activities": ["Design & Product"], "groups": ["Career & tech"]}, {"url": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1513364776144", "activities": ["Art & Sketching"], "groups": ["Culture, learning & causes"]}, {"url": "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1518998053901", "activities": ["Museums & Galleries"], "groups": ["Culture, learning & causes"]}, {"url": "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1400&q=75&fit=max&auto=format", "source": "unsplash", "source_url": "https://unsplash.com/photos/1565193566173", "activities": ["Art & Sketching"], "groups": ["Culture, learning & causes"]}];
+
+renderers.photos = async (main, sub) => {
+  const tab = sub[0] || 'active';
+  const [list, groups, acts] = await Promise.all([rpc('admin_photos'), rows(sb.from('interest_groups').select('id,name').order('sort')), rows(sb.from('interests').select('id,name,group_id').eq('is_active', true).order('name'))]);
+  const untagged = (p) => !(p.tags || []).length;
+  const shown = list.filter((p) => tab === 'retired' ? p.status === 'retired' : tab === 'untagged' ? p.status === 'active' && untagged(p) : p.status === 'active');
+  const bar = tabs([['active', 'Active (' + list.filter((p) => p.status === 'active').length + ')'], ['untagged', 'Untagged (' + list.filter((p) => p.status === 'active' && untagged(p)).length + ')'], ['retired', 'Retired (' + list.filter((p) => p.status === 'retired').length + ')']], tab, (v) => { location.hash = '#/photos/' + v; });
+
+  // one multi-select for tags: whole categories first, then single activities
+  const tagSelect = (selected) => h('select', { multiple: true, size: '8', 'aria-label': 'Tags', style: 'min-width:260px' },
+    h('optgroup', { label: 'Whole category' }, groups.map((g) => h('option', { value: 'g' + g.id, selected: selected.includes('g' + g.id) }, g.name))),
+    groups.map((g) => h('optgroup', { label: g.name }, acts.filter((a) => a.group_id === g.id).map((a) => h('option', { value: 'i' + a.id, selected: selected.includes('i' + a.id) }, a.name)))));
+  const picked = (sel) => { const v = [...sel.selectedOptions].map((o) => o.value); return { interests: v.filter((x) => x[0] === 'i').map((x) => Number(x.slice(1))), groups: v.filter((x) => x[0] === 'g').map((x) => Number(x.slice(1))) }; };
+
+  const files = h('input', { type: 'file', multiple: true, accept: 'image/jpeg,image/png,image/webp', 'aria-label': 'Photos' });
+  const credit = h('input', { placeholder: 'Credit (photographer), optional', 'aria-label': 'Credit', style: 'max-width:260px' });
+  const tagsUp = tagSelect([]);
+  const upload = async () => {
+    const fl = [...files.files]; if (!fl.length) return toast('Pick some photos first.', true);
+    const t = picked(tagsUp); let done = 0;
+    for (const f of fl) {
+      const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[f.type];
+      if (!ext || f.size > 5 * 1024 * 1024) { toast(f.name + ': use a JPG, PNG or WebP under 5 MB.', true); continue; }
+      const path = crypto.randomUUID() + '.' + ext;
+      const up = await sb.storage.from('activity-photos').upload(path, f, { contentType: f.type });
+      if (up.error) { toast(f.name + ': ' + up.error.message, true); continue; }
+      try { await rpc('admin_add_photo', { p_path: path, p_source: 'own', p_source_url: null, p_credit: credit.value.trim() || null, p_interests: t.interests, p_groups: t.groups }); done++; } catch (e) { toast(friendlyError(e), true); }
+    }
+    toast(done + ' photo' + (done === 1 ? '' : 's') + ' added'); refresh();
+  };
+
+  const links = h('textarea', { rows: '4', placeholder: 'One image link per line (https)', 'aria-label': 'Image links', style: 'width:100%;max-width:520px' });
+  const tagsLink = tagSelect([]);
+  const runImport = async (items, label) => {
+    if (!items.length) return toast('Add at least one link.', true);
+    const { data, error } = await sb.functions.invoke('photo-import', { body: { items } });
+    if (error || !data || !data.results) return toast('Import failed. Try again.', true);
+    const ok = data.results.filter((r) => r.ok).length, bad = data.results.filter((r) => !r.ok);
+    toast(label + ': ' + ok + ' added' + (bad.length ? ', ' + bad.length + ' failed (' + bad[0].error + ')' : ''), bad.length > 0 && ok === 0); refresh();
+  };
+  const importLinks = () => { const t = picked(tagsLink); runImport(links.value.split('\n').map((s) => s.trim()).filter(Boolean).map((u) => ({ url: u, credit: credit.value.trim() || undefined, source: 'import', activities: acts.filter((x) => t.interests.includes(x.id)).map((x) => x.name), groups: groups.filter((x) => t.groups.includes(x.id)).map((x) => x.name) })), 'Import'); };
+
+  const card = (p) => {
+    const sel = (p.tags || []).map((x) => (x.interest_id ? 'i' + x.interest_id : 'g' + x.group_id));
+    let editor = null;
+    const editBox = h('div', { style: 'display:none;margin-top:8px' });
+    const sel2 = tagSelect(sel);
+    const save = async () => { const t = picked(sel2); if (await act(() => rpc('admin_tag_photo', { p_photo: p.id, p_interests: t.interests, p_groups: t.groups }), 'Tags saved')) refresh(); };
+    editBox.append(sel2, h('div', { class: 'row', style: 'margin-top:6px' }, h('button', { class: 'small primary', on: { click: save } }, 'Save tags')));
+    return h('div', { class: 'panel', style: 'width:230px;padding:10px' },
+      h('img', { src: PHOTO_BASE + p.path, alt: '', loading: 'lazy', style: 'width:100%;height:140px;object-fit:cover;border-radius:8px;display:block' + (p.status === 'retired' ? ';opacity:.45' : '') }),
+      h('div', { style: 'margin-top:8px;font-size:12.5px;line-height:1.5' }, (p.tags || []).length ? (p.tags || []).map((x) => x.name).join(', ') : h('em', null, 'No tags yet')),
+      h('div', { class: 'muted', style: 'font-size:12px;margin-top:4px' }, 'Used on ' + p.uses + ' booking' + (p.uses === 1 ? '' : 's') + (p.credit ? ' · ' + p.credit : '')),
+      h('div', { class: 'row', style: 'gap:6px;margin-top:8px;flex-wrap:wrap' },
+        h('button', { class: 'small', on: { click: () => { editBox.style.display = editBox.style.display === 'none' ? '' : 'none'; } } }, 'Tags'),
+        h('button', { class: 'small', on: { click: async () => { if (await act(() => rpc('admin_set_photo_status', { p_photo: p.id, p_status: p.status === 'active' ? 'retired' : 'active' }), p.status === 'active' ? 'Retired' : 'Restored')) refresh(); } } }, p.status === 'active' ? 'Retire' : 'Restore')),
+      editBox);
+  };
+
+  put(main, header('Photos', 'Our own library of pictures for bookings and covers. Each new booking gets the least-used photo for its activity, and keeps it. Retiring a photo stops it being picked; bookings that already have it fall back to a plain card.'),
+    h('div', { class: 'panel' }, h('h3', null, 'Add from your computer'), h('div', { class: 'row', style: 'gap:12px;flex-wrap:wrap;align-items:flex-start' }, h('div', null, files, h('div', { style: 'margin-top:8px' }, credit)), tagsUp, h('button', { class: 'primary', on: { click: upload } }, 'Upload'))),
+    h('div', { class: 'panel' }, h('h3', null, 'Add from links'), h('p', { class: 'muted' }, 'Paste direct links to images you are allowed to use. We download a copy into our own storage, so nothing depends on the other site later.'), h('div', { class: 'row', style: 'gap:12px;flex-wrap:wrap;align-items:flex-start' }, links, tagsLink, h('button', { class: 'primary', on: { click: importLinks } }, 'Import'))),
+    h('div', { class: 'panel' }, h('h3', null, 'Starter set'), h('p', { class: 'muted' }, STARTER_PHOTOS.length + ' free-to-use photos, already tagged to categories and activities. Copies are saved into our storage. Run once.'), h('button', { class: 'primary', on: { click: () => { if (window.confirm('Add the starter set of ' + STARTER_PHOTOS.length + ' photos?')) runImport(STARTER_PHOTOS, 'Starter set'); } } }, 'Add the starter set')),
+    bar,
+    shown.length ? h('div', { class: 'row', style: 'gap:14px;flex-wrap:wrap;align-items:flex-start' }, shown.map(card)) : h('p', { class: 'muted' }, tab === 'retired' ? 'Nothing retired.' : tab === 'untagged' ? 'Every photo has tags.' : 'No photos yet. Add the starter set to begin.'));
 };
 
 /* ---------- promo codes ---------- */
