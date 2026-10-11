@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Enter, PulseDot, Skeleton, useCountdown } from '@/components/fx';
 import { useRouter } from 'expo-router';
 import { PersonAvatar } from '@/components/Avatar';
-import { Cover } from '@/components/Cover';
+import { PhotoCard } from '@/components/PhotoCard';
 import { PressScale } from '@/components/motion';
 import { LetterBadge, RingBadge, Row, State, TabHeader, WithDot } from '@/components/lists';
 import { Button } from '@/components/ui';
@@ -36,44 +36,37 @@ type Plan = ReturnType<typeof comingUp>[number];
 const CARD = 252, GAP = 12;
 const urgent = (b: { joined_count: number; headcount_max: number | null }) => b.headcount_max != null && b.headcount_max - b.joined_count <= 2;
 
-/** Your very next plan, big, with a live countdown. */
+/** Your very next plan, a big photo with a live countdown. */
 function NextCard({ p, onPress }: { p: Plan; onPress: () => void }) {
-  const bg = toneFor(p.interest, isDark) ?? colors.surface;
-  const icon = activityIcon(p.interest);
   const cd = useCountdown(p.startsAt, p.endsAt);
+  const cover = useSignedUrl(p.coverPath, 'event-covers');
   return (
-    <PressScale accessibilityRole="button" accessibilityLabel={`${p.title}, ${cd.text}`} onPress={onPress} scaleTo={0.985} style={{ minHeight: 214, borderRadius: 28, backgroundColor: bg, padding: 22, overflow: 'hidden', justifyContent: 'space-between' }}>
-      <LinearGradient colors={isDark ? ['rgba(255,255,255,0.10)', 'rgba(255,255,255,0)'] : ['rgba(255,255,255,0.45)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0 }} end={{ x: 0.9, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
-      {icon ? <View style={{ position: 'absolute', right: -6, top: 4, opacity: 0.9 }}><SvgXml xml={icon} width={118} height={118} color={colors.ink} /></View> : null}
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', backgroundColor: colors.ground, borderRadius: 16, paddingVertical: 6, paddingHorizontal: 12 }}>
-        {cd.soon ? <PulseDot size={8} /> : null}
-        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.ink }}>{cd.text}</Text>
-      </View>
-      <View>
-        <Text numberOfLines={2} style={{ fontFamily: fonts.title, fontSize: 30, lineHeight: 34, color: colors.ink, maxWidth: 270 }}>{p.title}</Text>
-        <Text numberOfLines={1} style={{ fontFamily: fonts.body, fontSize: 14, color: colors.ink, opacity: 0.75, marginTop: 6 }}>{bookingDay(p.startsAt)}, {timeRange(p.startsAt, p.endsAt).split(' to ')[0]}{p.where ? `  ·  ${p.where}` : ''}</Text>
-      </View>
-    </PressScale>
+    <PhotoCard uri={cover} photoPath={p.photoPath} activity={p.interest} height={300} radius={28} onPress={onPress} label={`${p.title}, ${cd.text}`}
+      top={<View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', backgroundColor: 'rgba(250,248,244,0.94)', borderRadius: 16, paddingVertical: 6, paddingHorizontal: 12 }}>
+        {cd.soon ? <PulseDot size={8} color="#1b1a18" /> : null}
+        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: '#1b1a18' }}>{cd.text}</Text>
+      </View>}>
+      <Text numberOfLines={2} style={{ fontFamily: fonts.title, fontSize: 32, lineHeight: 36, color: '#faf8f4' }}>{p.title}</Text>
+      <Text numberOfLines={1} style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: 'rgba(250,248,244,0.9)', marginTop: 6 }}>{bookingDay(p.startsAt)}, {timeRange(p.startsAt, p.endsAt).split(' to ')[0]}{p.where ? `  ·  ${p.where}` : ''}</Text>
+    </PhotoCard>
   );
 }
 
 /** A further plan in the swipe row: the card in the middle grows a little, the ones at the edges recede. */
 function PlanCard({ p, i, x, onPress }: { p: Plan; i: number; x: SharedValue<number>; onPress: () => void }) {
-  const bg = toneFor(p.interest, isDark) ?? colors.surface;
-  const icon = activityIcon(p.interest);
+  const cover = useSignedUrl(p.coverPath, 'event-covers');
   const a = useAnimatedStyle(() => {
     const d = Math.abs(x.value - i * (CARD + GAP)) / (CARD + GAP);
     return { transform: [{ scale: interpolate(d, [0, 1], [1, 0.94], Extrapolation.CLAMP) }], opacity: interpolate(d, [0, 1], [1, 0.7], Extrapolation.CLAMP) };
   });
   return (
     <Animated.View style={[{ width: CARD, marginRight: GAP }, a]}>
-      <PressScale accessibilityRole="button" onPress={onPress} style={{ minHeight: 168, borderRadius: 24, backgroundColor: bg, padding: 18, overflow: 'hidden' }}>
-        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.6, textTransform: 'uppercase', color: colors.ink, opacity: 0.65 }}>{bookingDay(p.startsAt)}, {timeRange(p.startsAt, p.endsAt).split(' to ')[0]}</Text>
-        <Text numberOfLines={2} style={{ fontFamily: fonts.title, fontSize: 23, lineHeight: 27, color: colors.ink, marginTop: 6, maxWidth: 170 }}>{p.title}</Text>
-        {p.where ? <Text numberOfLines={1} style={{ fontFamily: fonts.body, fontSize: 13.5, color: colors.ink, opacity: 0.75, marginTop: 6, maxWidth: 190 }}>{p.where}</Text> : null}
-        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.ink, marginTop: 14 }}>{p.note}</Text>
-        {icon ? <View style={{ position: 'absolute', right: -14, bottom: -16, opacity: 0.9 }}><SvgXml xml={icon} width={104} height={104} color={colors.ink} /></View> : null}
-      </PressScale>
+      <PhotoCard uri={cover} photoPath={p.photoPath} activity={p.interest} height={210} radius={24} onPress={onPress} label={p.title}
+        top={<Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.4, textTransform: 'uppercase', color: '#faf8f4' }}>{bookingDay(p.startsAt)}, {timeRange(p.startsAt, p.endsAt).split(' to ')[0]}</Text>}>
+        <Text numberOfLines={2} style={{ fontFamily: fonts.title, fontSize: 22, lineHeight: 26, color: '#faf8f4' }}>{p.title}</Text>
+        {p.where ? <Text numberOfLines={1} style={{ fontFamily: fonts.body, fontSize: 13, color: 'rgba(250,248,244,0.88)', marginTop: 4 }}>{p.where}</Text> : null}
+        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 12.5, color: 'rgba(250,248,244,0.85)', marginTop: 4 }}>{p.note}</Text>
+      </PhotoCard>
     </Animated.View>
   );
 }
@@ -90,24 +83,17 @@ function HomeSkeleton() {
   );
 }
 
-function FeaturedEvent({ e, onPress }: { e: { id: string; title: string; cover_path: string | null; interest_name: string | null; starts_at: string; venue_name: string | null; area: string | null; price_inr: number }; onPress: () => void }) {
+function FeaturedEvent({ e, onPress }: { e: { id: string; title: string; cover_path: string | null; photo_path?: string | null; interest_name: string | null; starts_at: string; venue_name: string | null; area: string | null; price_inr: number }; onPress: () => void }) {
   const cover = useSignedUrl(e.cover_path, 'event-covers');
   return (
-    <PressScale accessibilityRole="button" onPress={onPress} scaleTo={0.985}>
-      <View>
-        <Cover uri={cover} activity={e.interest_name} height={170} />
-        <View style={{ position: 'absolute', left: 14, top: 14, backgroundColor: colors.ground, borderRadius: 14, paddingVertical: 6, paddingHorizontal: 12 }}>
-          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.ink }}>{bookingDay(e.starts_at)}</Text>
-        </View>
-      </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 12 }}>
-        <View style={{ flex: 1, paddingRight: 10 }}>
-          <Text style={{ fontFamily: fonts.title, fontSize: 24, color: colors.ink }}>{e.title}</Text>
-          <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 2 }}>{[e.venue_name, e.area].filter(Boolean).join(', ')}</Text>
-        </View>
-        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 12.5, color: colors.ink, borderWidth: 1, borderColor: colors.line, borderRadius: 13, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden' }}>{e.price_inr > 0 ? `from ${priceText(e.price_inr)}` : 'Free'}</Text>
-      </View>
-    </PressScale>
+    <PhotoCard uri={cover} photoPath={e.photo_path} activity={e.interest_name} height={260} radius={26} onPress={onPress} label={e.title}
+      top={<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{ backgroundColor: 'rgba(250,248,244,0.94)', borderRadius: 14, paddingHorizontal: 12, height: 28, justifyContent: 'center' }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 12.5, color: '#1b1a18' }}>{bookingDay(e.starts_at)}</Text></View>
+        <View style={{ backgroundColor: 'rgba(27,26,24,0.85)', borderRadius: 14, paddingHorizontal: 12, height: 28, justifyContent: 'center' }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 12.5, color: '#faf8f4' }}>{e.price_inr > 0 ? `from ${priceText(e.price_inr)}` : 'Free'}</Text></View>
+      </View>}>
+      <Text numberOfLines={2} style={{ fontFamily: fonts.title, fontSize: 28, lineHeight: 32, color: '#faf8f4' }}>{e.title}</Text>
+      <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: 'rgba(250,248,244,0.9)', marginTop: 4 }}>{[e.venue_name, e.area].filter(Boolean).join(', ')}</Text>
+    </PhotoCard>
   );
 }
 
@@ -193,9 +179,13 @@ function HomeInner() {
         {soon.length ? (<>
           <Heading title="Starting soon" action="See all" onAction={() => r.navigate('/bookings' as never)} />
           {soon.map((b, i) => (
-            <Enter key={b.id} index={3 + i}><Row left={<LetterBadge name={b.title} activity={b.interest_name} size={52} />} title={b.title} subtitle={`${bookingDay(b.starts_at)}, ${timeRange(b.starts_at, b.ends_at).split(' to ')[0]}${b.area ? `. ${b.area}` : ''}`}
-              right={spots(b).left ? <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: urgent(b) ? colors.ink : colors.line, borderRadius: 13, paddingHorizontal: 10, paddingVertical: 4 }}>{urgent(b) ? <PulseDot size={6} /> : null}<Text style={{ fontFamily: fonts.bodySemi, fontSize: 12, color: colors.ink }}>{spots(b).left}</Text></View> : undefined}
-              onPress={() => r.push({ pathname: '/booking/[id]', params: { id: b.id } })} /></Enter>
+            <Enter key={b.id} index={3 + i} style={{ marginBottom: 14 }}>
+              <PhotoCard photoPath={b.photo_path} activity={b.interest_name} height={200} radius={24} label={b.title} onPress={() => r.push({ pathname: '/booking/[id]', params: { id: b.id } })}
+                top={spots(b).left ? <View style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(250,248,244,0.94)', borderRadius: 14, paddingHorizontal: 11, height: 28 }}>{urgent(b) ? <PulseDot size={6} color="#1b1a18" /> : null}<Text style={{ fontFamily: fonts.bodySemi, fontSize: 12.5, color: '#1b1a18' }}>{spots(b).left}</Text></View> : null}>
+                <Text numberOfLines={2} style={{ fontFamily: fonts.title, fontSize: 24, lineHeight: 28, color: '#faf8f4' }}>{b.title}</Text>
+                <Text numberOfLines={1} style={{ fontFamily: fonts.bodyMedium, fontSize: 13.5, color: 'rgba(250,248,244,0.9)', marginTop: 4 }}>{bookingDay(b.starts_at)}, {timeRange(b.starts_at, b.ends_at).split(' to ')[0]}{b.area ? `  ·  ${b.area}` : ''}</Text>
+              </PhotoCard>
+            </Enter>
           ))}
         </>) : null}
 
