@@ -18,6 +18,7 @@ import { friendly } from '@/lib/messages';
 import { useLoad } from '@/lib/useLoad';
 import { Info } from '@/components/Info';
 import { AreaPicker } from '@/components/AreaPicker';
+import { PhotoCard } from '@/components/PhotoCard';
 
 export default function NewBooking() {
   const r = useRouter();
@@ -44,6 +45,9 @@ export default function NewBooking() {
   const [men, setMen] = useState(2);
   const [women, setWomen] = useState(2);
   const [minScoreT, setMinScoreT] = useState('');
+  const [photos, setPhotos] = useState<{ id: string; path: string }[]>([]);
+  const [photoI, setPhotoI] = useState(0);
+  const [shuffled, setShuffled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -56,7 +60,8 @@ export default function NewBooking() {
   const end = start ? new Date(new Date(start).getTime() + dur * 60000).toISOString() : null;
   const startErr = startError(start, new Date(), win.min, win.max);
   const chooseActivity = (a: { id: number; name: string }) => {
-    setInterest(a); setPick(false);
+    setInterest(a); setPick(false); setPhotoI(0); setShuffled(false);
+    void api.interestPhotos(a.id).then(setPhotos).catch(() => setPhotos([]));
     void api.bookingMaxDuration(a.id).then((m) => { setMaxDur(m); setDur((d) => clampDuration(d, m)); });
     void api.bookingWindow(a.id).then(setWin);
     void api.bookingLimits(a.id).then((l) => { setLimits(l); setCloseH(l.close_hours); setPeople((p) => Math.min(p, l.max_people)); setMen(0); setWomen(0); });
@@ -78,6 +83,7 @@ export default function NewBooking() {
         startsAt: start, endsAt: end, headcountMax: headcount, maleSlots: mixOn ? men : null, femaleSlots: mixOn ? women : null,
         minScore, ageMin, ageMax,
       });
+      if (shuffled && photos[photoI]) await api.setBookingPhoto(id, photos[photoI].id).catch(() => {});
       if (limits && closeH != null && closeH > limits.close_hours) await api.setBookingCloseHours(id, closeH).catch(() => {});
       r.replace({ pathname: '/booking/[id]', params: { id } });
     } catch (e) { setErr(friendly(e)); } finally { setBusy(false); }
@@ -90,6 +96,13 @@ export default function NewBooking() {
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
         {label('Activity')}
         <Button label={interest?.name ?? 'Choose an activity'} variant="secondary" onPress={() => setPick(true)} />
+        {interest && photos.length ? (
+          <View style={{ marginTop: 14 }}>
+            <PhotoCard photoPath={photos[photoI % photos.length].path} activity={interest.name} height={170} radius={22} />
+            <Pressable accessibilityRole="button" onPress={() => { setPhotoI((i) => (i + 1) % photos.length); setShuffled(true); }} style={{ alignSelf: 'flex-start', marginTop: 8, paddingVertical: 8 }}>
+              <Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink, textDecorationLine: 'underline' }}>Try another photo</Text>
+            </Pressable>
+          </View>) : null}
         <TextField label="Title" value={title} onChangeText={setTitle} maxLength={80} />
 
         {label('Date')}

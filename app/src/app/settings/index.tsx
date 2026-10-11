@@ -3,7 +3,8 @@ import { Linking, ScrollView, Switch, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Bar } from '@/components/Bar';
 import { Icon } from '@/components/Icon';
-import { Row, SectionLabel, State } from '@/components/lists';
+import { Row, SectionLabel, Segmented, State } from '@/components/lists';
+import { setPlayfulness, usePlayfulness } from '@/lib/playful';
 import { Body } from '@/components/ui';
 import { colors, fonts } from '@/theme';
 import { SITE_URL } from '@/lib/config';
@@ -19,6 +20,7 @@ export default function Settings() {
   const r = useRouter();
   const city = useCity();
   const { signOut } = useAuth();
+  const feel = usePlayfulness();
   const [err, setErr] = useState<string | null>(null);
   const { data, error, loading, reload, setData } = useLoad(async () => {
     const [prefs, own, blocked] = await Promise.all([api.notificationPrefs(), api.ownRow(), api.blocked().catch(() => [])]);
@@ -44,6 +46,9 @@ export default function Settings() {
           <Row title="Based in" meta={city.home?.home_name ?? ''} right={<Chev />} onPress={() => r.push('/settings/city')} />
           <Row title="Interests" meta={`${data.interests} of 5`} right={<Chev />} onPress={() => r.push('/settings/interests')} />
           <Row title="Password" right={<Chev />} onPress={() => r.push('/settings/password')} />
+
+          <SectionLabel info="Calm turns off buzzes and entrance animations. Full adds a little extra.">Feel</SectionLabel>
+          <Segmented value={feel} onChange={setPlayfulness} options={[{ value: 'calm', label: 'Calm' }, { value: 'playful', label: 'Playful' }, { value: 'full', label: 'Full' }]} />
 
           <SectionLabel>Privacy</SectionLabel>
           <Row title="What others see on your profile" right={<Chev />} onPress={() => r.push('/settings/privacy')} />

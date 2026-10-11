@@ -354,3 +354,10 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Built in the app: full-photo booking and event cards, photo heroes on booking and event pages, hold-to-confirm (join, reserve, waitlist, pay with a "Pay ₹X?" step, post a booking, open a channel, submit the application), History "By activity" view.
 - Still on the canvas only: welcome photo columns, setup finale, fun interludes, playfulness dial, scenes, reliability simulator, swipe rows, tilting ticket.
 - Idea to discuss: a "Nearby" feature (what is around me now). Not designed yet.
+
+## Feel, photos and small touches (Oct 2026)
+- Settings > Feel: Calm (no buzzes, no entrance animations), Playful (default), Full. Stored on the phone.
+- Hosting a booking shows the automatic photo with "Try another photo" (picks from the activity's pool).
+- Profile has a photo banner from the member's first activity.
+- Booking lists show a dry one-line aside after every third card.
+- Activity rows swipe to mark read. The event ticket tilts as you drag it.

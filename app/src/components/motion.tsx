@@ -1,16 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { tap } from '@/lib/haptic';
+import { usePlayfulness } from '@/lib/playful';
 import { AccessibilityInfo, Animated, Easing, GestureResponderEvent, Pressable, PressableProps, StyleProp, ViewStyle } from 'react-native';
 
 /** True when the phone is set to reduce motion: animations then jump straight to their end state. */
 export function useReduceMotion() {
   const [reduce, setReduce] = useState(false);
+  const calm = usePlayfulness() === 'calm';
   useEffect(() => {
     let live = true;
     AccessibilityInfo.isReduceMotionEnabled().then((v) => live && setReduce(v)).catch(() => {});
     return () => { live = false; };
   }, []);
-  return reduce;
+  return reduce || calm;
 }
 
 /** Fades and slides its children up once when they first appear. */

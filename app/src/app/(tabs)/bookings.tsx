@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
 import { Buckets } from '@/components/Buckets';
 import { PhotoCard } from '@/components/PhotoCard';
+import { Interlude } from '@/components/Interlude';
 import { FilterBar, Segmented, SectionLabel, State, TabHeader } from '@/components/lists';
 import { Screen } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
@@ -69,7 +70,11 @@ function BookingsInner() {
             {groupByDay(items).map((g) => (
               <View key={g.day}>
                 <SectionLabel>{g.day}</SectionLabel>
-                {g.rows.map((b) => <Card key={b.id} b={b} onPress={() => open(b.id)} note={b.is_host ? 'Hosting' : b.my_status === 'joined' ? "You're in" : null} />)}
+                {g.rows.map((b, i) => (
+                  <View key={b.id}>
+                    <Card b={b} onPress={() => open(b.id)} note={b.is_host ? 'Hosting' : b.my_status === 'joined' ? "You're in" : null} />
+                    {i % 3 === 2 && i < g.rows.length - 1 ? <Interlude n={i + g.day.length} /> : null}
+                  </View>))}
               </View>
             ))}
         </>)} />

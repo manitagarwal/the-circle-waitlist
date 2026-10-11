@@ -4,6 +4,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { Bar } from '@/components/Bar';
 import { HoldButton } from '@/components/HoldButton';
 import { PhotoCard } from '@/components/PhotoCard';
+import { TiltCard } from '@/components/TiltCard';
 import { PersonAvatar } from '@/components/Avatar';
 import { SectionLabel, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice, TextField } from '@/components/ui';
@@ -109,12 +110,12 @@ export default function EventDetail() {
         {roster.length > 24 ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>and {roster.length - 24} more</Text> : null}</>) : null}
 
       {ticket ? (
-        <View style={{ marginTop: 20, alignItems: 'center', padding: 20, backgroundColor: colors.surface, borderRadius: 24 }}>
-          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>YOUR TICKET</Text>
+        <TiltCard style={{ marginTop: 20, alignItems: 'center', padding: 20, backgroundColor: colors.surface, borderRadius: 24 }}>
+          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>YOUR TICKET · DRAG TO TILT</Text>
           <View style={{ marginTop: 10 }}><TicketQr code={ticket} /></View>
           <Text selectable style={{ fontFamily: fonts.display, fontSize: 32, letterSpacing: 5, color: colors.ink, marginTop: 12 }}>{ticket}</Text>
           <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 4, textAlign: 'center' }}>Show this at the door. Doors open at {clock(new Date(e.starts_at))}.</Text>
-        </View>) : null}
+        </TiltCard>) : null}
 
       {err ? <Notice tone="error">{err}</Notice> : null}
       {note ? <Notice tone="plain">{note}</Notice> : null}

@@ -15,6 +15,7 @@ import { PRIVACY_FIELDS } from '@/lib/privacy';
 import { toneFor } from '@/lib/tones';
 import { useLoad } from '@/lib/useLoad';
 import { useCity } from '@/lib/city';
+import { PhotoCard } from '@/components/PhotoCard';
 
 const month = (iso: string) => new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' }).format(new Date(iso));
 
@@ -38,9 +39,9 @@ export default function Profile() {
   const city = useCity();
   const { data, error, loading, refreshing, pull, reload } = useLoad(async () => {
     const me = member!.id;
-    const [profile, score, code, friends, channels, privacy] = await Promise.all([api.profile(me), api.myScore().catch(() => null), api.referralCode().catch(() => null), api.friends(me).catch(() => []), api.channels().catch(() => []), api.myPrivacy().catch(() => ({}))]);
+    const [profile, score, code, friends, channels, privacy, banner] = await Promise.all([api.profile(me), api.myScore().catch(() => null), api.referralCode().catch(() => null), api.friends(me).catch(() => []), api.channels().catch(() => []), api.myPrivacy().catch(() => ({})), api.profile(me).then((x) => (x?.interests?.[0] ? api.interestBanner(x.interests[0]) : null)).catch(() => null)]);
     // Lobbies you join yourself are not counted here; booking chats are temporary, so only channels you chose to be in
-    return { profile, score, code, friends: friends.length, channels: channels.filter((c) => c.is_member && c.kind === 'public').length, hidden: Object.values(privacy).filter(Boolean).length };
+    return { banner, profile, score, code, friends: friends.length, channels: channels.filter((c) => c.is_member && c.kind === 'public').length, hidden: Object.values(privacy).filter(Boolean).length };
   });
   const p = data?.profile;
   const photo = useSignedUrl(p?.photo_path);
@@ -55,7 +56,8 @@ export default function Profile() {
       <State loading={loading} error={error} onRetry={reload} />
       {p ? (<>
         <FadeUp distance={30}>
-          <View style={{ alignItems: 'center', marginTop: 10 }}>
+          {data!.banner ? <PhotoCard photoPath={data!.banner} activity={p.interests?.[0]} height={170} radius={26} /> : null}
+          <View style={{ alignItems: 'center', marginTop: data!.banner ? -75 : 10 }}>
             <View style={{ padding: 6, borderRadius: 90, backgroundColor: ring }}><ArchPhoto uri={photo} avatarId={p.avatar_id} size={150} /></View>
           </View>
         </FadeUp>

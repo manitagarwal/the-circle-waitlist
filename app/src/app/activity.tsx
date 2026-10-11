@@ -3,6 +3,7 @@ import { RemoteImage } from '@/components/RemoteImage';
 import { FadeUp } from '@/components/motion';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { Screen, Button } from '@/components/ui';
 import { State, PageHeader } from '@/components/lists';
 import { colors, fonts } from '@/theme';
@@ -42,8 +43,11 @@ export default function Activity() {
         };
         return (
           <FadeUp key={n.id} delay={Math.min(idx, 8) * 60}>
+          <ReanimatedSwipeable enabled={n.is_unread} overshootRight={false} rightThreshold={60}
+            renderRightActions={() => <View style={{ width: 96, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.ink }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: colors.inkOn }}>Mark read</Text></View>}
+            onSwipeableOpen={() => { void api.markRead(n.id).then(reload).catch(() => {}); }}>
           <Pressable accessibilityRole={v.go ? 'button' : undefined} disabled={!v.go && !n.is_unread} onPress={open}
-            style={{ flexDirection: 'row', gap: 12, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: colors.line }}>
+            style={{ flexDirection: 'row', gap: 12, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: colors.line, backgroundColor: colors.ground }}>
             <View style={{ width: 10, paddingTop: 7 }}>{n.is_unread ? <View accessibilityLabel="Unread" style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.clay }} /> : null}</View>
             <View style={{ flex: 1 }}>
               {v.from ? <Text style={{ fontFamily: fonts.bodySemi, fontSize: 12, color: colors.goldText, marginBottom: 2 }}>{v.from}</Text> : null}
@@ -59,6 +63,7 @@ export default function Activity() {
             </View>
             <Text style={{ fontFamily: fonts.body, fontSize: 12, color: colors.faint }}>{ago(n.created_at)}</Text>
           </Pressable>
+          </ReanimatedSwipeable>
           </FadeUp>
         );
       })}
