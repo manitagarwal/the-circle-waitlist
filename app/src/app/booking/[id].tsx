@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Bar } from '@/components/Bar';
+import { HoldButton } from '@/components/HoldButton';
+import { PhotoCard } from '@/components/PhotoCard';
+import { pickBookingPhoto } from '@/lib/photo';
+import { ReportSheet } from '@/components/ReportSheet';
 import { PersonAvatar } from '@/components/Avatar';
 import { SectionLabel, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice } from '@/components/ui';
 import { colors, fonts, radius } from '@/theme';
-import { api } from '@/lib/auth';
+import { api, useAuth } from '@/lib/auth';
 import { ageRange, bookingDay, freeLeaveUntil, joinCheck, joinClosesAt, spots, startsIn, timeRange } from '@/lib/bookings';
 import { clock } from '@/lib/format';
 import { friendly } from '@/lib/messages';
@@ -28,9 +32,11 @@ function Line({ k, v, note }: { k: string; v: string; note?: string | null }) {
 export default function BookingDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const r = useRouter();
+  const { member } = useAuth();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<'leave' | 'cancel' | null>(null);
+  const [reportPhoto, setReportPhoto] = useState(false);
 
   const { data, error, loading, reload } = useLoad(async () => {
     const booking = await api.booking(id);
@@ -57,9 +63,17 @@ export default function BookingDetail() {
     const qualifies = b.min_score == null || score == null ? null : score >= b.min_score;
     const menWanted = Math.max(0, (b.male_slots ?? 0) - b.male_joined), womenWanted = Math.max(0, (b.female_slots ?? 0) - b.female_joined);
     body = (<>
-      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.2, color: colors.goldText }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}  ·  {b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
-      <Text style={{ fontFamily: fonts.title, fontSize: 32, lineHeight: 39, color: colors.ink, marginTop: 6 }}>{b.title}</Text>
-      <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 6 }}>
+      <PhotoCard photoPath={b.photo_path} uploadPath={b.upload_path} activity={b.interest_name} height={300} radius={28}>
+        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.4, color: 'rgba(250,248,244,0.85)' }}>{(group ? `${group} · ${b.interest_name}` : b.interest_name).toUpperCase()}  ·  {b.kind === 'admin' ? 'HOSTED BY ADMIN' : 'PRIVATE EVENT'}</Text>
+        <Text style={{ fontFamily: fonts.title, fontSize: 32, lineHeight: 38, color: '#faf8f4', marginTop: 6 }}>{b.title}</Text>
+      </PhotoCard>
+      {!b.is_host && b.upload_path ? <Text accessibilityRole="button" onPress={() => setReportPhoto(true)} style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, textDecorationLine: 'underline', paddingVertical: 8, alignSelf: 'flex-start' }}>Report this photo</Text> : null}
+      {b.is_host && new Date(b.ends_at).getTime() > Date.now() ? (
+        <View style={{ flexDirection: 'row', gap: 18, marginTop: 8 }}>
+          <Text accessibilityRole="button" onPress={() => act(async () => { const p = await pickBookingPhoto(); if (!p || !member) return; await api.setBookingUpload(id, await api.uploadBookingPhoto(member.id, p.bytes)); })} style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink, textDecorationLine: 'underline', paddingVertical: 8 }}>Change photo</Text>
+          {b.upload_path ? <Text accessibilityRole="button" onPress={() => act(() => api.setBookingUpload(id, null))} style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.muted, paddingVertical: 8 }}>Use ours</Text> : null}
+        </View>) : null}
+      <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, marginTop: 14 }}>
         Hosted by <Text accessibilityRole="link" onPress={() => r.push({ pathname: '/member/[id]', params: { id: b.host_id } })} style={{ fontFamily: fonts.bodySemi, color: colors.ink, textDecorationLine: 'underline' }}>{b.host_username}</Text>{host ? `. ${host.bookings_hosted} ${host.bookings_hosted === 1 ? 'booking' : 'bookings'} hosted. ${host.member_since ? `Member since ${month(host.member_since)}.` : ''}` : ''}
       </Text>
       {b.status === 'cancelled' ? <Notice tone="error">This booking was cancelled by the host.</Notice> : null}
@@ -97,7 +111,7 @@ export default function BookingDetail() {
           {b.is_host && !over && (b.status === 'open' || b.status === 'full') ? <Button label="Cancel booking" variant="secondary" onPress={() => setConfirm('cancel')} /> : null}
           {!b.is_host && !over ? <Button label="Leave booking" variant="secondary" onPress={() => setConfirm('leave')} /> : null}
         </>) : (
-          <Button label="Join booking" onPress={() => act(() => api.joinBooking(id))} loading={busy} disabled={!check.ok} />
+          <HoldButton label="Hold to join" holdingLabel="Keep holding…" doneLabel="You're in" onComplete={() => act(() => api.joinBooking(id))} loading={busy} disabled={!check.ok} />
         )}
         {!joined && !check.ok && check.reason ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.error, textAlign: 'center' }}>{check.reason}</Text> : null}
       </View>
@@ -110,6 +124,7 @@ export default function BookingDetail() {
     <View style={{ flex: 1, backgroundColor: colors.ground }}>
       <Bar title="Booking" />
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }}>{body}</ScrollView>
+      <ReportSheet member={reportPhoto && b ? { id: b.host_id, username: b.host_username } : null} context={b ? { booking_id: b.id } : undefined} onClose={() => setReportPhoto(false)} />
       <Sheet visible={!!confirm} onClose={() => setConfirm(null)} title={confirm === 'cancel' ? 'Cancel this booking?' : 'Leave this booking?'}>
         <Body style={{ marginBottom: 16 }}>{confirm === 'cancel' ? "Everyone who joined is told. Its chat closes tomorrow." : b && Date.now() > freeLeaveUntil(b.starts_at).getTime() ? 'It starts soon, so leaving now counts against your reliability score.' : 'Leaving now is free. After the cut-off it would count against you.'}</Body>
         <View style={{ gap: 8 }}>

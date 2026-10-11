@@ -280,11 +280,14 @@ renderers.reports = async (main, sub) => {
   const which = sub[0] || 'open';
   const all = await rows(sb.from('admin_reports_queue').select('*').order('created_at', { ascending: false }).limit(300));
   const list = all.filter((r) => (which === 'open' ? r.status === 'open' : r.status !== 'open'));
+  const removePhoto = async (r) => { if (!(await confirmBox('Remove this photo?', 'It disappears from the booking now and the file is deleted. The booking goes back to our photo.', 'Remove photo', true))) return; let path = null; if (await act(async () => { path = await rpc('admin_clear_booking_photo', { p_booking: r.booking_id }); }, 'Photo removed.')) { if (path) await sb.storage.from('booking-photos').remove([path]).catch(() => {}); refresh(); } };
   const resolve = async (r, outcome, label) => { if (await confirmBox(label + '?', 'Report against @' + r.reported_username + '. This updates their reliability score and may restrict their account.', label, outcome !== 'dismissed')) { if (await act(() => rpc('resolve_report', { p_report: r.id, p_outcome: outcome }), (x) => 'Result: ' + x)) refresh(); } };
   put(main, header('Reports'), tabs([['open', 'Open'], ['done', 'Resolved']], which, (v) => { location.hash = '#/reports/' + v; }),
     list.length ? table(['Against', 'From', 'Category', 'Reason', 'History', 'When', ''], list.map((r) => tr([
       h('div', null, '@' + r.reported_username, ' ', r.is_safety ? badge('safety') : null, h('div', { class: 'faint' }, r.reported_state)),
-      '@' + r.reporter_username, r.category, h('div', { style: 'max-width:280px;white-space:pre-wrap' }, r.reason || ''),
+      '@' + r.reporter_username, r.category, h('div', { style: 'max-width:280px;white-space:pre-wrap' }, r.reason || '',
+        r.booking_photo ? h('div', { style: 'margin-top:8px' }, h('img', { src: SUPABASE_URL + '/storage/v1/object/public/booking-photos/' + r.booking_photo, alt: 'Reported photo', style: 'width:200px;border-radius:12px;display:block' }),
+          h('button', { class: 'small danger', style: 'margin-top:6px', on: { click: () => removePhoto(r) } }, 'Remove photo')) : (r.booking_id ? h('div', { class: 'faint', style: 'margin-top:6px' }, 'About a booking photo (none on it now)') : null)),
       h('div', { class: 'faint' }, r.prior_upheld + ' upheld before · score ' + (r.reported_score == null ? '—' : Number(r.reported_score).toFixed(1))), fmtDate(r.created_at),
       r.status === 'open' ? h('div', { class: 'row' }, h('button', { class: 'small', on: { click: () => resolve(r, 'dismissed', 'Dismiss') } }, 'Dismiss'), h('button', { class: 'small', on: { click: () => resolve(r, 'upheld_minor', 'Uphold (minor)') } }, 'Minor'), h('button', { class: 'small danger', on: { click: () => resolve(r, 'upheld_severe', 'Uphold (severe)') } }, 'Severe')) : badge(r.status.replace('_', ' ')),
     ]))) : h('p', { class: 'muted' }, 'Nothing here.'));

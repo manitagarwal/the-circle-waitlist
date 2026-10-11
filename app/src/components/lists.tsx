@@ -1,3 +1,5 @@
+import { Image } from 'expo-image';
+import { libraryPhotoUrl } from '@/lib/photoUrl';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Easing, Modal, PanResponder, Pressable, ScrollView, Text, View } from 'react-native';
 import Svg, { Path, SvgXml } from 'react-native-svg';
@@ -112,21 +114,22 @@ export const SectionLabel = ({ children, info }: { children: React.ReactNode; in
 );
 
 /** The circle behind an activity's clipart. Without an activity it shows the first letter. */
-export function LetterBadge({ name, size = 56, activity }: { name: string; size?: number; activity?: string | null }) {
+export function LetterBadge({ name, size = 56, activity, photo }: { name: string; size?: number; activity?: string | null; photo?: string | null }) {
   const icon = activityIcon(activity);
+  const uri = libraryPhotoUrl(photo);
   return (
-    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: toneFor(activity, isDark) ?? colors.plate, alignItems: 'center', justifyContent: 'center' }}>
-      {icon ? <SvgXml xml={icon} width={size * 0.58} height={size * 0.58} color={colors.ink} /> : <Text style={{ fontFamily: fonts.title, fontSize: size * 0.42, color: colors.ink }}>{(name[0] ?? '?').toUpperCase()}</Text>}
+    <View style={{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden', backgroundColor: toneFor(activity, isDark) ?? colors.plate, alignItems: 'center', justifyContent: 'center' }}>
+      {uri ? <Image source={{ uri }} style={{ width: size, height: size }} contentFit="cover" transition={250} accessibilityIgnoresInvertColors /> : icon ? <SvgXml xml={icon} width={size * 0.58} height={size * 0.58} color={colors.ink} /> : <Text style={{ fontFamily: fonts.title, fontSize: size * 0.42, color: colors.ink }}>{(name[0] ?? '?').toUpperCase()}</Text>}
     </View>
   );
 }
-export const ArchBadge = ({ name, size = 60, activity }: { name: string; size?: number; activity?: string | null }) => <LetterBadge name={name} size={size} activity={activity} />;
+export const ArchBadge = ({ name, size = 60, activity, photo }: { name: string; size?: number; activity?: string | null; photo?: string | null }) => <LetterBadge name={name} size={size} activity={activity} photo={photo} />;
 
 /** The same circle with a small dot on the corner when something is new. */
-export function RingBadge({ name, unread, size = 60, activity }: { name: string; unread?: boolean; size?: number; activity?: string | null }) {
+export function RingBadge({ name, unread, size = 60, activity, photo }: { name: string; unread?: boolean; size?: number; activity?: string | null; photo?: string | null }) {
   return (
     <View style={{ width: size, height: size }}>
-      <LetterBadge name={name} size={size} activity={activity} />
+      <LetterBadge name={name} size={size} activity={activity} photo={photo} />
       {unread ? <View accessibilityLabel="New messages" style={{ position: 'absolute', top: 1, right: 1, width: 12, height: 12, borderRadius: 6, backgroundColor: colors.ink, borderWidth: 2, borderColor: colors.ground }} /> : null}
     </View>
   );

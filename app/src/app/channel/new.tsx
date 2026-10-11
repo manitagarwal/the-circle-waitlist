@@ -5,6 +5,7 @@ import { ActivityPicker } from '@/components/ActivityPicker';
 import { Bar } from '@/components/Bar';
 import { Chip, Row, Sheet } from '@/components/lists';
 import { Body, Button, Notice, TextField } from '@/components/ui';
+import { HoldButton } from '@/components/HoldButton';
 import { colors, fonts } from '@/theme';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
@@ -83,7 +84,7 @@ export default function NewChannel() {
 
         {mine.data != null ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 24 }}>{mine.data} of 2 channels open. Get one channel to 50 members and you can open a third.</Text> : null}
         {err ? <Notice tone="error">{err}</Notice> : null}
-        <Button label="Create channel" onPress={create} loading={busy} disabled={!ready} style={{ marginTop: 20 }} />
+        <View style={{ marginTop: 20 }}><HoldButton label="Hold to open the doors" doneLabel="Open" onComplete={create} loading={busy} disabled={!ready} /></View>
       </ScrollView>
 
       <ActivityPicker visible={pickActivity} onClose={() => setPickActivity(false)} selectedId={interest?.id} onPick={(a) => { setInterest(a); setPickActivity(false); }} />

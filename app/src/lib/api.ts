@@ -18,7 +18,7 @@ export type Ticket = { id: string; name: string; price_inr: number; left: number
 export type ChannelRow = {
   id: string; kind: 'lobby' | 'public' | 'private' | 'booking' | 'dm'; name: string; photo_path: string | null;
   interest_id: number | null; interest_name: string | null; created_by: string | null; created_at: string;
-  member_count: number; is_member: boolean; my_role: string | null; tags: { type: string; value: string }[]; city_id?: number | null;
+  member_count: number; is_member: boolean; my_role: string | null; tags: { type: string; value: string }[]; city_id?: number | null; library_photo?: string | null;
 };
 export type City = { id: number; name: string; is_live: boolean; sort: number };
 export type Area = { id: number; name: string; place: string | null; sort: number };
@@ -62,7 +62,7 @@ export type OwnRow = {
   lat: number | null; lng: number | null; area: string; field_of_work: string;
 };
 export type EventRow = {
-  id: string; title: string; description: string | null; interest_id: number | null; interest_name: string | null; cover_path: string | null;
+  id: string; title: string; description: string | null; interest_id: number | null; interest_name: string | null; cover_path: string | null; photo_path?: string | null;
   venue_name: string | null; area: string | null; city: string | null; address_text: string | null; starts_at: string; ends_at: string;
   capacity: number | null; price_inr: number; age_min: number | null; age_max: number | null; genders: string[]; cities: string[]; min_score: number | null;
   status: 'published' | 'cancelled'; going_count: number; waitlist_count: number; my_status: 'going' | 'waitlist' | 'cancelled' | 'attended' | 'no_show' | null; my_position: number | null;
@@ -164,6 +164,16 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     channelInvites: () => rpc<ChannelInvite[]>('my_channel_invites'),
     createGroup: (name: string, members: string[]) => rpc<string>('create_group', { p_name: name, p_members: members }),
     addToGroup: (channel: string, members: string[]) => rpc<number>('add_to_group', { p_channel: channel, p_members: members }),
+    interestPhotos: (interestId: number) => rpc<{ id: string; path: string }[]>('interest_photos', { p_interest: interestId }),
+    interestBanner: (name: string) => rpc<string | null>('interest_banner', { p_name: name }),
+    uploadBookingPhoto: async (uid: string, bytes: ArrayBuffer) => {
+      const path = `${uid}/${Date.now()}.jpg`;
+      const { error } = await sb.storage.from('booking-photos').upload(path, bytes, { contentType: 'image/jpeg', upsert: false });
+      if (error) throw error;
+      return path;
+    },
+    setBookingUpload: (booking: string, path: string | null) => rpc<void>('set_booking_upload', { p_booking: booking, p_path: path }),
+    setBookingPhoto: (booking: string, photo: string) => rpc<void>('set_booking_photo', { p_booking: booking, p_photo: photo }),
     joinChannel: (id: string) => rpc<void>('join_channel', { p_channel: id }),
     leaveChannel: (id: string) => rpc<void>('leave_channel', { p_channel: id }),
     closeChannel: (id: string) => rpc<void>('close_channel', { p_channel: id }),

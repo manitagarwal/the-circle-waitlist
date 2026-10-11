@@ -2,7 +2,7 @@ import type { BookingRow } from './bookings.ts';
 import type { EventRow } from './api.ts';
 
 export type HistoryItem = {
-  key: string; kind: 'booking' | 'event'; id: string; title: string; when: string; place: string | null; outcome: string;
+  key: string; kind: 'booking' | 'event'; id: string; title: string; when: string; place: string | null; outcome: string; activity: string | null;
 };
 
 const bookingOutcome = (b: BookingRow): string =>
@@ -17,13 +17,20 @@ export function buildHistory(bookings: BookingRow[], events: EventRow[], now = D
   for (const b of bookings) {
     if (new Date(b.ends_at).getTime() >= now) continue;
     if (!b.is_host && !b.my_status) continue;
-    out.push({ key: `b${b.id}`, kind: 'booking', id: b.id, title: b.title, when: b.starts_at, place: b.area ?? b.venue_name, outcome: bookingOutcome(b) });
+    out.push({ key: `b${b.id}`, kind: 'booking', id: b.id, title: b.title, when: b.starts_at, place: b.area ?? b.venue_name, outcome: bookingOutcome(b), activity: b.interest_name ?? null });
   }
   for (const e of events) {
     if (!e.my_status || new Date(e.ends_at ?? e.starts_at).getTime() >= now) continue;
-    out.push({ key: `e${e.id}`, kind: 'event', id: e.id, title: e.title, when: e.starts_at, place: e.area ?? e.venue_name, outcome: eventOutcome(e.my_status) });
+    out.push({ key: `e${e.id}`, kind: 'event', id: e.id, title: e.title, when: e.starts_at, place: e.area ?? e.venue_name, outcome: eventOutcome(e.my_status), activity: e.interest_name ?? null });
   }
   return out.sort((a, b) => new Date(b.when).getTime() - new Date(a.when).getTime());
 }
 
 export const monthKey = (iso: string) => new Date(iso).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+
+/** How many past things per activity, most first. Things with no activity are left out. */
+export function byActivity(items: HistoryItem[]): { activity: string; n: number }[] {
+  const m = new Map<string, number>();
+  for (const h of items) if (h.activity) m.set(h.activity, (m.get(h.activity) ?? 0) + 1);
+  return [...m].map(([activity, n]) => ({ activity, n })).sort((a, b) => b.n - a.n || a.activity.localeCompare(b.activity));
+}

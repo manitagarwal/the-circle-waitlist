@@ -137,7 +137,7 @@ export default function Chat() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <Bar title={channel?.name ?? 'Channel'} subtitle={subtitle} left={channel ? <ArchBadge name={channel.name} activity={channel.interest_name} size={36} /> : undefined}
+      <Bar title={channel?.name ?? 'Channel'} subtitle={subtitle} left={channel ? <ArchBadge name={channel.name} activity={channel.interest_name} photo={channel.library_photo} size={36} /> : undefined}
         onTitlePress={channel && channel.kind !== 'lobby' ? () => r.push({ pathname: '/channel/settings/[id]', params: { id } }) : undefined} />
       {channel && activityIcon(channel.interest_name) ? (
         <View pointerEvents="none" style={{ position: 'absolute', right: -70, bottom: 110, opacity: 0.05 }}>

@@ -343,3 +343,23 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Booking and event cards use a full-bleed photo with a tone-coloured fallback. Each booking has one saved photo, the same for every viewer, picked automatically from our own library (least-used for the activity). The host can change it from the activity's pool.
 - The library lives in our storage (admin portal > Photos): upload, import from links, tag to activities or whole categories, retire. Starter set of free-to-use photos included.
 - App display is not built yet; the design is being settled on the canvas.
+
+## Device navigation (Oct 2026)
+- The app follows the phone's own navigation setting, whether gesture navigation or the three buttons. We do not build a custom back gesture.
+- Every screen uses normal stack navigation and leaves the system back enabled. Every pushed screen also shows a visible back control, so button users are never stuck.
+- Screens respect the safe areas, so bottom bars and hold buttons are never under the gesture bar or nav buttons.
+- Our own swipes (swipe-to-dismiss rows, swipe cards) must not start at the very left edge, which belongs to the system back gesture.
+
+## Design build status (Oct 2026)
+- Built in the app: full-photo booking and event cards, photo heroes on booking and event pages, hold-to-confirm (join, reserve, waitlist, pay with a "Pay ₹X?" step, post a booking, open a channel, submit the application), History "By activity" view.
+- Still on the canvas only: welcome photo columns, setup finale, fun interludes, playfulness dial, scenes, reliability simulator, swipe rows, tilting ticket.
+- Idea to discuss: a "Nearby" feature (what is around me now). Not designed yet.
+
+## Feel, photos and small touches (Oct 2026)
+- Settings > Feel: Calm (no buzzes, no entrance animations), Playful (default), Full. Stored on the phone.
+- Hosting a booking shows the automatic photo with "Try another photo" (picks from the activity's pool).
+- Profile has a photo banner from the member's first activity.
+- Booking lists show a dry one-line aside after every third card.
+- Activity rows swipe to mark read. The event ticket tilts as you drag it.
+- Hosts can upload their own photo for a booking (when creating it, or later with "Change photo" until it ends). "Use ours" goes back to the automatic one. Admin can remove a photo from storage if needed.
+- "Report this photo" on someone else's booking that has an uploaded photo. It goes to the normal Reports queue. In Admin > Reports the photo is shown with a "Remove photo" button that puts the booking back on our photo and deletes the file.

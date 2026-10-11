@@ -7,8 +7,9 @@ import { ChipRow } from '@/components/ChipRow';
 import { Chip } from '@/components/lists';
 import { DatePickerSheet, TimePickerSheet } from '@/components/Pickers';
 import { Body, Button, Notice, Stepper, TextField } from '@/components/ui';
+import { HoldButton } from '@/components/HoldButton';
 import { colors, fonts } from '@/theme';
-import { api } from '@/lib/auth';
+import { api, useAuth } from '@/lib/auth';
 import { closeLabel } from '@/lib/bookings';
 import type { BookingLimits } from '@/lib/api';
 import { clampDuration, type Clock12, DURATION_STEP, durationLabel, istToIso, MIN_DURATION, startError, todayIST, type YMD, ymdLabel, clockLabel } from '@/lib/schedule';
@@ -17,9 +18,13 @@ import { friendly } from '@/lib/messages';
 import { useLoad } from '@/lib/useLoad';
 import { Info } from '@/components/Info';
 import { AreaPicker } from '@/components/AreaPicker';
+import { PhotoCard } from '@/components/PhotoCard';
+import { pickBookingPhoto } from '@/lib/photo';
 
 export default function NewBooking() {
   const r = useRouter();
+  const { member } = useAuth();
+  const [own, setOwn] = useState<{ uri: string; bytes: ArrayBuffer } | null>(null);
   const [interest, setInterest] = useState<{ id: number; name: string } | null>(null);
   const [pick, setPick] = useState(false);
   const [title, setTitle] = useState('');
@@ -43,6 +48,9 @@ export default function NewBooking() {
   const [men, setMen] = useState(2);
   const [women, setWomen] = useState(2);
   const [minScoreT, setMinScoreT] = useState('');
+  const [photos, setPhotos] = useState<{ id: string; path: string }[]>([]);
+  const [photoI, setPhotoI] = useState(0);
+  const [shuffled, setShuffled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -55,7 +63,8 @@ export default function NewBooking() {
   const end = start ? new Date(new Date(start).getTime() + dur * 60000).toISOString() : null;
   const startErr = startError(start, new Date(), win.min, win.max);
   const chooseActivity = (a: { id: number; name: string }) => {
-    setInterest(a); setPick(false);
+    setInterest(a); setPick(false); setPhotoI(0); setShuffled(false);
+    void api.interestPhotos(a.id).then(setPhotos).catch(() => setPhotos([]));
     void api.bookingMaxDuration(a.id).then((m) => { setMaxDur(m); setDur((d) => clampDuration(d, m)); });
     void api.bookingWindow(a.id).then(setWin);
     void api.bookingLimits(a.id).then((l) => { setLimits(l); setCloseH(l.close_hours); setPeople((p) => Math.min(p, l.max_people)); setMen(0); setWomen(0); });
@@ -77,6 +86,8 @@ export default function NewBooking() {
         startsAt: start, endsAt: end, headcountMax: headcount, maleSlots: mixOn ? men : null, femaleSlots: mixOn ? women : null,
         minScore, ageMin, ageMax,
       });
+      if (own && member) { const p = await api.uploadBookingPhoto(member.id, own.bytes).catch(() => null); if (p) await api.setBookingUpload(id, p).catch(() => {}); }
+      else if (shuffled && photos[photoI]) await api.setBookingPhoto(id, photos[photoI].id).catch(() => {});
       if (limits && closeH != null && closeH > limits.close_hours) await api.setBookingCloseHours(id, closeH).catch(() => {});
       r.replace({ pathname: '/booking/[id]', params: { id } });
     } catch (e) { setErr(friendly(e)); } finally { setBusy(false); }
@@ -89,6 +100,17 @@ export default function NewBooking() {
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
         {label('Activity')}
         <Button label={interest?.name ?? 'Choose an activity'} variant="secondary" onPress={() => setPick(true)} />
+        {interest && (photos.length || own) ? (
+          <View style={{ marginTop: 14 }}>
+            <PhotoCard uri={own?.uri} photoPath={photos.length ? photos[photoI % photos.length].path : null} activity={interest.name} height={170} radius={22} />
+            <View style={{ flexDirection: 'row', gap: 18, marginTop: 8 }}>
+              {!own && photos.length ? <Pressable accessibilityRole="button" onPress={() => { setPhotoI((i) => (i + 1) % photos.length); setShuffled(true); }} style={{ paddingVertical: 8 }}>
+                <Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink, textDecorationLine: 'underline' }}>Try another photo</Text></Pressable> : null}
+              <Pressable accessibilityRole="button" onPress={async () => { try { const p = await pickBookingPhoto(); if (p) setOwn(p); } catch (e) { setErr(friendly(e)); } }} style={{ paddingVertical: 8 }}>
+                <Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink, textDecorationLine: 'underline' }}>{own ? 'Choose a different upload' : 'Upload your own'}</Text></Pressable>
+              {own ? <Pressable accessibilityRole="button" onPress={() => setOwn(null)} style={{ paddingVertical: 8 }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.muted }}>Use ours</Text></Pressable> : null}
+            </View>
+          </View>) : null}
         <TextField label="Title" value={title} onChangeText={setTitle} maxLength={80} />
 
         {label('Date')}
@@ -142,7 +164,7 @@ export default function NewBooking() {
 
         {mine.data ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 20 }}>{mine.data.open} of 2 bookings open. {Math.max(0, 3 - mine.data.today)} of 3 left to post today.</Text> : null}
         {err ? <Notice tone="error">{err}</Notice> : null}
-        <Button label="Post booking" onPress={post} loading={busy} disabled={!ready} style={{ marginTop: 16 }} />
+        <View style={{ marginTop: 16 }}><HoldButton label="Hold to post" doneLabel="Posted" onComplete={post} loading={busy} disabled={!ready} /></View>
       </ScrollView>
 
       <DatePickerSheet visible={pickDate} value={date} onClose={() => setPickDate(false)} onPick={setDate} />

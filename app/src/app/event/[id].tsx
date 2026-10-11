@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Bar } from '@/components/Bar';
-import { Cover } from '@/components/Cover';
+import { HoldButton } from '@/components/HoldButton';
+import { PhotoCard } from '@/components/PhotoCard';
+import { TiltCard } from '@/components/TiltCard';
 import { PersonAvatar } from '@/components/Avatar';
 import { SectionLabel, Sheet, State } from '@/components/lists';
 import { Body, Button, Notice, TextField } from '@/components/ui';
@@ -29,6 +31,7 @@ export default function EventDetail() {
   const [promo, setPromo] = useState('');
   const [promoOpen, setPromoOpen] = useState(false);
   const [note, setNote] = useState<string | null>(null);
+  const [payFor, setPayFor] = useState<string | null>(null);
 
   const { data, error, loading, reload } = useLoad(async () => {
     const event = await api.event(id);
@@ -74,9 +77,10 @@ export default function EventDetail() {
     const why = e.my_status ? null : eventFit(e, me);
     const late = new Date(e.starts_at).getTime() - Date.now() < 3 * 3600000;
     body = (<>
-      <View style={{ marginBottom: 18 }}><Cover uri={cover} activity={e.interest_name} height={220} /></View>
-      <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>{[group, e.interest_name].filter(Boolean).join(' · ').toUpperCase() || 'THE SEMI CIRCLE'}</Text>
-      <Text style={{ fontFamily: fonts.display, fontSize: 37, lineHeight: 41, color: colors.ink, marginTop: 6 }}>{e.title}</Text>
+      <PhotoCard uri={cover} photoPath={e.photo_path} activity={e.interest_name} height={320} radius={28}>
+        <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: 'rgba(250,248,244,0.85)' }}>{[group, e.interest_name].filter(Boolean).join(' · ').toUpperCase() || 'THE SEMI CIRCLE'}</Text>
+        <Text style={{ fontFamily: fonts.display, fontSize: 37, lineHeight: 41, color: '#faf8f4', marginTop: 6 }}>{e.title}</Text>
+      </PhotoCard>
       {e.status === 'cancelled' ? <Notice tone="error">This event was cancelled.</Notice> : null}
 
       <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: colors.line }}>
@@ -106,18 +110,18 @@ export default function EventDetail() {
         {roster.length > 24 ? <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.faint, marginTop: 6 }}>and {roster.length - 24} more</Text> : null}</>) : null}
 
       {ticket ? (
-        <View style={{ marginTop: 20, alignItems: 'center', padding: 20, backgroundColor: colors.surface, borderRadius: 24 }}>
-          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>YOUR TICKET</Text>
+        <TiltCard style={{ marginTop: 20, alignItems: 'center', padding: 20, backgroundColor: colors.surface, borderRadius: 24 }}>
+          <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11.5, letterSpacing: 1.4, color: colors.faint }}>YOUR TICKET · DRAG TO TILT</Text>
           <View style={{ marginTop: 10 }}><TicketQr code={ticket} /></View>
           <Text selectable style={{ fontFamily: fonts.display, fontSize: 32, letterSpacing: 5, color: colors.ink, marginTop: 12 }}>{ticket}</Text>
           <Text style={{ fontFamily: fonts.body, fontSize: 13, color: colors.muted, marginTop: 4, textAlign: 'center' }}>Show this at the door. Doors open at {clock(new Date(e.starts_at))}.</Text>
-        </View>) : null}
+        </TiltCard>) : null}
 
       {err ? <Notice tone="error">{err}</Notice> : null}
       {note ? <Notice tone="plain">{note}</Notice> : null}
       <View style={{ marginTop: 20, gap: 10 }}>
-        {cta === 'reserve' ? <Button label="Reserve my spot" onPress={() => act(() => api.rsvp(id))} loading={busy} disabled={!!why} /> : null}
-        {cta === 'waitlist' ? <Button label="Join the waitlist" onPress={() => act(() => api.rsvp(id))} loading={busy} disabled={!!why} /> : null}
+        {cta === 'reserve' ? <HoldButton label="Hold to reserve" doneLabel="Reserved" onComplete={() => act(() => api.rsvp(id))} loading={busy} disabled={!!why} /> : null}
+        {cta === 'waitlist' ? <HoldButton label="Hold to join the waitlist" doneLabel="You're on the list" onComplete={() => act(() => api.rsvp(id))} loading={busy} disabled={!!why} /> : null}
         {cta === 'paid' && tickets.length ? (<>
           <Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.8, color: colors.faint, marginTop: 6 }}>CHOOSE A TICKET</Text>
           {tickets.map((t) => {
@@ -138,7 +142,7 @@ export default function EventDetail() {
             : <Text accessibilityRole="button" onPress={() => setPromoOpen(true)} style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink, textDecorationLine: 'underline', textAlign: 'center', paddingVertical: 8 }}>Have a promo code?</Text>}
           {(() => {
             const chosen = tickets.find((t) => t.id === (pick ?? tickets.find((x) => x.left !== 0)?.id));
-            return <Button label={chosen ? `Pay ${priceText(chosen.price_inr)}` : 'Sold out'} onPress={() => chosen && buy(chosen.id)} loading={busy} disabled={!chosen || chosen.left === 0 || !!why} />;
+            return <Button label={chosen ? `Pay ${priceText(chosen.price_inr)}` : 'Sold out'} onPress={() => chosen && setPayFor(chosen.id)} loading={busy} disabled={!chosen || chosen.left === 0 || !!why} />;
           })()}
         </>) : null}
         {cta === 'paid' && !tickets.length ? <Button label="Tickets are not on sale" onPress={() => {}} disabled /> : null}
@@ -148,6 +152,10 @@ export default function EventDetail() {
         {cta === 'over' ? <Text style={{ fontFamily: fonts.body, fontSize: 14, color: colors.muted, textAlign: 'center' }}>This event has finished.</Text> : null}
       </View>
       {cta === 'cancel' ? <Info text={"You can cancel any time before it starts. Cancelling in the last 3 hours counts against your reliability score."} /> : null}
+      <Sheet visible={!!payFor} onClose={() => setPayFor(null)} title={`Pay ${priceText(tickets.find((t) => t.id === payFor)?.price_inr ?? 0)}?`}>
+        <Body style={{ marginBottom: 16 }}>{`${tickets.find((t) => t.id === payFor)?.name ?? 'Ticket'} for ${e.title}.${promo ? ` Promo ${promo} is applied at checkout.` : ''} Hold the button to pay. Cancelling later returns what the refund rules allow.`}</Body>
+        <View style={{ gap: 8 }}><HoldButton label="Hold to pay" doneLabel="Paying…" onComplete={() => { const t = payFor; setPayFor(null); if (t) void buy(t); }} /><Button label="Not now" variant="link" onPress={() => setPayFor(null)} /></View>
+      </Sheet>
       <Sheet visible={confirm} onClose={() => setConfirm(false)} title={cta === 'cancel' ? 'Cancel your spot?' : 'Leave the waitlist?'}>
         <Body style={{ marginBottom: 16 }}>{cta === 'cancel' && refund && refund.paid_inr > 0 ? `You paid ₹${refund.paid_inr}. Cancelling now returns ₹${refund.refund_inr}${refund.percent < 100 ? ` (${refund.percent}%)` : ''}.${late ? ' It also counts against your reliability score.' : ''}` : cta === 'cancel' ? (late ? 'The event is close, so cancelling now counts against your reliability score.' : 'Your spot goes to the next person on the waitlist.') : "You'll lose your place in the queue."}</Body>
         <View style={{ gap: 8 }}><Button label={cta === 'cancel' ? 'Cancel my spot' : 'Leave the waitlist'} loading={busy} onPress={() => (cta === 'cancel' && refund && refund.paid_inr > 0 ? cancelPaid() : act(() => api.cancelRsvp(id)))} /><Button label="Keep it" variant="link" onPress={() => setConfirm(false)} /></View>

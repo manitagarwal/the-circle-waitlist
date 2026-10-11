@@ -78,7 +78,7 @@ function ChannelsInner() {
         {lobby.length === 0 ? <State empty="You haven't joined a lobby yet. Browse all lobbies and pick the ones you like." /> : null}
         <Buckets buckets={lobbyShown} render={(items) => (<>
             {items.map((c) => (
-              <Row key={c.id} unread={unread.byChannel[c.id]} left={<RingBadge name={c.name} activity={c.interest_name} unread={!!unread.byChannel[c.id]} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
+              <Row key={c.id} unread={unread.byChannel[c.id]} left={<RingBadge name={c.name} activity={c.interest_name} photo={c.library_photo} unread={!!unread.byChannel[c.id]} />} title={c.name} subtitle={preview(c.id)} meta={data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} onPress={() => open(c.id)} />
             ))}
         </>)} />
       </>) : null}
@@ -96,7 +96,7 @@ function ChannelsInner() {
             {items.map((c) => {
               const why = c.is_member ? null : channelFit(c, data.me);
               return (
-                <Row key={c.id} unread={c.is_member ? unread.byChannel[c.id] : undefined} left={<RingBadge name={c.name} activity={c.interest_name} unread={c.is_member && !!unread.byChannel[c.id]} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
+                <Row key={c.id} unread={c.is_member ? unread.byChannel[c.id] : undefined} left={<RingBadge name={c.name} activity={c.interest_name} photo={c.library_photo} unread={c.is_member && !!unread.byChannel[c.id]} />} title={c.name} subtitle={`${c.interest_name}. ${channelSummary(c)}${why ? ` ${why}` : ''}`} onPress={() => open(c.id)}
                   right={c.is_member ? (unread.byChannel[c.id] ? undefined : <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted }}>Joined</Text>)
                     : why ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 12, color: colors.faint, maxWidth: 70, textAlign: 'center' }}>Not for you</Text>
                     : <Button label="Join" variant="secondary" loading={busy === c.id} onPress={() => act(c.id, () => api.joinChannel(c.id))} style={{ height: 40, paddingHorizontal: 16 }} />} />
@@ -110,7 +110,7 @@ function ChannelsInner() {
         {mine.map((c) => {
           const ends = endsIn(data.expiry[c.id] ?? null);
           return (
-            <Row key={c.id} unread={unread.byChannel[c.id]} left={<RingBadge name={c.name} activity={c.interest_name} unread={!!unread.byChannel[c.id]} />} title={c.name} subtitle={preview(c.id) ?? 'Booking chat'}
+            <Row key={c.id} unread={unread.byChannel[c.id]} left={<RingBadge name={c.name} activity={c.interest_name} photo={c.library_photo} unread={!!unread.byChannel[c.id]} />} title={c.name} subtitle={preview(c.id) ?? 'Booking chat'}
               meta={ends ? ends.toUpperCase() : data.previews[c.id] ? listStamp(data.previews[c.id].last_at) : null} tag={ends} onPress={() => open(c.id)} />
           );
         })}
@@ -121,7 +121,7 @@ function ChannelsInner() {
           <ChipRow>{browseBuckets.map((b) => <Chip key={b.group.id} label={b.group.name} on={b.group.id === browseSel?.group.id} onPress={() => setCat(b.group.id)} />)}</ChipRow>
           <ScrollView style={{ flexGrow: 0, flexShrink: 1, marginTop: 8 }} contentContainerStyle={{ paddingBottom: 12 }} showsVerticalScrollIndicator nestedScrollEnabled>
             {browseSel?.items.map((c) => (
-              <Row key={c.id} left={<LetterBadge name={c.name} activity={c.interest_name} size={44} />} title={c.name}
+              <Row key={c.id} left={<LetterBadge name={c.name} activity={c.interest_name} photo={c.library_photo} size={44} />} title={c.name}
                 right={<Button label={c.is_member ? 'Leave' : 'Join'} variant={c.is_member ? 'secondary' : 'primary'} loading={busy === c.id} onPress={() => act(c.id, () => (c.is_member ? api.leaveChannel(c.id) : api.joinChannel(c.id)))} style={{ height: 38, paddingHorizontal: 16 }} />} />
             ))}
           </ScrollView>
