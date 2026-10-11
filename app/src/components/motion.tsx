@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { tap } from '@/lib/haptic';
 import { AccessibilityInfo, Animated, Easing, GestureResponderEvent, Pressable, PressableProps, StyleProp, ViewStyle } from 'react-native';
 
 /** True when the phone is set to reduce motion: animations then jump straight to their end state. */
@@ -30,7 +31,7 @@ export function PressScale({ children, style, scaleTo = 0.97, ...rest }: Omit<Pr
   const v = useRef(new Animated.Value(1)).current;
   const to = (n: number) => Animated.spring(v, { toValue: n, speed: 34, bounciness: n === 1 ? 14 : 0, useNativeDriver: true }).start();
   return (
-    <AnimatedPressable {...rest} style={[style, { transform: [{ scale: v }] }]} onPressIn={(e: GestureResponderEvent) => { to(scaleTo); rest.onPressIn?.(e); }} onPressOut={(e: GestureResponderEvent) => { to(1); rest.onPressOut?.(e); }}>
+    <AnimatedPressable {...rest} style={[style, { transform: [{ scale: v }] }]} onPressIn={(e: GestureResponderEvent) => { to(scaleTo); rest.onPressIn?.(e); }} onPress={(e: GestureResponderEvent) => { if (!rest.disabled) tap('light'); rest.onPress?.(e); }} onPressOut={(e: GestureResponderEvent) => { to(1); rest.onPressOut?.(e); }}>
       {children}
     </AnimatedPressable>
   );

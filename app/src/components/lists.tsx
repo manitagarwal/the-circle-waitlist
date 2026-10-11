@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Easing, Modal, PanResponder, Pressable, ScrollView, Text, View } from 'react-native';
 import Svg, { Path, SvgXml } from 'react-native-svg';
+import RAnimated from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { Icon } from './Icon';
 import { Info } from './Info';
@@ -25,7 +26,7 @@ export function CountBadge({ n }: { n: number }) {
 }
 
 /** The top of a main screen: the name and quick actions (find people, messages, activity), then a large heading. */
-export function TabHeader({ title, right, info }: { title: string; right?: React.ReactNode; info?: string }) {
+export function TabHeader({ title, right, info, titleStyle }: { title: string; right?: React.ReactNode; info?: string; titleStyle?: object }) {
   const r = useRouter();
   const unread = useUnread();
   const round = { width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: colors.line, alignItems: 'center' as const, justifyContent: 'center' as const };
@@ -43,13 +44,13 @@ export function TabHeader({ title, right, info }: { title: string; right?: React
           </PressScale>
         </View>
       </View>
-      <View style={{ minHeight: 60, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
+      <RAnimated.View style={[{ minHeight: 60, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }, titleStyle]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 42, lineHeight: 48, letterSpacing: -1, color: colors.ink }}>{title}</Text>
           {info ? <Info text={info} title={title} style={{ marginTop: 10 }} /> : null}
         </View>
         {right}
-      </View>
+      </RAnimated.View>
     </View>
   );
 }

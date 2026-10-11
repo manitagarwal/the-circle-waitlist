@@ -9,6 +9,7 @@ import { Fraunces_400Regular, Fraunces_500Medium } from '@expo-google-fonts/frau
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { UnreadProvider } from '@/lib/unread';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CityProvider } from '@/lib/city';
 import { colors, isDark } from '@/theme';
 
@@ -100,11 +101,13 @@ export default function RootLayout() {
   useEffect(() => { if (loaded) SplashScreen.hideAsync().catch(() => {}); }, [loaded]);
   if (!loaded) return null;
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <AuthProvider>
         <CityProvider><UnreadProvider><Routes /></UnreadProvider></CityProvider>
       </AuthProvider>
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
