@@ -1,6 +1,6 @@
 # Marketing plan (first draft, Oct 2026)
 
-Plain version. Assumptions are marked so you can correct them. Nothing here needs a big budget.
+Plain version. Assumptions are marked so you can correct them. Budget is close to zero, so everything below runs on time, relationships and free tools (Instagram, WhatsApp, Canva).
 
 ## 1. What we are selling
 A private group of people aged about 21 to 28 in Delhi NCR who actually show up. You plan things together (padel, cafes, quizzes, treks, events), you can see how reliable people are, and you only get in by being picked.
@@ -42,9 +42,18 @@ Ranked by what is cheap and likely to work for this crowd.
 3. **WhatsApp communities (week 3 on).** Join and sponsor existing running, padel, board-game, comedy and startup groups in NCR. Offer their members a few early invites rather than posting links.
 4. **Offices and colleges.** Co-working spaces, startup communities, a few college societies. One short pitch and a few invites each.
 5. **Venues as partners.** Padel courts, cafes, quiz pubs. They get a full room, we get a place and a mention. Ask for a banner or a QR at the venue.
-6. **Small creators.** 5 to 10 local creators with 5k to 30k followers who fit. Give them invites, not money. Paid posts come later.
+6. **Small creators.** 5 to 10 local creators with 5k to 30k followers who fit. Give them invites, not money. No paid posts until there is revenue.
 
 Do not do for now: paid ads, big influencers, PR, press release, cold DMs to strangers.
+
+## 5b. Running it on near-zero budget
+- **Your time is the budget.** Plan on 5 to 6 hours a week: 1 hour on posts, 2 hours messaging people, the rest at events.
+- **Pay in invites and exclusivity,** never in cash. Early invites to communities, creators and venue owners are the currency.
+- **Venues:** offer a full room on a slow weekday and a mention in return for a free corner, a banner or a QR code. No fees either way.
+- **Events cost nothing to start:** free or split-cost plans (padel court split, cafe meetups, quiz teams). Paid events come with the payments system later.
+- **Tools:** Instagram, WhatsApp broadcast lists, Canva free tier, the share card we build in the app. No paid scheduler or ad account.
+- **The first 100 members matter more than any channel.** Pick them personally. They bring the next 100.
+- **First spend, when there is any:** photo help for events, then a small boost on the best-performing post. Not ads before that.
 
 ## 6. Content (about 3 posts a week)
 - **The queue.** Posts with the live queue number. "433 waiting. 40 in."
