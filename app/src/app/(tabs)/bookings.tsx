@@ -21,7 +21,7 @@ function Card({ b, onPress, note }: { b: BookingRow; onPress: () => void; note?:
   const tail = note ?? sp.left;
   return (
     <View style={{ marginBottom: 14 }}>
-      <PhotoCard photoPath={b.photo_path} activity={b.interest_name} height={236} onPress={onPress} label={`${b.title}, ${timeRange(b.starts_at, b.ends_at)}`}
+      <PhotoCard photoPath={b.photo_path} uploadPath={b.upload_path} activity={b.interest_name} height={236} onPress={onPress} label={`${b.title}, ${timeRange(b.starts_at, b.ends_at)}`}
         top={tail ? <View style={{ alignSelf: 'flex-start', backgroundColor: 'rgba(250,248,244,0.92)', borderRadius: 14, paddingHorizontal: 11, height: 28, justifyContent: 'center' }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 12.5, color: '#1b1a18' }}>{tail}</Text></View> : null}>
         <Text numberOfLines={2} style={{ fontFamily: fonts.title, fontSize: 26, lineHeight: 31, color: '#faf8f4' }}>{b.title}</Text>
         <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 14, color: 'rgba(250,248,244,0.9)', marginTop: 4 }}>{timeRange(b.starts_at, b.ends_at)}  ·  {[b.venue_name, b.area].filter(Boolean).join(', ')}</Text>

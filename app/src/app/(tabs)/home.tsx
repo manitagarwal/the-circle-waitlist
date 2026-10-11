@@ -41,7 +41,7 @@ function NextCard({ p, onPress }: { p: Plan; onPress: () => void }) {
   const cd = useCountdown(p.startsAt, p.endsAt);
   const cover = useSignedUrl(p.coverPath, 'event-covers');
   return (
-    <PhotoCard uri={cover} photoPath={p.photoPath} activity={p.interest} height={300} radius={28} onPress={onPress} label={`${p.title}, ${cd.text}`}
+    <PhotoCard uri={cover} photoPath={p.photoPath} uploadPath={p.uploadPath} activity={p.interest} height={300} radius={28} onPress={onPress} label={`${p.title}, ${cd.text}`}
       top={<View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', backgroundColor: 'rgba(250,248,244,0.94)', borderRadius: 16, paddingVertical: 6, paddingHorizontal: 12 }}>
         {cd.soon ? <PulseDot size={8} color="#1b1a18" /> : null}
         <Text style={{ fontFamily: fonts.bodySemi, fontSize: 13, color: '#1b1a18' }}>{cd.text}</Text>
@@ -61,7 +61,7 @@ function PlanCard({ p, i, x, onPress }: { p: Plan; i: number; x: SharedValue<num
   });
   return (
     <Animated.View style={[{ width: CARD, marginRight: GAP }, a]}>
-      <PhotoCard uri={cover} photoPath={p.photoPath} activity={p.interest} height={210} radius={24} onPress={onPress} label={p.title}
+      <PhotoCard uri={cover} photoPath={p.photoPath} uploadPath={p.uploadPath} activity={p.interest} height={210} radius={24} onPress={onPress} label={p.title}
         top={<Text style={{ fontFamily: fonts.bodySemi, fontSize: 11, letterSpacing: 1.4, textTransform: 'uppercase', color: '#faf8f4' }}>{bookingDay(p.startsAt)}, {timeRange(p.startsAt, p.endsAt).split(' to ')[0]}</Text>}>
         <Text numberOfLines={2} style={{ fontFamily: fonts.title, fontSize: 22, lineHeight: 26, color: '#faf8f4' }}>{p.title}</Text>
         {p.where ? <Text numberOfLines={1} style={{ fontFamily: fonts.body, fontSize: 13, color: 'rgba(250,248,244,0.88)', marginTop: 4 }}>{p.where}</Text> : null}
@@ -180,7 +180,7 @@ function HomeInner() {
           <Heading title="Starting soon" action="See all" onAction={() => r.navigate('/bookings' as never)} />
           {soon.map((b, i) => (
             <Enter key={b.id} index={3 + i} style={{ marginBottom: 14 }}>
-              <PhotoCard photoPath={b.photo_path} activity={b.interest_name} height={200} radius={24} label={b.title} onPress={() => r.push({ pathname: '/booking/[id]', params: { id: b.id } })}
+              <PhotoCard photoPath={b.photo_path} uploadPath={b.upload_path} activity={b.interest_name} height={200} radius={24} label={b.title} onPress={() => r.push({ pathname: '/booking/[id]', params: { id: b.id } })}
                 top={spots(b).left ? <View style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(250,248,244,0.94)', borderRadius: 14, paddingHorizontal: 11, height: 28 }}>{urgent(b) ? <PulseDot size={6} color="#1b1a18" /> : null}<Text style={{ fontFamily: fonts.bodySemi, fontSize: 12.5, color: '#1b1a18' }}>{spots(b).left}</Text></View> : null}>
                 <Text numberOfLines={2} style={{ fontFamily: fonts.title, fontSize: 24, lineHeight: 28, color: '#faf8f4' }}>{b.title}</Text>
                 <Text numberOfLines={1} style={{ fontFamily: fonts.bodyMedium, fontSize: 13.5, color: 'rgba(250,248,244,0.9)', marginTop: 4 }}>{bookingDay(b.starts_at)}, {timeRange(b.starts_at, b.ends_at).split(' to ')[0]}{b.area ? `  ·  ${b.area}` : ''}</Text>

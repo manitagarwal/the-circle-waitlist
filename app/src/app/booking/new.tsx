@@ -9,7 +9,7 @@ import { DatePickerSheet, TimePickerSheet } from '@/components/Pickers';
 import { Body, Button, Notice, Stepper, TextField } from '@/components/ui';
 import { HoldButton } from '@/components/HoldButton';
 import { colors, fonts } from '@/theme';
-import { api } from '@/lib/auth';
+import { api, useAuth } from '@/lib/auth';
 import { closeLabel } from '@/lib/bookings';
 import type { BookingLimits } from '@/lib/api';
 import { clampDuration, type Clock12, DURATION_STEP, durationLabel, istToIso, MIN_DURATION, startError, todayIST, type YMD, ymdLabel, clockLabel } from '@/lib/schedule';
@@ -19,9 +19,12 @@ import { useLoad } from '@/lib/useLoad';
 import { Info } from '@/components/Info';
 import { AreaPicker } from '@/components/AreaPicker';
 import { PhotoCard } from '@/components/PhotoCard';
+import { pickBookingPhoto } from '@/lib/photo';
 
 export default function NewBooking() {
   const r = useRouter();
+  const { member } = useAuth();
+  const [own, setOwn] = useState<{ uri: string; bytes: ArrayBuffer } | null>(null);
   const [interest, setInterest] = useState<{ id: number; name: string } | null>(null);
   const [pick, setPick] = useState(false);
   const [title, setTitle] = useState('');
@@ -83,7 +86,8 @@ export default function NewBooking() {
         startsAt: start, endsAt: end, headcountMax: headcount, maleSlots: mixOn ? men : null, femaleSlots: mixOn ? women : null,
         minScore, ageMin, ageMax,
       });
-      if (shuffled && photos[photoI]) await api.setBookingPhoto(id, photos[photoI].id).catch(() => {});
+      if (own && member) { const p = await api.uploadBookingPhoto(member.id, own.bytes).catch(() => null); if (p) await api.setBookingUpload(id, p).catch(() => {}); }
+      else if (shuffled && photos[photoI]) await api.setBookingPhoto(id, photos[photoI].id).catch(() => {});
       if (limits && closeH != null && closeH > limits.close_hours) await api.setBookingCloseHours(id, closeH).catch(() => {});
       r.replace({ pathname: '/booking/[id]', params: { id } });
     } catch (e) { setErr(friendly(e)); } finally { setBusy(false); }
@@ -96,12 +100,16 @@ export default function NewBooking() {
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
         {label('Activity')}
         <Button label={interest?.name ?? 'Choose an activity'} variant="secondary" onPress={() => setPick(true)} />
-        {interest && photos.length ? (
+        {interest && (photos.length || own) ? (
           <View style={{ marginTop: 14 }}>
-            <PhotoCard photoPath={photos[photoI % photos.length].path} activity={interest.name} height={170} radius={22} />
-            <Pressable accessibilityRole="button" onPress={() => { setPhotoI((i) => (i + 1) % photos.length); setShuffled(true); }} style={{ alignSelf: 'flex-start', marginTop: 8, paddingVertical: 8 }}>
-              <Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink, textDecorationLine: 'underline' }}>Try another photo</Text>
-            </Pressable>
+            <PhotoCard uri={own?.uri} photoPath={photos.length ? photos[photoI % photos.length].path : null} activity={interest.name} height={170} radius={22} />
+            <View style={{ flexDirection: 'row', gap: 18, marginTop: 8 }}>
+              {!own && photos.length ? <Pressable accessibilityRole="button" onPress={() => { setPhotoI((i) => (i + 1) % photos.length); setShuffled(true); }} style={{ paddingVertical: 8 }}>
+                <Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink, textDecorationLine: 'underline' }}>Try another photo</Text></Pressable> : null}
+              <Pressable accessibilityRole="button" onPress={async () => { try { const p = await pickBookingPhoto(); if (p) setOwn(p); } catch (e) { setErr(friendly(e)); } }} style={{ paddingVertical: 8 }}>
+                <Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.ink, textDecorationLine: 'underline' }}>{own ? 'Choose a different upload' : 'Upload your own'}</Text></Pressable>
+              {own ? <Pressable accessibilityRole="button" onPress={() => setOwn(null)} style={{ paddingVertical: 8 }}><Text style={{ fontFamily: fonts.bodySemi, fontSize: 14, color: colors.muted }}>Use ours</Text></Pressable> : null}
+            </View>
           </View>) : null}
         <TextField label="Title" value={title} onChangeText={setTitle} maxLength={80} />
 

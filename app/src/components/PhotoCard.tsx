@@ -5,14 +5,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { PressScale } from './motion';
 import { Arcs } from './Arch';
 import { toneFor } from '@/lib/tones';
-import { libraryPhotoUrl } from '@/lib/photoUrl';
+import { bookingUploadUrl, libraryPhotoUrl } from '@/lib/photoUrl';
 import { colors, isDark } from '@/theme';
 
 /** A card whose whole face is a picture, with a dark fade at the bottom for text. Without a picture it falls back to the activity's tone. */
-export function PhotoCard({ photoPath, uri: given, activity, height = 230, onPress, children, label, top, radius = 26 }: {
-  photoPath?: string | null; uri?: string | null; activity?: string | null; height?: number; onPress?: () => void; children?: React.ReactNode; label?: string; top?: React.ReactNode; radius?: number;
+export function PhotoCard({ photoPath, uploadPath, uri: given, activity, height = 230, onPress, children, label, top, radius = 26 }: {
+  photoPath?: string | null; uploadPath?: string | null; uri?: string | null; activity?: string | null; height?: number; onPress?: () => void; children?: React.ReactNode; label?: string; top?: React.ReactNode; radius?: number;
 }) {
-  const uri = given ?? libraryPhotoUrl(photoPath);
+  const uri = given ?? bookingUploadUrl(uploadPath) ?? libraryPhotoUrl(photoPath);
   const body = (
     <View style={{ height, borderRadius: radius, overflow: 'hidden', backgroundColor: toneFor(activity, isDark) ?? colors.plate }}>
       {uri ? <Image source={{ uri }} style={{ position: 'absolute', inset: 0 } as never} contentFit="cover" transition={400} accessibilityIgnoresInvertColors />

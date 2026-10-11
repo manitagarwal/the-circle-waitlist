@@ -3,14 +3,14 @@ import type { EventRow } from './api';
 
 export const greeting = (d = new Date()) => { const h = d.getHours(); return h < 5 ? 'Good night' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 22 ? 'Good evening' : 'Good night'; };
 
-export type Upcoming = { kind: 'booking' | 'event'; id: string; title: string; interest: string | null; startsAt: string; endsAt: string; where: string; note: string; photoPath: string | null; coverPath: string | null };
+export type Upcoming = { kind: 'booking' | 'event'; id: string; title: string; interest: string | null; startsAt: string; endsAt: string; where: string; note: string; photoPath: string | null; uploadPath?: string | null; coverPath: string | null };
 
 /** The member's next plans: bookings they host or joined and events they are going to, soonest first. */
 export function comingUp(bookings: BookingRow[], events: EventRow[], now = new Date()): Upcoming[] {
   const live = (end: string) => new Date(end) > now;
   const b: Upcoming[] = bookings.filter((x) => (x.is_host || x.my_status === 'joined') && (x.status === 'open' || x.status === 'full') && live(x.ends_at)).map((x) => ({
     kind: 'booking', id: x.id, title: x.title, interest: x.interest_name, startsAt: x.starts_at, endsAt: x.ends_at, where: [x.venue_name, x.area].filter(Boolean).join(', '),
-    note: x.headcount_max ? `${x.joined_count} of ${x.headcount_max} in` : `${x.joined_count} in`, photoPath: x.photo_path ?? null, coverPath: null,
+    note: x.headcount_max ? `${x.joined_count} of ${x.headcount_max} in` : `${x.joined_count} in`, photoPath: x.photo_path ?? null, uploadPath: x.upload_path ?? null, coverPath: null,
   }));
   const e: Upcoming[] = events.filter((x) => x.my_status === 'going' && x.status === 'published' && live(x.ends_at)).map((x) => ({
     kind: 'event', id: x.id, title: x.title, interest: x.interest_name, startsAt: x.starts_at, endsAt: x.ends_at, where: [x.venue_name, x.area ?? x.city].filter(Boolean).join(', '), note: "You're going", photoPath: x.photo_path ?? null, coverPath: x.cover_path,

@@ -166,6 +166,13 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     addToGroup: (channel: string, members: string[]) => rpc<number>('add_to_group', { p_channel: channel, p_members: members }),
     interestPhotos: (interestId: number) => rpc<{ id: string; path: string }[]>('interest_photos', { p_interest: interestId }),
     interestBanner: (name: string) => rpc<string | null>('interest_banner', { p_name: name }),
+    uploadBookingPhoto: async (uid: string, bytes: ArrayBuffer) => {
+      const path = `${uid}/${Date.now()}.jpg`;
+      const { error } = await sb.storage.from('booking-photos').upload(path, bytes, { contentType: 'image/jpeg', upsert: false });
+      if (error) throw error;
+      return path;
+    },
+    setBookingUpload: (booking: string, path: string | null) => rpc<void>('set_booking_upload', { p_booking: booking, p_path: path }),
     setBookingPhoto: (booking: string, photo: string) => rpc<void>('set_booking_photo', { p_booking: booking, p_photo: photo }),
     joinChannel: (id: string) => rpc<void>('join_channel', { p_channel: id }),
     leaveChannel: (id: string) => rpc<void>('leave_channel', { p_channel: id }),

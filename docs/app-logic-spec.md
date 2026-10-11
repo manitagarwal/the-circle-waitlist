@@ -361,3 +361,4 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Profile has a photo banner from the member's first activity.
 - Booking lists show a dry one-line aside after every third card.
 - Activity rows swipe to mark read. The event ticket tilts as you drag it.
+- Hosts can upload their own photo for a booking (when creating it, or later with "Change photo" until it ends). "Use ours" goes back to the automatic one. Admin can remove a photo from storage if needed.
