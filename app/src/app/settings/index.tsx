@@ -11,11 +11,13 @@ import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { NOTIFICATION_SWITCHES } from '@/lib/profile';
 import { useLoad } from '@/lib/useLoad';
+import { useCity } from '@/lib/city';
 
 const Chev = () => <Icon name="chevron" size={18} color={colors.faint} />;
 
 export default function Settings() {
   const r = useRouter();
+  const city = useCity();
   const { signOut } = useAuth();
   const [err, setErr] = useState<string | null>(null);
   const { data, error, loading, reload, setData } = useLoad(async () => {
@@ -39,6 +41,7 @@ export default function Settings() {
         {data ? (<>
           <SectionLabel>Account</SectionLabel>
           <Row title="Photo, bio and username" right={<Chev />} onPress={() => r.push('/settings/profile')} />
+          <Row title="Based in" meta={city.home?.home_name ?? ''} right={<Chev />} onPress={() => r.push('/settings/city')} />
           <Row title="Interests" meta={`${data.interests} of 5`} right={<Chev />} onPress={() => r.push('/settings/interests')} />
           <Row title="Password" right={<Chev />} onPress={() => r.push('/settings/password')} />
 

@@ -1,3 +1,5 @@
+import { useCity } from '@/lib/city';
+import { NotLive } from '@/components/NotLive';
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -17,9 +19,10 @@ import { INTERESTS_MIN } from '@/lib/profile';
 import { useUnread } from '@/lib/unread';
 
 type Seg = 'lobby' | 'public' | 'booking';
-export default function Channels() {
+function ChannelsInner() {
   const r = useRouter();
   const unread = useUnread();
+  const city = useCity();
   const [seg, setSeg] = useState<Seg>('lobby');
   const [filters, setFilters] = useState<Filters>({});
   const [busy, setBusy] = useState<string | null>(null);
@@ -38,12 +41,12 @@ export default function Channels() {
     try { await fn(); await reload(); } catch (e) { setActionErr(friendly(e)); } finally { setBusy(null); }
   };
 
-  const lobby = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'lobby' && c.is_member)
-    .sort((a, b) => (data!.previews[b.id]?.last_at ?? '').localeCompare(data!.previews[a.id]?.last_at ?? '') || a.name.localeCompare(b.name)), [data]);
-  const publicAll = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'public'), [data]);
+  const lobby = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'lobby' && c.is_member && c.city_id === city.id)
+    .sort((a, b) => (data!.previews[b.id]?.last_at ?? '').localeCompare(data!.previews[a.id]?.last_at ?? '') || a.name.localeCompare(b.name)), [data, city.id]);
+  const publicAll = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'public' && c.city_id === city.id), [data, city.id]);
   const publicShown = useMemo(() => (data ? bucket(data.groups, applyFilters(publicAll, filters, data.me).sort((a, b) => (a.interest_name ?? '').localeCompare(b.interest_name ?? '') || b.member_count - a.member_count), (c) => c.interest_id) : []), [data, publicAll, filters]);
   const lobbyShown = useMemo(() => (data ? bucket(data.groups, lobby, (c) => c.interest_id) : []), [data, lobby]);
-  const browseBuckets = useMemo(() => (data ? bucket(data.groups, data.channels.filter((c) => c.kind === 'lobby'), (c) => c.interest_id) : []), [data]);
+  const browseBuckets = useMemo(() => (data ? bucket(data.groups, data.channels.filter((c) => c.kind === 'lobby' && c.city_id === city.id), (c) => c.interest_id) : []), [data, city.id]);
   const browseSel = browseBuckets.find((b) => b.group.id === cat) ?? browseBuckets[0];
   const mine = useMemo(() => (data?.channels ?? []).filter((c) => c.kind === 'booking' && c.is_member)
     .sort((a, b) => (data!.previews[b.id]?.last_at ?? b.created_at).localeCompare(data!.previews[a.id]?.last_at ?? a.created_at)), [data]);
@@ -82,7 +85,6 @@ export default function Channels() {
 
       {data && seg === 'public' ? (<>
         <FilterBar values={filters as Record<string, string | undefined>} onChange={(k, v) => setFilters((o) => ({ ...o, [k]: v }))} defs={[
-          { key: 'city', label: 'City', options: filterOptions(publicAll, 'city') },
           { key: 'area', label: 'Area', options: filterOptions(publicAll, 'area') },
           { key: 'activity', label: 'Activity', options: filterOptions(publicAll, 'activity') },
           { key: 'gender', label: 'Gender', options: Object.values(GENDER_AUDIENCE) },
@@ -127,4 +129,9 @@ export default function Channels() {
       </Sheet>
     </Screen>
   );
+}
+
+export default function Channels() {
+  const city = useCity();
+  return city.live ? <ChannelsInner /> : <NotLive />;
 }

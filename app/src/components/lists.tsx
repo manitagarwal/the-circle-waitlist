@@ -10,6 +10,7 @@ import { colors, fonts, isDark, radius } from '@/theme';
 import { toneFor } from '@/lib/tones';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackButton, Button } from './ui';
+import { CityChip } from './CitySheet';
 import { ChipRow } from './ChipRow';
 import { FadeUp, PressScale, useReduceMotion } from './motion';
 
@@ -31,10 +32,7 @@ export function TabHeader({ title, right, info }: { title: string; right?: React
   return (
     <View>
       <View style={{ height: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Svg width={22} height={12} viewBox="0 0 22 12"><Path d="M1 12A10 10 0 0 1 21 12z" fill={colors.ink} /></Svg>
-          <Text style={{ fontFamily: fonts.title, fontSize: 16, color: colors.ink }}>The Semi Circle</Text>
-        </View>
+        <CityChip />
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <PressScale accessibilityRole="button" accessibilityLabel="Find people" onPress={() => r.push('/people')} style={round}><Icon name="search" size={20} /></PressScale>
           <PressScale accessibilityRole="button" accessibilityLabel={unread.messages ? `Messages, ${unread.messages} unread` : 'Messages'} onPress={() => r.push('/messages')} style={round}>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Image, View } from 'react-native';
-import Svg, { Path, SvgXml } from 'react-native-svg';
-import { AVATAR_SVGS } from '@/lib/avatars';
+import Svg, { Path } from 'react-native-svg';
+import { PICTURES } from './Avatar';
 import { colors, isDark } from '@/theme';
 import { useReduceMotion } from './motion';
 
@@ -36,11 +36,11 @@ export function ArchRings({ width: fixed, height: fixedH }: { width?: number; he
 
 /** A member's photo (or avatar) in a circle. */
 export function ArchPhoto({ uri, avatarId, size = 160 }: { uri?: string | null; avatarId?: number | null; size?: number }) {
-  const xml = avatarId ? AVATAR_SVGS[avatarId] : undefined;
+  const pic = avatarId ? PICTURES[avatarId] : undefined;
   return (
     <View style={{ width: size, height: size, borderRadius: size / 2, alignSelf: 'center', overflow: 'hidden', backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
       {uri ? <Image source={{ uri }} style={{ width: size, height: size }} resizeMode="cover" accessibilityIgnoresInvertColors />
-        : xml ? <SvgXml xml={xml} width={size} height={size} color={colors.ink} /> : null}
+        : pic ? <Image source={pic} style={{ width: size, height: size }} resizeMode="cover" accessibilityIgnoresInvertColors /> : null}
     </View>
   );
 }

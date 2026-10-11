@@ -18,8 +18,11 @@ export type Ticket = { id: string; name: string; price_inr: number; left: number
 export type ChannelRow = {
   id: string; kind: 'lobby' | 'public' | 'private' | 'booking' | 'dm'; name: string; photo_path: string | null;
   interest_id: number | null; interest_name: string | null; created_by: string | null; created_at: string;
-  member_count: number; is_member: boolean; my_role: string | null; tags: { type: string; value: string }[];
+  member_count: number; is_member: boolean; my_role: string | null; tags: { type: string; value: string }[]; city_id?: number | null;
 };
+export type City = { id: number; name: string; is_live: boolean; sort: number };
+export type Area = { id: number; name: string; place: string | null; sort: number };
+export type MyCity = { current_id: number; current_name: string; current_live: boolean; home_id: number; home_name: string; changes_left: number; next_change_at: string | null };
 export type ChannelPreview = { channel_id: string; body: string; last_at: string; sender_username: string | null; from_me: boolean };
 export type ChannelInvite = { id: string; channel_id: string; channel_name: string; inviter_username: string; created_at: string };
 export type Message = { id: string; channel_id: string; sender_id: string; body: string; created_at: string; edited_at: string | null; image_path?: string | null };
@@ -33,7 +36,7 @@ export type NotificationRow = { id: string; type: string; payload: Record<string
 export type RosterEntry = { member_id: string; username: string; avatar_id: number | null; photo_path: string | null; status: string; is_host: boolean };
 export type Profile = {
   id: string; username: string; full_name: string | null; avatar_id: number | null; photo_path: string | null; bio: string | null; age: number | null;
-  gender: string | null; area: string | null; field_of_work: string | null; member_since: string | null; interests: string[] | null; bookings_hosted: number | null;
+  gender: string | null; area: string | null; field_of_work: string | null; member_since: string | null; interests: string[] | null; bookings_hosted: number | null; home_city?: string | null;
 };
 export type BookingInput = {
   interestId: number; title: string; description: string | null; venue: string; area: string; address: string; startsAt: string; endsAt: string;
@@ -241,10 +244,11 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       if (error) throw error;
       return data as Person[];
     },
-    searchMembers: async (q: string, limit = 30) => {
+    searchMembers: async (q: string, cityId: number, limit = 30) => {
       const term = cleanSearch(q);
       if (term.length < 2) return [] as FoundPerson[];
       const { data, error } = await sb.from('member_profiles').select('id, username, full_name, avatar_id, photo_path, area')
+        .eq('home_city_id', cityId)
         .or(`username.ilike.%${term}%,full_name.ilike.%${term}%`).limit(limit);
       if (error) throw error;
       return data as FoundPerson[];
@@ -340,6 +344,20 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
     markAllRead: () => rpc<number>('mark_all_notifications_read'),
     respondFriend: (from: string, accept: boolean) => rpc<void>('respond_friend_request', { p_from: from, p_accept: accept }),
     hasPassword: () => rpc<boolean>('has_password'),
+    cities: async () => {
+      const { data, error } = await sb.from('cities').select('id, name, is_live, sort').order('sort');
+      if (error) throw error;
+      return data as City[];
+    },
+    myCity: async () => (await rpc<MyCity[]>('my_city'))?.[0] ?? null,
+    setCurrentCity: (id: number) => rpc<void>('set_current_city', { p_city: id }),
+    changeHomeCity: (id: number) => rpc<void>('change_home_city', { p_city: id }),
+    notifyCity: (id: number) => rpc<void>('notify_city', { p_city: id }),
+    areas: async (cityId: number) => {
+      const { data, error } = await sb.from('areas').select('id, name, place, sort').eq('city_id', cityId).order('sort').order('name').limit(1000);
+      if (error) throw error;
+      return data as Area[];
+    },
     registerCityInterest: (email: string, city: string) => rpc<void>('register_city_interest', { p_email: email, p_city: city }),
     myApplication: async (): Promise<Application | null> => {
       const rows = await rpc<Application[]>('my_application');

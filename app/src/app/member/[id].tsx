@@ -60,6 +60,7 @@ export default function MemberProfile() {
             <View style={{ alignItems: 'center', marginTop: 16 }}>
               <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 36, lineHeight: 42, color: colors.ink, textAlign: 'center' }}>{p.full_name ?? p.username}</Text>
               <Text style={{ fontFamily: fonts.body, fontSize: 15, color: colors.muted, marginTop: 2 }}>@{p.username}</Text>
+              {p.home_city ? <Text style={{ fontFamily: fonts.body, fontSize: 13.5, color: colors.faint, marginTop: 2 }}>Based in {p.home_city}</Text> : null}
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 12 }}>
                 {[p.age != null ? `${p.age}` : null, p.area, p.field_of_work].filter((x): x is string => !!x).map((t) => <Text key={t} style={{ fontFamily: fonts.bodyMedium, fontSize: 13.5, color: colors.ink, borderWidth: 1, borderColor: colors.line, borderRadius: 16, paddingVertical: 5, paddingHorizontal: 12, overflow: 'hidden' }}>{t}</Text>)}
               </View>

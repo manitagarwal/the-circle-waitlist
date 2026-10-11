@@ -321,3 +321,14 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Queue number shown to applicants = 432 + real position, so the first applicant sees #433.
 - Delhi NCR only: the database refuses applications from other cities (`outside_area`). Choosing "Other" in the app takes an email and city, saved to `city_interest`, and does not enter the queue.
 - Avatars are drawn in a per-avatar colour pair (light and dark variants) instead of one ink colour.
+
+## Cities (Oct 2026)
+- A city (Delhi NCR, Mumbai, ...) is the unit of place. `cities.is_live` says if we are open there. Only Delhi NCR is live. Delhi, Gurugram, Noida, Greater Noida, Faridabad and Ghaziabad are all areas inside Delhi NCR.
+- Each member has a **home city** (shown on profile as "Based in", changeable twice every 60 days) and a **current city** (the one they are viewing; anyone can switch whenever they like, from the city chip at the top of every tab).
+- City-scoped: bookings, public channels, lobbies, Find people. The database enforces it: other cities' bookings and channels are not returned, joining across cities raises `wrong_city`, posting in a city that is not live raises `city_not_live`.
+- People-scoped (stay visible in every city): direct messages, private groups, friends, and bookings or chats you have joined or host (they show in Mine and Chats).
+- Events are admin-controlled and not city-restricted.
+- Switching to a city that is not live shows "We're not live in X yet", with Tell me when it opens and Change city.
+- Booking and channel forms do not ask for a city. They use an **area picker**: search the city's list (e.g. "sec 56" finds "Sector 56, Gurugram") or type your own.
+- Admin portal > Cities: add a city, see who is waiting, Open city (creates a lobby for every activity).
+- Not yet built: pre-filled venues (courts etc.), by decision.
