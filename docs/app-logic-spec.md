@@ -343,3 +343,9 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Booking and event cards use a full-bleed photo with a tone-coloured fallback. Each booking has one saved photo, the same for every viewer, picked automatically from our own library (least-used for the activity). The host can change it from the activity's pool.
 - The library lives in our storage (admin portal > Photos): upload, import from links, tag to activities or whole categories, retire. Starter set of free-to-use photos included.
 - App display is not built yet; the design is being settled on the canvas.
+
+## Device navigation (Oct 2026)
+- The app follows the phone's own navigation setting, whether gesture navigation or the three buttons. We do not build a custom back gesture.
+- Every screen uses normal stack navigation and leaves the system back enabled. Every pushed screen also shows a visible back control, so button users are never stuck.
+- Screens respect the safe areas, so bottom bars and hold buttons are never under the gesture bar or nav buttons.
+- Our own swipes (swipe-to-dismiss rows, swipe cards) must not start at the very left edge, which belongs to the system back gesture.
