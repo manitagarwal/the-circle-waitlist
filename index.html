@@ -811,6 +811,79 @@ section[id]{scroll-margin-top:54px}
 .closing{padding:54px 20px 120px}
 .foot{padding:26px 20px 150px;text-align:center;font-size:12.5px;color:var(--ink-dimmer);background:#f0ece4}
 .foot a{color:var(--ink-dim);margin:0 8px}
+
+/* ---- top bar apply, clearer notes ---- */
+.tb-apply{font:600 13px var(--sans);color:var(--bg);background:var(--ink);text-decoration:none;border-radius:999px;padding:9px 18px}
+.dr-note{max-width:300px;line-height:1.5}
+.dr-note2{margin-top:8px;font-size:12.5px}
+.dr-note2 a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+
+/* ---- demo: make it obvious it is real ---- */
+.sx-badge{display:inline-flex;align-items:center;gap:8px;font:600 11px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:#fff;border:1px solid var(--panel-border);border-radius:999px;padding:9px 14px;margin:0 0 20px;box-shadow:0 8px 20px -14px rgba(27,26,24,.5)}
+.sx-badge i{width:8px;height:8px;border-radius:4px;background:#4f9a43;animation:sxp 1.1s ease-in-out infinite alternate}
+.sx-ping{position:absolute;right:12px;top:10px;z-index:4;display:flex;align-items:center;gap:6px;pointer-events:none}
+.sx-ping i{width:14px;height:14px;border-radius:7px;background:#faf8f4;box-shadow:0 0 0 0 rgba(250,248,244,.8);animation:sxring 1.5s ease-out infinite}
+.sx-ping b{font:600 10.5px var(--sans);color:#faf8f4;background:rgba(27,26,24,.75);border-radius:10px;padding:4px 8px}
+@keyframes sxring{0%{box-shadow:0 0 0 0 rgba(250,248,244,.85)}100%{box-shadow:0 0 0 16px rgba(250,248,244,0)}}
+.sx-steps{list-style:none;margin:22px auto 0;padding:0;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.sx-steps li{font:600 12.5px var(--sans);color:var(--ink-dim);background:#fff;border:1px solid var(--panel-border);border-radius:999px;padding:9px 14px;display:flex;align-items:center;gap:7px;transition:all .35s cubic-bezier(.34,1.56,.64,1)}
+.sx-steps li:before{content:"";width:9px;height:9px;border-radius:5px;border:1.5px solid #b9b2a3;transition:all .3s}
+.sx-steps li.ok{color:var(--bg);background:var(--ink);border-color:var(--ink);transform:scale(1.04)}
+.sx-steps li.ok:before{background:#cfe4c8;border-color:#cfe4c8}
+.sx-done{font:italic 400 19px var(--serif);color:var(--ink);margin:16px 20px 0;animation:qzIn .5s both}
+
+/* ---- the form: card, steps, fields, buttons ---- */
+.apply{padding:46px 14px 110px}
+.apply-head{margin-bottom:26px;padding:0 6px}
+.apply-head .kick{margin-bottom:10px}
+.apply-head h2{font-size:clamp(32px,9.5vw,40px);line-height:1.05;margin:0 0 10px}
+.apply-head p{font-size:15px;max-width:300px;margin-left:auto;margin-right:auto}
+.card{padding:22px 18px 24px;border-radius:30px;border:1px solid var(--panel-border);box-shadow:0 30px 60px -36px rgba(27,26,24,.45)}
+.authbar{justify-content:space-between;margin:-4px 0 14px;font-size:13px;gap:8px}
+.authbar a,.authbar button,.linklike{color:var(--ink);font-weight:600;font-size:13px}
+#stepCap{font:600 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:#76706a;margin:0 0 10px}
+.progress{display:grid!important;grid-template-columns:repeat(5,1fr);gap:6px;overflow:visible;margin:0 0 22px;padding:0;border:0}
+.progress-item{opacity:1!important;position:relative;height:6px;border-radius:3px;background:#e8e3d9;transition:background .4s}
+.progress-item.active{background:var(--ink)}
+.progress-item .n,.progress-item .l{display:none!important}
+.flow-title{font:400 31px/1.08 var(--serif);font-style:normal;letter-spacing:-.6px;margin:0 0 8px}
+.flow-body{font-size:14.5px;line-height:1.55;color:var(--ink-dim);margin:0 0 22px}
+.field{margin-bottom:18px}
+.field label{display:block;font:600 12.5px/1.2 var(--sans);color:var(--ink);margin-bottom:8px;letter-spacing:.01em}
+.field input,.field select,.field textarea{width:100%;height:54px;padding:0 16px!important;background:#f7f4ee;border:1.5px solid #e8e3d9;border-radius:16px!important;color:var(--ink);font-family:var(--sans);transition:border-color .2s,background .2s,box-shadow .2s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--ink);background:#fff;box-shadow:0 0 0 4px rgba(27,26,24,.06)}
+.field .hint{font-size:12.5px;color:var(--ink-dimmer);margin-top:7px;line-height:1.45}
+.field .err{display:block;font:600 12.5px/1.4 var(--sans);color:var(--ink);margin-top:8px;padding-left:10px;border-left:3px solid var(--ink)}
+.field.invalid input{border-color:var(--ink);background:#fff}
+.field .ok-line{font-size:12.5px;margin-top:8px}
+.phone-row{grid-template-columns:134px 1fr!important;gap:10px}
+.chips{gap:8px}
+.chip{border-radius:999px;min-height:44px;padding:0 16px;font:500 14px var(--sans);background:#f7f4ee;border:1.5px solid #e8e3d9;color:var(--ink);transition:all .25s cubic-bezier(.34,1.56,.64,1)}
+.chip:active{transform:scale(.95)}
+.chip[aria-checked="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg);font-weight:600}
+.nav-row{display:flex!important;flex-direction:column-reverse;align-items:stretch;gap:10px;margin-top:26px}
+.nav-row>span{display:none}
+.nav-row .btn,.nav-row .btn-ghost,.btn-block{width:100%;height:54px;padding:0 20px;font-size:15.5px}
+.nav-row .btn-ghost{border-color:transparent;color:var(--ink-dim);height:46px}
+.btn:disabled{opacity:.35}
+.code-input{font-size:30px;letter-spacing:.5em;text-align:center}
+.notice{border-radius:16px;border:0;background:#f0ece4;padding:14px 16px;font-size:13.5px;line-height:1.5}
+.notice.error{background:#f0ece4;border-left:3px solid var(--ink);border-radius:6px 16px 16px 6px;color:var(--ink);font-weight:600}
+.otp-note{border-radius:16px}
+.review-list{border:1px solid #e8e3d9;border-radius:20px;padding:4px 16px;margin:0 0 18px;background:#fff}
+.review-row{display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid #eee9de;font-size:14px}
+.review-row:last-child{border-bottom:0}
+.review-row .k{color:var(--ink-dimmer);flex:none}
+.review-row .v{text-align:right;font-weight:600;word-break:break-word}
+.vouch-item,.ref-row input{border-radius:16px}
+.confirm .card{padding:32px 20px}
+.confirm h2,.confirm p{text-align:center}
+.queue-num,.qpos{font-size:64px}
+.id-block{padding:54px 20px 58px}
+.id-kicker{font-size:19px}
+.member-card{border-radius:20px}
+.mc-name{font-size:28px}
+
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.dr-h1 span,.dr-sub,.dr .ledger-row,.hb{opacity:1;transform:none;animation:none}.dr-mark path{stroke-dashoffset:0;animation:none}.dr-mark .knob{opacity:1;animation:none}.dr-scroll span{animation:none}}
 </style>
 </head>
@@ -819,7 +892,7 @@ section[id]{scroll-margin-top:54px}
 <div id="app">
 <header class="tb">
   <a class="tb-brand" href="#door" aria-label="The Semi Circle, back to top"><svg viewBox="0 0 40 24" aria-hidden="true"><path d="M4,20 A16,16 0 0 1 36,20 L4,20 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>The Semi <i>Circle</i></span></a>
-  <a class="tb-status" href="status.html">Check status</a>
+  <a class="tb-apply" href="#apply" data-apply>Apply</a>
 </header>
 
 <!-- ================= THE DOOR (hero) ================= -->
@@ -839,18 +912,19 @@ section[id]{scroll-margin-top:54px}
       <span class="ledger-num" id="regNum">
         <span class="ledger-digit" data-pos="0">0</span><span class="ledger-digit" data-pos="1">0</span><span class="ledger-digit" data-pos="2">0</span><span class="ledger-digit" data-pos="3">0</span>
       </span>
-      <span class="ledger-label">Waiting</span>
+      <span class="ledger-label">Applied</span>
     </div>
     <div class="ledger-divider"></div>
     <div class="ledger-stat">
       <span class="ledger-num" id="selNum">
         <span class="ledger-digit" data-pos="0">0</span><span class="ledger-digit" data-pos="1">0</span><span class="ledger-digit" data-pos="2">0</span><span class="ledger-digit" data-pos="3">0</span>
       </span>
-      <span class="ledger-label">In</span>
+      <span class="ledger-label">Let in</span>
     </div>
   </div>
-  <button type="button" class="hb" id="holdApply" aria-label="Hold to request an invitation. Press and hold for about a second."><i></i><span id="holdApplyText">Hold to request an invitation</span></button>
-  <p class="dr-note">No app yet. For now, this page is the door.</p>
+  <button type="button" class="hb" id="holdApply" aria-label="Hold to apply to join. Press and hold for about a second."><i></i><span id="holdApplyText">Hold to apply</span></button>
+  <p class="dr-note">Free. Takes about two minutes. Invitation only, so every application is read by a person.</p>
+  <p class="dr-note dr-note2">No app yet, so this page is the door. <a href="status.html">Already applied? Check your status.</a></p>
   <button type="button" class="btn" id="heroApplyBtn" hidden>Request an invitation</button>
   <a class="dr-scroll" href="#rules" aria-label="Scroll down">Or scroll. We have jokes.<span aria-hidden="true">↓</span></a>
 </section>
@@ -868,7 +942,7 @@ section[id]{scroll-margin-top:54px}
   <div class="rs-end" id="rsEnd" hidden>
     <div class="rs-score" id="rsScore"></div>
     <p class="rs-verdict" id="rsVerdict"></p>
-    <div class="fx-actions"><button type="button" class="btn" data-apply>Request an invitation</button><button type="button" class="btn-ghost" id="rsAgain">Go again</button></div>
+    <div class="fx-actions"><button type="button" class="btn" data-apply>Apply to join</button><button type="button" class="btn-ghost" id="rsAgain">Go again</button></div>
   </div>
 </section>
 
@@ -876,7 +950,7 @@ section[id]{scroll-margin-top:54px}
 <section class="fx fx-peach" id="quiz">
   <p class="kick rv">Honest question</p>
   <h2 class="rv">How reliable are you, really?</h2>
-  <p class="fx-sub rv">Six questions. We won't tell anyone. We might screenshot it.</p>
+  <p class="fx-sub rv">Seven questions, picked at random. We won't tell anyone. We might screenshot it.</p>
   <div class="qz rv" id="qz">
     <button type="button" class="btn qz-start" id="qzStart">Find out</button>
   </div>
@@ -895,9 +969,10 @@ section[id]{scroll-margin-top:54px}
 </section>
 <!-- ================= APP PREVIEW (interactive, demo data) ================= -->
 <section class="sx" id="inside" aria-labelledby="sxTitle">
-  <p class="sx-kicker">Inside</p>
-  <h2 id="sxTitle">Take it for a spin.</h2>
-  <p class="sx-sub">A tiny working piece of the app. Tap a plan, then press and hold the button. Demo data, no sign-up.</p>
+  <p class="sx-kicker">Live demo</p>
+  <h2 id="sxTitle">Try the app. Really.</h2>
+  <p class="sx-sub">This is not a screenshot. It works. Tap a plan, hold the button, open the profile. Demo data, no sign-up.</p>
+  <div class="sx-badge"><i></i>Live demo &nbsp;·&nbsp; tap anything</div>
   <div class="sx-stage">
     <div class="sx-phone" role="group" aria-label="Interactive preview of The Semi Circle app, using demo data">
       <div class="sx-screen" id="sxScreen">
@@ -909,6 +984,7 @@ section[id]{scroll-margin-top:54px}
           <div class="sx-label"><span>Up next</span><span>All bookings</span></div>
           <button class="sx-card" style="height:180px" data-open="0" aria-label="Padel doubles at sunrise, open">
             <img class="bg" alt="" data-ph="850fea2d-f0d5-4b95-87ba-a5335feb4f6c.jpg">
+            <span class="sx-ping" id="sxPing" aria-hidden="true"><i></i><b>Tap me</b></span>
             <span class="sx-pill"><i class="sx-dot"></i><span id="sxCount">in 2h 14m</span></span>
             <span class="t"><b>Padel doubles at sunrise</b><span>Tomorrow, 7:00 am &nbsp;·&nbsp; Sector 43</span></span>
           </button>
@@ -947,7 +1023,9 @@ section[id]{scroll-margin-top:54px}
       </div>
     </div>
   </div>
-  <div class="sx-cta"><a class="btn" href="#apply">Request an invitation</a></div>
+  <ol class="sx-steps" id="sxSteps" aria-label="Things to try"><li data-s="1">Tap a plan</li><li data-s="2">Hold to join</li><li data-s="3">Open Profile</li></ol>
+  <p class="sx-done" id="sxDone" hidden>That is the app. Getting in is the hard part.</p>
+  <div class="sx-cta"><a class="btn" href="#apply">Apply to join</a></div>
   <p class="sx-fine">Demo data. The real app is for members only.</p>
 </section>
 <script>
@@ -1054,8 +1132,9 @@ section[id]{scroll-margin-top:54px}
 <!-- ================= FORM (same five steps as the app) ================= -->
 <section class="apply wrap" id="apply">
   <div class="apply-head">
+    <p class="kick">Apply to join</p>
     <h2>Request an invitation</h2>
-    <p>Five short steps. Read by people, not a model.</p>
+    <p>Five short steps, about two minutes. Read by people, not a model.</p>
     <p class="hint" id="declinedStat" style="margin-top:10px;"></p>
   </div>
   <div class="card">
@@ -1101,7 +1180,7 @@ section[id]{scroll-margin-top:54px}
   <div style="margin-top:14px"><a href="/privacy/" style="color:inherit">Privacy policy</a> &nbsp;·&nbsp; <a href="/terms/" style="color:inherit">Terms of use</a></div>
 </footer>
 
-<div id="stk"><button type="button" data-apply>Request an invitation</button></div>
+<div id="stk"><button type="button" data-apply>Apply to join</button></div>
 <footer class="foot">The Semi Circle &nbsp;·&nbsp; Delhi NCR &nbsp;·&nbsp; By invitation<br><a href="terms/">Terms</a><a href="privacy/">Privacy</a><a href="status.html">Status</a></footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1414,7 +1493,7 @@ section[id]{scroll-margin-top:54px}
         showStep(2);
       });
       put(panel, 
-        h('h3', {class:'flow-title'}, 'Request an invitation.'), h('p', {class:'flow-body'}, 'Five short steps. Read by people, not a model.'),
+        h('h3', {class:'flow-title'}, 'First, the basics.'), h('p', {class:'flow-body'}, 'Who you are and how to reach you.'),
         field('fullName', 'Full name', fn, null, e.fullName),
         field('phone', 'Phone number', phoneRow, null, e.phone),
         h('div', {class:'field' + (e.cityPick ? ' invalid' : '')}, h('label', null, 'City'), cityChips,
@@ -1653,7 +1732,7 @@ section[id]{scroll-margin-top:54px}
       showPlain(() => [h('h3', {class:'flow-title'}, 'Welcome back.'), h('p', {class:'flow-body'}, 'Log in with your personal email to see where your application stands.'),
         field('lemail', 'Personal email', e1), field('lpw', 'Password', p1), err ? h('div', {class:'notice error', role:'alert'}, err) : null,
         btn(busy ? 'Logging in…' : 'Log in', 'btn btn-block', go, {disabled: busy}),
-        h('div', {class:'nav-row'}, btn('Forgot, or haven\'t set a password?', 'linklike', () => forgotView()), btn('New here? Request an invitation', 'linklike', () => { showStep(state.step || 1); }))]);
+        h('div', {class:'nav-row'}, btn('Forgot, or haven\'t set a password?', 'linklike', () => forgotView()), btn('New here? Apply to join', 'linklike', () => { showStep(state.step || 1); }))]);
     };
     async function go(){
       if(busy) return; busy = true; err = null; draw();
@@ -1776,26 +1855,81 @@ section[id]{scroll-margin-top:54px}
   function hbStart(){if(hb.classList.contains('done')||hbT)return;hb.classList.add('fill');$('holdApplyText').textContent='Keep holding…';buzz(8);
     hbBar.style.transition='width '+(reduce?1:MS)+'ms linear';hbBar.style.width='100%';
     hbT=setTimeout(function(){hbT=null;hb.classList.add('done');$('holdApplyText').textContent='Come in.';buzz([20,40,20]);confettiOn(hb);
-      setTimeout(function(){$('heroApplyBtn').click();setTimeout(function(){hb.classList.remove('done','fill');hbBar.style.transition='none';hbBar.style.width='0';$('holdApplyText').textContent='Hold to request an invitation'},1400)},500)},reduce?1:MS)}
-  function hbStop(){if(!hbT)return;clearTimeout(hbT);hbT=null;hb.classList.remove('fill');hbBar.style.transition='width .25s ease';hbBar.style.width='0';$('holdApplyText').textContent='Hold to request an invitation'}
+      setTimeout(function(){$('heroApplyBtn').click();setTimeout(function(){hb.classList.remove('done','fill');hbBar.style.transition='none';hbBar.style.width='0';$('holdApplyText').textContent='Hold to apply'},1400)},500)},reduce?1:MS)}
+  function hbStop(){if(!hbT)return;clearTimeout(hbT);hbT=null;hb.classList.remove('fill');hbBar.style.transition='width .25s ease';hbBar.style.width='0';$('holdApplyText').textContent='Hold to apply'}
   hb.addEventListener('pointerdown',function(e){try{hb.setPointerCapture(e.pointerId)}catch(_){}hbStart()});
   ['pointerup','pointercancel','pointerleave'].forEach(function(ev){hb.addEventListener(ev,hbStop)});
   hb.addEventListener('keydown',function(e){if((e.key===' '||e.key==='Enter')&&!e.repeat){e.preventDefault();hbStart()}});
   hb.addEventListener('keyup',function(e){if(e.key===' '||e.key==='Enter')hbStop()});
 
-  // ---------- rules: swipe cards ----------
-  var RULES=[
-    {t:'Say yes only when you mean yes.',n:'"Maybe" is a no with manners.'},
-    {t:'Show up. Or tell us early.',n:'Ghosting comes with a score.'},
-    {t:'Be on time. Traffic is a reason, not a plan.',n:'Leave early. Blame Rajiv Chowk later.'},
-    {t:'Vouch only for people you could be stuck in a lift with.',n:'You are on the hook for them.'},
-    {t:'Phones away at the table. Photos are fine.',n:'The group chat will survive.'}
+  // ---------- rules: swipe cards (a random hand of 8 from a pool of 56) ----------
+  var POOL=[
+    ['Say yes only when you mean yes.','"Maybe" is a no with manners.'],
+    ['Show up. Or tell us early.','Ghosting comes with a score.'],
+    ['Traffic is a reason, not a plan.','Leave earlier. Blame Rajiv Chowk later.'],
+    ['Vouch only for people you could be stuck in a lift with.','You are on the hook for them.'],
+    ['Phones away at the table. Photos are fine.','The group chat will survive.'],
+    ['Reply to "who is in?" within a day.','Silence is not an RSVP.'],
+    ['Be the first to say "I am in".','Someone has to. It builds character.'],
+    ['Split the bill without a spreadsheet.','Rounding up is a love language.'],
+    ['Cancel at least three hours before.','Honesty has a cut-off time.'],
+    ['Arrive within ten minutes of the start.','Delhi time is not a time zone.'],
+    ['Introduce yourself to the person standing alone.','They were hoping you would.'],
+    ['Never say "five minutes away" from your bed.','We can tell. We have all done it.'],
+    ['Bring your own energy. Borrow nobody else\'s.','Batteries are not included.'],
+    ['A plan with a time and a place beats a plan with a vibe.','Vibes do not book courts.'],
+    ['Say thank you to the person who booked it.','They did the boring part.'],
+    ['Check the group chat before asking what is happening.','It is all there. Scroll up.'],
+    ['Be kind to the waiter. Always.','It says more than your résumé.'],
+    ['Leave a place cleaner than you found it.','Yes, even the cafe table.'],
+    ['Invite one new person to every plan.','The circle is half-open for a reason.'],
+    ['Do not make the plan about your ex.','Not even a little.'],
+    ['Listen more than you post.','Stories can wait. People cannot.'],
+    ['Learn names. Use them.','"Hey, you" is not a name.'],
+    ['Pay your share the same day.','Not the same month.'],
+    ['Cheer for the person who beats you at padel.','They have also been playing since 2019.'],
+    ['Reach out first once in a while.','Nobody keeps score. We do, but quietly.'],
+    ['Say "no" kindly instead of "maybe" slowly.','Both take the same amount of time.'],
+    ['Look up from your phone when someone speaks.','Eyes are free.'],
+    ['Do not hijack the plan to sell something.','Nobody came for your startup.'],
+    ['Keep other people\'s stories to yourself.','What happens at the quiz night stays at the quiz night.'],
+    ['Tell the host if you are bringing someone.','Surprise guests belong in birthdays.'],
+    ['Make the first move on the plan.','Waiting for someone else is how Fridays die.'],
+    ['Be curious about people who are nothing like you.','The best table has one of everything.'],
+    ['Laugh at yourself first.','It is the safest joke in the room.'],
+    ['Do not argue about the bill for more than a minute.','It is chai money.'],
+    ['Respect the "no photos" request.','Every time. Every single time.'],
+    ['Come with an open mind and a closed tab.','The 40 browser tabs can wait.'],
+    ['Be okay with plans that start late and end later.','Some of the best ones do.'],
+    ['Tell people when you are running late. Early.','Not when you are already the reason we are late.'],
+    ['Tip properly. It is not a negotiation.','Do the math before you do the face.'],
+    ['Include the quiet one.','They are noticing everything and judging nothing.'],
+    ['Put your phone on silent before the game starts.','Your boss can wait for a rally.'],
+    ['Forgive a late arrival once.','Everyone has a bad day. You are allowed one too.'],
+    ['Be the friend who actually shows up to the thing.','This is the whole product.'],
+    ['Treat the group chat like a room, not a megaphone.','Fifteen voice notes is not a conversation.'],
+    ['If you booked it, show up first.','Hosting is hospitality.'],
+    ['Give honest feedback with a kind face.','Both. At the same time.'],
+    ['Stay for the whole plan unless you said you would not.','Leaving early is a decision, not an accident.'],
+    ['Bring a friend who would also follow the rules.','Quality is contagious.'],
+    ['Do not forward the plan to people who were not invited.','The circle has a door for a reason.'],
+    ['Say "I do not know" instead of guessing loudly.','We still like you.'],
+    ['Be proud of your terrible dance moves.','It is the one place they are welcome.'],
+    ['Walk away from an argument. Come back with chai.','It solves more than you think.'],
+    ['Try the activity you are bad at.','Everyone starts as the worst player.'],
+    ['Ask before you take the last piece.','Then take it. Politely.'],
+    ['Remember the small things people tell you.','It is the whole friendship.'],
+    ['Make plans for Tuesday too.','Weekends are not the only days that count.'],
+    ['Celebrate other people\'s good news first.','Then talk about yours.']
   ];
-  var ri=0,ryes=0,rst=$('rsStack');
+  var VERDICTS=['None of them? Fiercely independent. You could start a circle of your own.','One out of eight. A very clear sense of self. We respect that.','Two out of eight. Picky, in the best way. Standards are underrated.','Three out of eight. A healthy skeptic. Skeptics ask the useful questions.','Half and half. A balanced mind. The group chat needs you.','Five out of eight. Opinionated, but easy to talk to.','Six out of eight. You would fit in with a little less polish.','Seven out of eight. You would be the one who brings the snacks.','Eight for eight. You were practically born for this.'];
+  var HAND=8,deck=[],ri=0,ryes=0,rst=$('rsStack'),rhand=[];
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+  function dealHand(){if(deck.length<HAND)deck=shuffle(POOL.map(function(_,i){return i}));rhand=deck.splice(0,HAND).map(function(i){return POOL[i]})}
   function rtop(){return rst.querySelector('[data-d="0"]')}
   function rdraw(){
-    var h='';for(var k=Math.min(ri+2,RULES.length-1);k>=ri;k--){var r=RULES[k],d=k-ri;
-      h+='<div class="rs-card" data-d="'+d+'" style="transform:translateY('+(d*11)+'px) scale('+(1-d*.05)+');z-index:'+(10-d)+'"><span class="rs-stamp y">FAIR</span><span class="rs-stamp n">HARD PASS</span><small>Rule '+(k+1)+' of '+RULES.length+'</small><p>'+r.t+'</p><em>'+r.n+'</em></div>'}
+    var h='';for(var k=Math.min(ri+2,rhand.length-1);k>=ri;k--){var r=rhand[k],d=k-ri;
+      h+='<div class="rs-card" data-d="'+d+'" style="transform:translateY('+(d*11)+'px) scale('+(1-d*.05)+');z-index:'+(10-d)+'"><span class="rs-stamp y">FAIR</span><span class="rs-stamp n">HARD PASS</span><small>Rule '+(k+1)+' of '+rhand.length+'</small><p>'+r[0]+'</p><em>'+r[1]+'</em></div>'}
     rst.innerHTML=h;var t=rtop();if(t)rbind(t)}
   function rbind(el){
     var sx=0,dx=0,on=false;
@@ -1807,44 +1941,105 @@ section[id]{scroll-margin-top:54px}
     el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end)}
   function rfly(dir){var el=rtop();if(!el||el.dataset.gone)return;el.dataset.gone='1';
     if(dir>0)ryes++;buzz(14);el.style.transition='transform .4s ease,opacity .4s ease';el.style.transform='translateX('+(dir*560)+'px) rotate('+(dir*26)+'deg)';el.style.opacity='0';
-    setTimeout(function(){ri++;if(ri>=RULES.length)rend();else rdraw()},300)}
-  function rend(){rst.hidden=true;$('rsBtns').hidden=true;var e=$('rsEnd');e.hidden=false;$('rsScore').textContent=ryes+' of '+RULES.length;
-    $('rsVerdict').textContent=ryes===RULES.length?"You'd fit in. Suspiciously well.":ryes>=3?'Almost one of us. We can work with that.':"You'd hate it here. Apply anyway, we like a challenge.";
-    if(ryes===RULES.length){confettiOn($('rsScore'))}}
+    setTimeout(function(){ri++;if(ri>=rhand.length)rend();else rdraw()},300)}
+  function rend(){rst.hidden=true;$('rsBtns').hidden=true;var e=$('rsEnd');e.hidden=false;$('rsScore').textContent=ryes+' of '+rhand.length;
+    $('rsVerdict').textContent=VERDICTS[ryes];if(ryes>=6){confettiOn($('rsScore'))}}
+  function rstart(){ri=0;ryes=0;dealHand();$('rsEnd').hidden=true;rst.hidden=false;$('rsBtns').hidden=false;rdraw()}
   $('rsYes').addEventListener('click',function(){rfly(1)});$('rsNo').addEventListener('click',function(){rfly(-1)});
-  $('rsAgain').addEventListener('click',function(){ri=0;ryes=0;$('rsEnd').hidden=true;rst.hidden=false;$('rsBtns').hidden=false;rdraw()});
-  rdraw();
+  $('rsAgain').addEventListener('click',rstart);
+  rstart();
 
-  // ---------- quiz ----------
-  var Q=[
-    {q:'A friend says "be there at 7". You arrive at',o:[['6:55. Early. Unwell, honestly.',3],['7:15. Delhi time.',2],['7:40, with a story.',1],['"Five minutes away." From bed.',0]]},
-    {q:'You said yes. Then it starts raining. You',o:[['Go. A yes is a yes.',3],['Message early and cancel honestly.',2],['Ask the chat "still happening?"',1],['Go quiet and hope.',0]]},
-    {q:'The group chat asks "who is in?" You',o:[['Reply straight away.',3],['Thumbs up. Nothing else.',1],['Reply three days later.',1],['Read it. Forget it. Panic at 5 pm.',0]]},
-    {q:'You promised to be the fourth player. The night before, you',o:[['Confirm and set an alarm.',3],['Check the weather, then confirm.',2],['Think about confirming.',1],['Get a better offer. Take it.',0]]},
-    {q:'Your last cancellation was',o:[['Never. I am annoying like that.',3],['Weeks ago, with a real reason.',2],['Last week, with a bad reason.',1],['This morning.',0]]},
-    {q:'Someone says "no pressure, come if you can". You',o:[['Decide yes or no right now.',3],['Ask what the plan is first.',2],['Say maybe and mean no.',1],['Say yes and mean maybe.',0]]}
+  // ---------- quiz (a random seven from a pool of 56; options shuffled) ----------
+  var QP=[
+    ['A friend says "be there at 7". You arrive at',['6:55. Early. Unwell, honestly.','7:15. Delhi time.','7:40, with a story.','"Five minutes away." From bed.']],
+    ['You said yes. Then it starts raining. You',['Go. A yes is a yes.','Message early and cancel honestly.','Ask the chat "still happening?"','Go quiet and hope.']],
+    ['The group chat asks "who is in?" You',['Reply straight away.','Reply by the end of the day.','Thumbs up. Nothing else.','Read it. Panic at 5 pm.']],
+    ['You promised to be the fourth player. The night before, you',['Confirm and set an alarm.','Check the weather, then confirm.','Think about confirming.','Get a better offer. Take it.']],
+    ['Your last cancellation was',['Never. I am annoying like that.','Weeks ago, with a real reason.','Last week, with a decent reason.','This morning.']],
+    ['Someone says "no pressure, come if you can". You',['Decide yes or no right now.','Ask what the plan is first.','Say maybe and mean no.','Say yes and mean maybe.']],
+    ['You are running late. You tell them',['Before you leave, with a time.','On the way, with a time.','When you arrive, with a story.','Never. They will see you.']],
+    ['A friend asks you to be on the guest list for their birthday. You',['Reply with a yes and a plus-one count.','Say yes. Mention a plus-one later.','Say "will try".','Open the invite. Close it.']],
+    ['You booked a court for four. Two drop out the morning of. You',['Find replacements and tell the group.','Tell the group and play with three.','Tell nobody. Hope for the best.','Cancel and sulk.']],
+    ['The restaurant asks for a deposit. You',['Pay it and tell the group.','Pay it. Collect later.','Ask someone else to pay.','Cancel the idea.']],
+    ['A friend moves flats and needs help on Saturday. You',['Show up with boxes.','Show up with chai.','Send the sympathy of a thumbs up.','Discover a prior commitment.']],
+    ['It is a long weekend. Plans are being made. You',['Suggest a date and book it.','Say "count me in" and follow through.','Say "count me in" and follow quietly.','Say "let me check" for two weeks.']],
+    ['You are meeting a friend at a metro station. You',['Share your live location and arrive early.','Arrive on time.','Arrive when the train does.','Get off at the wrong station.']],
+    ['A plan needs a decision by 6 pm. At 5:55 you',['Have already decided.','Decide at 5:55.','Wait for someone else to.','Check your phone at 8.']],
+    ['Someone invites you to a dinner. You',['Reply within the hour.','Reply by evening.','Reply the next day.','Reply after the dinner.']],
+    ['You got a better offer after saying yes. You',['Stick to the original plan.','Ask if the first plan can move.','Do both and arrive tired.','Pick the better one. Apologise later.']],
+    ['The group asks who can host game night. You',['Raise your hand first.','Offer if nobody else does.','Say "maybe next time".','Suddenly get a work call.']],
+    ['A reminder pops up for a plan you made. You',['Already knew. Already packed.','Feel guilty. Get ready.','Snooze it. Then rush.','Notice it an hour after it started.']],
+    ['You said you would bring something. You',['Bring it, plus extra.','Bring it.','Bring something else.','Bring yourself. Mostly.']],
+    ['A friend asks you to proofread something by Friday. You',['Send it Thursday.','Send it Friday morning.','Send it Friday night.','Send it Monday with an apology.']],
+    ['It is a Sunday morning run. Your alarm is at 5:30. You',['Get up. No debate.','Get up on the second alarm.','Turn it off and join next time.','Turn it off and join never.']],
+    ['A friend is having a tough time. You',['Call the same day.','Message the same day.','Message the next day.','Mean to message.']],
+    ['You owe a friend a favour. You',['Return it before they ask.','Return it when they ask.','Return it eventually.','Return it with a dramatic gesture.']],
+    ['You are given a task in a group plan. You',['Do it early and report back.','Do it on time.','Do it at the last minute.','Do it in your head.']],
+    ['Your friend sends the venue address 20 minutes before. You',['Reply "got it" immediately.','Reply when you leave.','Reply when you arrive.','Ask for the address again.']],
+    ['A new person joins the plan. You',['Introduce yourself first.','Wave warmly.','Wait for them to speak.','Check your phone politely.']],
+    ['You are invited to something you do not want to go to. You',['Say no kindly and early.','Say no kindly and late.','Say maybe and ghost.','Say yes and regret it.']],
+    ['The plan is on a weekday evening after work. You',['Plan your day around it.','Leave when the office clears out.','Arrive when you arrive.','Realise it is a Tuesday.']],
+    ['Someone asks, "are we still on?" You',['Answer in one minute.','Answer within the hour.','Answer by evening.','Answer in a meme.']],
+    ['A friend wants to meet but you are busy. You',['Suggest another time and keep it.','Suggest another time.','Say "soon!" and vanish.','Say nothing and vanish.']],
+    ['You said you would call back. You',['Call back within the hour.','Call back the same day.','Call back next week.','Call back after the person has given up.']],
+    ['Someone puts you in charge of the playlist. You',['Make one the night before.','Make one on the way.','Press shuffle with confidence.','Hand your phone to someone else.']],
+    ['A plan needs a head count by Thursday. You',['Reply on Monday.','Reply on Wednesday.','Reply on Thursday at 11:59 pm.','Reply on Friday.']],
+    ['There is a group trip, and the tickets must be booked today. You',['Book within the hour.','Book by evening.','Say "will book tomorrow".','Book after the price has doubled.']],
+    ['A friend shares a work win. You',['Reply with a call.','Reply with a long message.','Reply with a heart.','Reply a week later.']],
+    ['You said you would be there at 8. At 7:30 you',['Are already there.','Are in the car.','Are in the shower.','Are asleep.']],
+    ['The group asks for a cuisine preference. You',['Name one and a backup.','Say "anything".','Say "anything except that".','Veto everything silently.']],
+    ['A friend asks if you remember their birthday. You',['Already booked a table.','Are about to message.','Remember at 9 pm.','Remember next week.']],
+    ['You are the only one who knows the way to the venue. You',['Share a pin and landmarks.','Say "follow me".','Say "just use maps".','Take a different route.']],
+    ['A friend says "I owe you one". You',['Say "just come on time".','Say "I will remember".','Say "you owe me five".','Keep a ledger in your head.']],
+    ['A plan falls through at the last minute. You',['Suggest another plan.','Say "no worries".','Sulk politely.','Make a meme.']],
+    ['You see a plan on a story you were not invited to. You',['Message the person with a joke.','Add a comment.','Add a sad reaction.','Mute them. Then unmute.']],
+    ['A friend asks you to pick the time. You',['Pick one and hold to it.','Pick one and rethink.','Say "anything works".','Say "what do you suggest?"']],
+    ['Your plan clashes with another. You',['Choose within an hour.','Choose within a day.','Choose the last day.','Let them both fall through.']],
+    ['A group buys tickets and asks you to pay. You',['Pay straight away.','Pay when you remember.','Pay when reminded twice.','Pay in chai.']],
+    ['You arrive and nobody else has. You',['Get a table and message the group.','Stand outside and wait.','Wait in the car.','Go home. Say you were there.']],
+    ['Someone needs a ride and you have a car. You',['Offer first.','Offer when asked.','Offer reluctantly.','Say the car has a mood.']],
+    ['It is the night before an early plan. You',['Sleep early. Alarm set.','Sleep late. Alarm set.','Sleep late. No alarm.','Sleep on the sofa. Phone on 2 percent.']],
+    ['A friend invites you to try a new activity. You',['Say yes and learn the rules.','Say yes and wing it.','Say "maybe".','Say "I will watch".']],
+    ['A plan is on a rainy evening. You',['Pack an umbrella and show up.','Take a cab and show up.','Wait to see if it clears.','Declare it a sign.']],
+    ['The group wants a photo at the end. You',['Offer to take it.','Stand where you fit.','Photobomb, lovingly.','Leave before it.']],
+    ['You said you would meet someone for coffee. You',['Arrive early with a book.','Arrive right on time.','Arrive 15 minutes late.','Arrive with an apology and a coffee for them.']],
+    ['A new plan needs a volunteer. You',['Volunteer.','Volunteer a friend.','Volunteer next time.','Volunteer your best wishes.']],
+    ['You are given directions to a hidden cafe. You',['Arrive early. Find it.','Arrive on time. Find it.','Arrive late. Find it.','Arrive somewhere else. Make friends.']],
+    ['At the end of a good plan, you',['Message the group the next day.','Message the group a week later.','Mean to message the group.','Wonder who has the photos.']],
+    ['You are in a plan chat that is going quiet. You',['Revive it with a plan.','Revive it with a meme.','Leave it alone.','Mute it. Then miss it.']]
   ];
-  var qz=$('qz'),qi=0,qtot=0,lastScore=0,lastTitle='';
+  var TIERS=[
+    [9.5,'Frighteningly reliable.','You send reminders nobody asked for. Everyone is quietly grateful.'],
+    [9,'Annoyingly reliable.','You are the person who books the court. We would like to meet you.'],
+    [8,'The one who books the table.','Early, kind and organised. Please do not change.'],
+    [7,'Dependable, with style.','You show up, and you look good doing it.'],
+    [6,'Mostly there, and charming about it.','A few late arrivals and one abandoned brunch. Very Delhi. Very fixable.'],
+    [5,'Delhi standard. Which is a standard.','You mean well. The group chat knows your heart.'],
+    [4,'Spontaneous, with good intentions.','You are the plan B everyone loves to have.'],
+    [3,'Chaotic good.','Things happen around you. Usually good things. Eventually.'],
+    [2,'A free spirit with a great excuse.','We would travel with you. We would pack for both.'],
+    [0,'A legend in the group chat.','Nobody knows what you will do next. Including you. That is the charm.']
+  ];
+  var QN=7,qdeck=[],qset=[],qz=$('qz'),qi=0,qtot=0,lastScore=0,lastTitle='';
+  function qdeal(){if(qdeck.length<QN)qdeck=shuffle(QP.map(function(_,i){return i}));qset=qdeck.splice(0,QN).map(function(i){return QP[i]})}
   function qstep(){
-    var q=Q[qi],h='<div class="qz-bar"><i style="width:'+(qi/Q.length*100)+'%"></i></div><p class="qz-q">'+q.q+'</p>';
-    q.o.forEach(function(o,k){h+='<button type="button" class="qz-opt" data-k="'+k+'">'+o[0]+'</button>'});qz.innerHTML=h;
+    var q=qset[qi],opts=shuffle(q[1].map(function(t,k){return [t,3-k]}));
+    var h='<div class="qz-bar"><i style="width:'+(qi/QN*100)+'%"></i></div><p class="qz-q">'+q[0]+'</p>';
+    opts.forEach(function(o,k){h+='<button type="button" class="qz-opt" data-w="'+o[1]+'">'+o[0]+'</button>'});qz.innerHTML=h;
     qz.querySelectorAll('.qz-opt').forEach(function(b){b.addEventListener('click',function(){
-      b.classList.add('pick');buzz(10);qtot+=q.o[+b.dataset.k][1];qz.querySelectorAll('.qz-opt').forEach(function(x){x.disabled=true});
-      setTimeout(function(){qi++;if(qi>=Q.length)qres();else qstep()},300)})})}
+      b.classList.add('pick');buzz(10);qtot+=+b.dataset.w;qz.querySelectorAll('.qz-opt').forEach(function(x){x.disabled=true});
+      setTimeout(function(){qi++;if(qi>=QN)qres();else qstep()},300)})})}
   function qres(){
-    var sc=Math.round(qtot/(Q.length*3)*100)/10,t,l;
-    if(sc>=8.6){t='Annoyingly reliable.';l='You are the person who books the court. We would like to meet you.'}
-    else if(sc>=6.6){t='Mostly there.';l='A few late arrivals and one abandoned brunch. Very Delhi. Very fixable.'}
-    else if(sc>=4){t='Delhi standard.';l='You mean well. The group chat knows better.'}
-    else{t='Chronic "five minutes away".';l='We admire the honesty. Apply anyway. We believe in growth.'}
-    lastScore=sc;lastTitle=t;var C=2*Math.PI*60;
+    var sc=Math.round(qtot/(QN*3)*100)/10,t=TIERS[TIERS.length-1];
+    for(var k=0;k<TIERS.length;k++){if(sc>=TIERS[k][0]){t=TIERS[k];break}}
+    lastScore=sc;lastTitle=t[1];var C=2*Math.PI*60;
     qz.innerHTML='<div class="qz-res"><svg class="qz-ring" viewBox="0 0 150 150"><circle cx="75" cy="75" r="60" fill="none" stroke="rgba(27,26,24,.12)" stroke-width="12"/><circle id="qzRing" cx="75" cy="75" r="60" fill="none" stroke="#1b1a18" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'" transform="rotate(-90 75 75)" style="transition:stroke-dashoffset 1.3s cubic-bezier(.3,.8,.3,1)"/><text x="75" y="88" text-anchor="middle" font-family="Fraunces,serif" font-size="40" fill="#1b1a18">'+sc.toFixed(1)+'</text></svg>'+
-      '<h3 class="qz-title">'+t+'</h3><p class="qz-line">'+l+'</p><div class="fx-actions"><button type="button" class="btn" id="qzShare">Share my score</button><button type="button" class="btn-ghost" id="qzAgain">Retake</button></div><div class="fx-actions" style="margin-top:10px"><button type="button" class="btn-ghost" data-apply>Request an invitation</button></div></div>';
+      '<h3 class="qz-title">'+t[1]+'</h3><p class="qz-line">'+t[2]+'</p><div class="fx-actions"><button type="button" class="btn" id="qzShare">Share my score</button><button type="button" class="btn-ghost" id="qzAgain">Take another round</button></div><div class="fx-actions" style="margin-top:10px"><button type="button" class="btn-ghost" data-apply>Apply to join</button></div></div>';
     setTimeout(function(){var r=$('qzRing');if(r)r.style.strokeDashoffset=String(C*(1-sc/10))},80);
-    if(sc>=8.6)setTimeout(function(){confettiOn($('qzRing'))},900);
-    $('qzAgain').addEventListener('click',function(){qi=0;qtot=0;qstep()});$('qzShare').addEventListener('click',shareScore);
+    if(sc>=8)setTimeout(function(){confettiOn($('qzRing'))},900);
+    $('qzAgain').addEventListener('click',function(){qi=0;qtot=0;qdeal();qstep()});$('qzShare').addEventListener('click',shareScore);
     qz.querySelector('[data-apply]').addEventListener('click',goApply)}
-  $('qzStart').addEventListener('click',function(){buzz(10);qi=0;qtot=0;qstep()});
+  $('qzStart').addEventListener('click',function(){buzz(10);qi=0;qtot=0;qdeal();qstep()});
   function shareScore(){
     var go=function(){var c=document.createElement('canvas');c.width=1080;c.height=1350;var x=c.getContext('2d');
       var SER='Fraunces, Georgia, serif',SAN='Inter, Helvetica, Arial, sans-serif';
@@ -1871,6 +2066,27 @@ section[id]{scroll-margin-top:54px}
       if(k>=6||reduce){clearInterval(iv);var n;do{n=Math.floor(Math.random()*EX.length)}while(n===exLast);exLast=n;txt.textContent=EX[n];exN++;exBusy=false;$('exCopy').hidden=false;$('exBtn').textContent='Another one';
         $('exNote').textContent=exN===3?'You are getting good at this. That is the problem.':exN===6?'At this point, join us. We have a score for exactly this.':exN===10?'We are legally obliged to say: just go.':''}},reduce?1:70)});
   $('exCopy').addEventListener('click',function(){var t=$('exText').textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast('Copied. Use responsibly.')},function(){toast('Long press to copy.')})});
+
+
+  // step caption above the progress bar, kept in step with the form
+  var prog=$('progress');
+  if(prog){
+    var cap=document.createElement('p');cap.id='stepCap';prog.parentNode.insertBefore(cap,prog);
+    var NAMES=['Details','Login','Work email','Vouch','Review'];
+    var upd=function(){
+      if(prog.style.display==='none'){cap.style.display='none';return}
+      cap.style.display='';var n=prog.querySelectorAll('.progress-item.active').length||1;cap.textContent='Step '+n+' of 5  ·  '+NAMES[n-1]};
+    new MutationObserver(upd).observe(prog,{attributes:true,subtree:true,attributeFilter:['class','style']});upd();
+  }
+
+  // demo: tick off what a visitor has tried
+  var sxDone={};
+  function sxTick(n){if(sxDone[n])return;sxDone[n]=true;var li=document.querySelector('#sxSteps [data-s="'+n+'"]');if(li)li.classList.add('ok');buzz(8);
+    var ping=$('sxPing');if(ping&&n===1)ping.style.display='none';
+    if(sxDone[1]&&sxDone[2]&&sxDone[3]){$('sxDone').hidden=false;confettiOn($('sxSteps'))}}
+  document.querySelectorAll('#sxHome [data-open]').forEach(function(c){c.addEventListener('click',function(){sxTick(1)})});
+  var sxHold=$('sxHold');if(sxHold)new MutationObserver(function(){if(sxHold.classList.contains('done'))sxTick(2)}).observe(sxHold,{attributes:true,attributeFilter:['class']});
+  document.querySelectorAll('#sxNav [data-tab="prof"]').forEach(function(b){b.addEventListener('click',function(){sxTick(3)})});
 
   // sticky apply pill: show after the door, hide near the form
   var stk=$('stk'),pastDoor=false,atForm=false;
