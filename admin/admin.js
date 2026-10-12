@@ -232,7 +232,7 @@ renderers.applicants = async (main, sub) => {
     list.length ? table(['Name', 'Contact', 'City', 'Work email', 'Signals', 'Applied', ''], list.map((a) => tr([
       h('div', null, a.full_name, a.fast_track ? [' ', badge('fast track', 'ok')] : null),
       h('div', null, a.phone, h('div', { class: 'faint' }, a.personal_email)),
-      a.city, h('div', null, a.work_email, ' ', badge(a.work_email_verified ? 'verified' : 'unverified', a.work_email_verified ? 'ok' : null)),
+      h('div', null, a.city, a.area ? h('div', { class: 'faint' }, a.area) : null), h('div', null, a.work_email, ' ', badge(a.work_email_verified ? 'verified' : 'unverified', a.work_email_verified ? 'ok' : null)),
       h('div', { class: 'faint' }, a.linkedin_url && safeUrl(a.linkedin_url) ? h('a', { href: safeUrl(a.linkedin_url), target: '_blank', rel: 'noopener noreferrer' }, 'LinkedIn') : 'no LinkedIn', h('br'), a.referred_by_name ? 'Referred by ' + a.referred_by_name : 'No referrer', a.vouches_total ? ' · ' + a.vouches_total + ' vouches' : ''),
       fmtDate(a.created_at),
       h('div', { class: 'row' },
