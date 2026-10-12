@@ -372,3 +372,7 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Sections: a "door" intro (tap the half-circle five times for a surprise; hold the button to request an invitation, which scrolls to the form), swipeable house rules with a verdict, a six-question reliability quiz with a shareable score card, an excuse generator, the working app preview, the card block, the application form (same five steps, restyled), and the closing email.
 - A small sticky "Request an invitation" button appears after the intro and hides at the form. Buzz feedback on Android. Animations respect reduced motion.
 - The sign-up logic and the Supabase calls are unchanged.
+- Swipe rules draw 8 at random from a pool of 57, and every score from 0 to 8 has its own positive verdict. The reliability quiz draws 7 at random from a pool of 56 with the answers shuffled, and has ten positive result levels. Neither says anything negative about the visitor.
+- The app preview is labelled "Live demo · tap anything", with a "Tap me" cue and three tick-off steps (tap a plan, hold to join, open Profile) that end on "That is the app. Getting in is the hard part."
+- Wording: the button says "Apply to join" everywhere (and "Hold to apply" on the intro). "Request an invitation" stays as the form's title, the brand voice and the email. A clear "Apply" button sits in the top bar.
+- The form has a 5-segment step bar with a "Step N of 5" caption, larger fields, full-width buttons and a tidier review list.
