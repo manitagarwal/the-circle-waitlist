@@ -387,3 +387,4 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Same on the website and in the app.
 
 - The vouch step is optional and says so: "Totally optional", a "Skip, I'll go solo" button, and the code and plus-one fields appear only when the person says they have someone. Greater Noida is not offered as an area.
+- Website: once someone has applied (or is already a member) and is logged in, the Apply pill, the hold-to-apply button, the sticky pill and the Apply buttons in the games all become "See my status" and take them to their status. Logged out, they go back to "Apply".

@@ -813,6 +813,7 @@ section[id]{scroll-margin-top:54px}
 .foot a{color:var(--ink-dim);margin:0 8px}
 
 /* ---- top bar apply, clearer notes ---- */
+.applied #holdApply,.applied #stk{display:none!important}
 .tb-apply{font:600 13px var(--sans);color:var(--bg);background:var(--ink);text-decoration:none;border-radius:999px;padding:9px 18px}
 .dr-note{max-width:300px;line-height:1.5}
 .dr-note2{margin-top:8px;font-size:12.5px}
@@ -1910,6 +1911,14 @@ section[id]{scroll-margin-top:54px}
     draw();
   }
 
+  // Once someone has applied (or is a member), every "Apply" button on the page turns into "See my status".
+  function setApplied(on){
+    document.body.classList.toggle('applied', !!on);
+    document.querySelectorAll('[data-apply]').forEach(b => { if(!b.dataset.t) b.dataset.t = b.textContent; b.textContent = on ? 'See my status' : b.dataset.t; });
+    const hb = document.getElementById('heroApplyBtn'); hb.hidden = !on; hb.textContent = 'See my status';
+  }
+  new MutationObserver(() => { if(document.body.classList.contains('applied')) document.querySelectorAll('[data-apply]').forEach(b => { if(b.textContent !== 'See my status'){ b.dataset.t = b.textContent; b.textContent = 'See my status'; } }); }).observe(document.body, {childList:true, subtree:true});
+
   function renderAuthBar(email){
     authBar.replaceChildren();
     if(email) authBar.append(h('span', {class:'who'}, email), btn('Log out', 'linklike', async () => { await sb.auth.signOut(); Object.assign(state, {step:1, personalVerified:false, passwordSet:false, workVerified:false, id: crypto.randomUUID()}); await route(); }));
@@ -1920,14 +1929,16 @@ section[id]{scroll-margin-top:54px}
   async function route(){
     const { data: { session } } = await sb.auth.getSession();
     renderAuthBar(session ? session.user.email : null);
+    setApplied(false);
     if(!session){ showStep(state.step || 1); return; }
     const memberRow = await sb.from('members').select('id').eq('id', session.user.id).maybeSingle();
     if(memberRow.data){
+      setApplied(true);
       showPlain(() => [h('div', {class:'center'}, h('h3', {class:'flow-title'}, "You're already a member."), h('p', {class:'flow-body'}, `Open The Semi Circle app and log in with ${session.user.email}.`))]);
       return;
     }
     const { data: apps } = await sb.rpc('my_application');
-    if(apps && apps[0]){ showPlain(() => statusView(apps[0], session.user.email)); return; }
+    if(apps && apps[0]){ setApplied(true); showPlain(() => statusView(apps[0], session.user.email)); return; }
     // signed in but nothing submitted yet: carry on with the form, with the login already done
     state.personalVerified = true; state.personalEmail = session.user.email;
     state.passwordSet = await hasPassword();
