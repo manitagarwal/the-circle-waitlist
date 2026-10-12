@@ -6,7 +6,7 @@ export const tagValue = (c: Pick<ChannelRow, 'tags'>, type: string) => tagValues
 /** Who a channel is for, by the values stored in the gender tag. */
 export const GENDER_AUDIENCE: Record<string, string> = { male: 'Men', female: 'Women', non_binary: 'Non-binary members', prefer_not_to_say: 'Prefer not to say' };
 
-export const CHANNEL_CITIES = ['Delhi', 'Gurgaon', 'Noida', 'Greater Noida', 'Faridabad', 'Ghaziabad'] as const;
+export const CHANNEL_CITIES = ['Delhi', 'Gurgaon', 'Noida', 'Faridabad', 'Ghaziabad'] as const;
 
 const list = (xs: string[]) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).join(', ')} or ${xs[xs.length - 1]}`);
 

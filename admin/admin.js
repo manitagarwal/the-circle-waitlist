@@ -7,7 +7,7 @@ const REQUIRE_MFA = false; // authenticator-app step is switched off for now: em
 if (!window.supabase) { document.getElementById('app').textContent = 'The admin page could not load its sign-in library. Check your connection and refresh.'; throw new Error('supabase library missing'); }
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'sc-admin-session' } });
 
-const CITIES = ['Delhi', 'Gurgaon', 'Noida', 'Greater Noida', 'Faridabad', 'Ghaziabad'];
+const CITIES = ['Delhi', 'Gurgaon', 'Noida', 'Faridabad', 'Ghaziabad'];
 const GENDERS = [['male', 'Male'], ['female', 'Female'], ['non_binary', 'Non-binary'], ['prefer_not_to_say', 'Prefer not to say']];
 const IST = 'Asia/Kolkata';
 
