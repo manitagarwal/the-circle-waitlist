@@ -366,3 +366,9 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 
 ## Website: "Inside" app preview (Oct 2026)
 - A section on thesemicircle.in (between the intro and the card block) with a phone frame and a working demo on demo data: tap a plan, press and hold "Hold to join" (fills, early release resets, confetti and the spots count change on success), a live countdown on Up next, and a Profile tab with the animated reliability ring. Photos come from the public photo library bucket. No sign-up, no real data. Keyboard users can hold with Space or Enter.
+
+## Website: phone-first and playful (Oct 2026)
+- The site is built for phones (one 480px column, centred on larger screens), in the app's ivory look.
+- Sections: a "door" intro (tap the half-circle five times for a surprise; hold the button to request an invitation, which scrolls to the form), swipeable house rules with a verdict, a six-question reliability quiz with a shareable score card, an excuse generator, the working app preview, the card block, the application form (same five steps, restyled), and the closing email.
+- A small sticky "Request an invitation" button appears after the intro and hides at the form. Buzz feedback on Android. Animations respect reduced motion.
+- The sign-up logic and the Supabase calls are unchanged.
