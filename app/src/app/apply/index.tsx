@@ -11,8 +11,9 @@ import { PhoneField } from '@/components/PhoneField';
 import { api } from '@/lib/auth';
 import { cityValue, useApply } from './_layout';
 import { Info } from '@/components/Info';
+import { NCR_PARTS } from '@/lib/config';
 
-type Errs = Partial<Record<'fullName' | 'phone' | 'city' | 'personalEmail' | 'linkedin', string>>;
+type Errs = Partial<Record<'fullName' | 'phone' | 'city' | 'area' | 'personalEmail' | 'linkedin', string>>;
 
 export default function Details() {
   const r = useRouter();
@@ -44,6 +45,7 @@ export default function Details() {
     if (pe) e.phone = pe;
     if (!s.city) e.city = 'Pick your city.';
     else if (!cityValue(s)) e.city = 'Type your city.';
+    else if (!s.area) e.area = 'Pick where in NCR you are.';
     if (!isEmail(s.personalEmail)) e.personalEmail = 'Enter a valid email address.';
     if (!isLinkedIn(s.linkedin)) e.linkedin = 'Paste your LinkedIn profile link.';
     setErrs(e);
@@ -89,6 +91,14 @@ export default function Details() {
         </View>
         {errs.city ? <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.error, marginTop: 6 }}>{errs.city}</Text> : null}
       </View>
+      {s.city && !notLive ? (
+        <View style={{ marginTop: 16 }}>
+          <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted, marginBottom: 6 }}>Where in NCR do you live or work?</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            {NCR_PARTS.map(([v, label]) => <Pill key={v} label={label} on={s.area === v} onPress={() => set({ area: v })} />)}
+          </View>
+          <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: errs.area ? colors.error : colors.faint, marginTop: 6 }}>{errs.area ?? 'This is how we decide where to open first.'}</Text>
+        </View>) : null}
       {s.city === 'Other' ? <TextField label="Your city" value={s.cityOther} onChangeText={(v) => set({ cityOther: v })} autoComplete="off" /> : null}
       {notLive ? <Body style={{ marginTop: 12 }}>We're only in Delhi NCR for now. Add your email below and we'll tell you when we open in your city.</Body> : null}
       <TextField label="Personal email" value={s.personalEmail} onChangeText={(v) => set({ personalEmail: v })} keyboardType="email-address" autoCapitalize="none" autoComplete="email"

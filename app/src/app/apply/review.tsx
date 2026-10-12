@@ -9,6 +9,7 @@ import { formatPhone, validatePhone } from '@/lib/phone';
 import { api, useAuth } from '@/lib/auth';
 import { friendly } from '@/lib/messages';
 import { cityValue, useApply } from './_layout';
+import { NCR_PARTS } from '@/lib/config';
 import { Info } from '@/components/Info';
 
 const Row = ({ k, v }: { k: string; v: string }) => (
@@ -29,7 +30,7 @@ export default function Review() {
   const submit = async () => {
     setBusy(true); setErr(null);
     try {
-      await api.submitApplication({ id: s.id, fullName: s.fullName, phone, personalEmail: s.personalEmail, workEmail: s.workEmail, linkedin: s.linkedin, city: cityValue(s), referredByCode: s.referredByCode || undefined }, s.vouches);
+      await api.submitApplication({ id: s.id, fullName: s.fullName, phone, personalEmail: s.personalEmail, workEmail: s.workEmail, linkedin: s.linkedin, city: cityValue(s), area: s.area || undefined, referredByCode: s.referredByCode || undefined }, s.vouches);
       await refresh(); // the account now has an application, so routing moves to the status screen
     } catch (e: any) {
       const m = String(e?.message ?? '');
@@ -54,6 +55,7 @@ export default function Review() {
         <Row k="Work email" v={s.workEmail} />
         <Row k="LinkedIn" v={linkedInHandle(s.linkedin) ? `linkedin.com/in/${linkedInHandle(s.linkedin)}` : s.linkedin} />
         <Row k="City" v={cityValue(s)} />
+        {s.area ? <Row k="Area" v={NCR_PARTS.find((p) => p[0] === s.area)?.[1] ?? s.area} /> : null}
         {s.referredByCode ? <Row k="Referral code" v={s.referredByCode} /> : null}
         {s.vouches.length ? <Row k="Vouching for" v={`${s.vouches.length} ${s.vouches.length === 1 ? 'person' : 'people'}`} /> : null}
       </View>

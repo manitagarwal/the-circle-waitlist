@@ -6,7 +6,7 @@ import { applicationCode, normalizeEmail } from './validators.ts';
 export type Dupes = { phone?: boolean; personal_email?: boolean; work_email?: boolean };
 export type ApplicationInput = {
   id: string; fullName: string; phone: string; personalEmail: string; workEmail: string;
-  linkedin: string; city: string; referredByCode?: string;
+  linkedin: string; city: string; area?: string; referredByCode?: string;
 };
 export type Application = {
   id: string; full_name: string; status: string; city: string; created_at: string;
@@ -378,7 +378,7 @@ export function createApi(sb: SupabaseClient, sbWork: SupabaseClient = sb) {
       if (a.referredByCode) referred = await rpc<string | null>('resolve_referral_code', { p_code: applicationCode(a.referredByCode) });
       const { error } = await sb.from('applicants').insert({
         id: a.id, full_name: a.fullName.trim(), phone: a.phone, personal_email: normalizeEmail(a.personalEmail),
-        work_email: normalizeEmail(a.workEmail), linkedin_url: a.linkedin.trim(), city: a.city, referred_by_id: referred,
+        work_email: normalizeEmail(a.workEmail), linkedin_url: a.linkedin.trim(), city: a.city, area: a.area || null, referred_by_id: referred,
       });
       if (error) throw error;
       if (vouches.length) {

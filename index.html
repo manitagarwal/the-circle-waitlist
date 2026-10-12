@@ -1393,7 +1393,10 @@ section[id]{scroll-margin-top:54px}
   // is only proof (checked through a throwaway client and never becomes a login).
   // =====================================================================
   const PERSONAL_DOMAINS = ['gmail.com','googlemail.com','yahoo.com','yahoo.in','yahoo.co.in','ymail.com','hotmail.com','outlook.com','live.com','msn.com','icloud.com','me.com','rediffmail.com','aol.com','proton.me','protonmail.com','gmx.com','zoho.com'];
-  const CITIES = ['Delhi','Gurgaon','Noida','Greater Noida','Faridabad','Ghaziabad','Other'];
+  // cities come from the database (one live city: Delhi NCR); AREAS are the parts of NCR [stored value, label]
+  let CITIES = [{name:'Delhi NCR', live:true}];
+  const AREAS = [['Delhi','Delhi'],['Gurugram','Gurgaon'],['Noida','Noida'],['Greater Noida','Greater Noida'],['Faridabad','Faridabad'],['Ghaziabad','Ghaziabad']];
+  const areaLabel = (v) => (AREAS.find(a => a[0] === v) || [v, v])[1];
   const SITE = 'https://thesemicircle.in';
 
   const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
@@ -1496,11 +1499,12 @@ section[id]{scroll-margin-top:54px}
 
   const refFromUrl = appCode(urlParams.get('ref') || '');
   const state = {
-    step: 1, fullName: '', dial: '91', phone: '', city: '', cityOther: '', personalEmail: '', linkedin: '',
+    step: 1, fullName: '', dial: '91', phone: '', city: '', cityOther: '', area: '', noted: false, personalEmail: '', linkedin: '',
     workEmail: '', personalVerified: false, passwordSet: false, workVerified: false,
     referredByCode: refFromUrl, vouches: [], id: crypto.randomUUID()
   };
   const cityValue = () => state.city === 'Other' ? state.cityOther.trim() : state.city;
+  const isLiveCity = () => { const c = CITIES.find(x => x.name === state.city); return !!c && c.live; };
 
   const panel = document.getElementById('panel');
   const progress = document.getElementById('progress');
@@ -1541,7 +1545,7 @@ section[id]{scroll-margin-top:54px}
   const mcName = document.getElementById('mcName'), mcCity = document.getElementById('mcCity'), mcHandle = document.getElementById('mcHandle');
   function updateCard(){
     mcName.textContent = state.fullName.trim() || 'Your name here';
-    mcCity.textContent = cityValue() || 'City, unset';
+    mcCity.textContent = cityValue() ? cityValue() + (state.area && isLiveCity() ? ' · ' + areaLabel(state.area) : '') : 'City, unset';
     const hd = linkedInHandle(state.linkedin);
     mcHandle.textContent = hd ? `linkedin.com/in/${hd}` : 'linkedin.com/in/-';
   }
@@ -1562,8 +1566,18 @@ section[id]{scroll-margin-top:54px}
           if(r.dial !== state.dial){ state.dial = r.dial; dialSel.value = r.dial; }
         }}});
       const phoneRow = h('div', {class:'phone-row'}, dialSel, ph);
-      const cityChips = h('div', {class:'chips', role:'radiogroup', 'aria-label':'City'}, CITIES.map(c => h('button', {type:'button', class:'chip', role:'radio', 'aria-checked': String(state.city === c), on:{click: () => { state.city = c; updateCard(); draw(); }}}, c)));
+      const names = CITIES.map(c => c.name).concat('Other');
+      const cityChips = h('div', {class:'chips', role:'radiogroup', 'aria-label':'City'}, names.map(c => h('button', {type:'button', class:'chip', role:'radio', 'aria-checked': String(state.city === c), on:{click: () => { state.city = c; if(!isLiveCity()) state.area = ''; updateCard(); draw(); }}}, c)));
       const other = state.city === 'Other' ? field('cityOther', 'Your city', input('cityOther', {type:'text', value: state.cityOther, on:{input: (ev) => { state.cityOther = ev.target.value; updateCard(); }}}), null, e.city) : null;
+      const live = isLiveCity(), notLive = !!state.city && !live;
+      const areaChips = h('div', {class:'chips', role:'radiogroup', 'aria-label':'Where in NCR'}, AREAS.map(a => h('button', {type:'button', class:'chip', role:'radio', 'aria-checked': String(state.area === a[0]), on:{click: () => { state.area = a[0]; updateCard(); draw(); }}}, a[1])));
+      const areaField = live ? h('div', {class:'field' + (e.area ? ' invalid' : '')}, h('label', null, 'Where in NCR do you live or work?'), areaChips,
+        h('div', {class: e.area ? 'err' : 'hint'}, e.area || 'This is how we decide where to open first.')) : null;
+      if(state.noted){
+        put(panel, h('h3', {class:'flow-title'}, 'Not there yet.'), h('p', {class:'flow-body'}, `The Semi Circle is only in Delhi NCR for now. We've noted ${cityValue()} and will email ${state.personalEmail.trim()} when we open there.`),
+          navRow(null, btn('Back', 'btn-ghost', () => { state.noted = false; state.city = ''; state.cityOther = ''; draw(); })));
+        return;
+      }
       const em = input('personalEmail', {type:'email', autocomplete:'email', value: state.personalEmail, disabled: state.personalVerified, on:{input: (ev) => { state.personalEmail = ev.target.value; }}});
       const li = input('linkedin', {type:'url', placeholder:'https://linkedin.com/in/yourname', value: state.linkedin, on:{input: (ev) => { state.linkedin = ev.target.value; updateCard(); }}});
       const next = btn('Continue', 'btn', async (ev) => {
@@ -1571,7 +1585,7 @@ section[id]{scroll-margin-top:54px}
         Object.keys(e).forEach(k => delete e[k]);
         if(state.fullName.trim().length < 2) e.fullName = 'Enter your full name.';
         { const pe = phoneErr(state.dial, state.phone); if(pe) e.phone = pe; }
-        if(!state.city) e.cityPick = 'Pick your city.'; else if(!cityValue()) e.city = 'Type your city.';
+        if(!state.city) e.cityPick = 'Pick your city.'; else if(!cityValue()) e.city = 'Type your city.'; else if(!state.area) e.area = 'Pick where in NCR you are.';
         if(!isEmail(state.personalEmail)) e.personalEmail = 'Enter a valid email address.';
         if(!isLinkedIn(state.linkedin)) e.linkedin = 'Paste your LinkedIn profile link.';
         if(Object.keys(e).length){ draw(); return; }
@@ -1585,13 +1599,28 @@ section[id]{scroll-margin-top:54px}
         if(Object.keys(e).length){ draw(); return; }
         showStep(2);
       });
-      put(panel, 
-        h('h3', {class:'flow-title'}, 'First, the basics.'), h('p', {class:'flow-body'}, 'Who you are and how to reach you.'),
+      const cityField = h('div', {class:'field' + (e.cityPick ? ' invalid' : '')}, h('label', null, 'Where are you based?'), cityChips,
+        h('div', {class: e.cityPick ? 'err' : 'hint'}, e.cityPick || "Delhi NCR only for now. Elsewhere? Pick your city and we'll email you when we reach it. You won't join the queue."));
+      const notify = btn('Notify me', 'btn btn-block', async (ev) => {
+        const b = ev.currentTarget; Object.keys(e).forEach(k => delete e[k]);
+        if(!cityValue()) e.city = 'Type your city.';
+        if(!isEmail(state.personalEmail)) e.personalEmail = 'Enter a valid email address.';
+        if(Object.keys(e).length){ draw(); return; }
+        b.disabled = true;
+        try{ const { error } = await sb.rpc('register_city_interest', { p_email: normEmail(state.personalEmail), p_city: cityValue() }); if(error) throw error; state.noted = true; }
+        catch{ e.personalEmail = "Can't reach the server. Check your connection."; }
+        draw();
+      });
+      if(notLive){
+        put(panel, h('h3', {class:'flow-title'}, 'First, where are you?'), h('p', {class:'flow-body'}, "We're only in Delhi NCR for now. Leave your email and we'll tell you when we open in your city."),
+          cityField, other, field('personalEmail', 'Your email', em, null, e.personalEmail), navRow(null, notify));
+        return;
+      }
+      put(panel,
+        h('h3', {class:'flow-title'}, 'First, the basics.'), h('p', {class:'flow-body'}, 'Where you are, who you are and how to reach you.'),
+        cityField, other, areaField,
         field('fullName', 'Full name', fn, null, e.fullName),
         field('phone', 'Phone number', phoneRow, null, e.phone),
-        h('div', {class:'field' + (e.cityPick ? ' invalid' : '')}, h('label', null, 'City'), cityChips,
-          h('div', {class: e.cityPick ? 'err' : 'hint'}, e.cityPick || "Delhi NCR only for now. Elsewhere? Pick Other and we'll tell you when we reach you.")),
-        other,
         field('personalEmail', 'Personal email', em, "This is your login. We'll check it's yours in the next step.", e.personalEmail),
         field('linkedin', 'LinkedIn URL', li, null, e.linkedin),
         navRow(null, next));
@@ -1769,7 +1798,7 @@ section[id]{scroll-margin-top:54px}
     let busy = false, err = null;
     const phoneStored = validPhone(state.dial, state.phone) || `+${state.dial}${state.phone}`;
     const rowsData = [['Name', state.fullName.trim()], ['Phone', showPhone(phoneStored)], ['Login email', state.personalEmail], ['Work email', state.workEmail],
-      ['LinkedIn', linkedInHandle(state.linkedin) ? `linkedin.com/in/${linkedInHandle(state.linkedin)}` : state.linkedin], ['City', cityValue()]];
+      ['LinkedIn', linkedInHandle(state.linkedin) ? `linkedin.com/in/${linkedInHandle(state.linkedin)}` : state.linkedin], ['City', cityValue()], ['Area', areaLabel(state.area)]];
     if(state.referredByCode) rowsData.push(['Referral code', state.referredByCode]);
     if(state.vouches.length) rowsData.push(['Vouching for', `${state.vouches.length} ${state.vouches.length === 1 ? 'person' : 'people'}`]);
     const draw = () => put(panel, 
@@ -1785,7 +1814,7 @@ section[id]{scroll-margin-top:54px}
         let referred = null;
         if(state.referredByCode){ const { data } = await sb.rpc('resolve_referral_code', { p_code: appCode(state.referredByCode) }); referred = data || null; }
         const { error } = await sb.from('applicants').insert({ id: state.id, full_name: state.fullName.trim(), phone: validPhone(state.dial, state.phone), personal_email: normEmail(state.personalEmail),
-          work_email: normEmail(state.workEmail), linkedin_url: state.linkedin.trim(), city: cityValue(), referred_by_id: referred });
+          work_email: normEmail(state.workEmail), linkedin_url: state.linkedin.trim(), city: cityValue(), area: state.area || null, referred_by_id: referred });
         if(error) throw error;
         if(state.vouches.length) await sb.from('referrals').insert(state.vouches.map(v => ({ applicant_id: state.id, name: v.name || null, email: v.email || null, phone: v.phone || null }))); // non-fatal
         await route();
@@ -1899,6 +1928,11 @@ section[id]{scroll-margin-top:54px}
   }
 
   document.getElementById('heroApplyBtn').addEventListener('click', () => document.getElementById('apply').scrollIntoView({behavior:'smooth', block:'start'}));
+  try{
+    sb.from('cities').select('name,is_live,sort').order('sort').then(({data}) => {
+      if(data && data.length){ CITIES = data.map(c => ({name:c.name, live:c.is_live})); if(state.step === 1 && !state.personalVerified && document.getElementById('panel').children.length) steps[1](); }
+    });
+  }catch(_){}
   updateCard();
   route();
 })();

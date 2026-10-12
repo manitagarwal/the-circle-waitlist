@@ -380,3 +380,8 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - The three playful sections each have their own interface: House rules is a dark section with a fanned deck, round yes/no buttons, a progress strip, a stamp slam at the end and a receipt of your answers. The reliability quiz is a group chat (friends send the questions, you reply by tapping, they react, and the result arrives as a message). The excuse is a scratch card you scratch with your finger (or "Just show me").
 - The sticky Apply button hides while any of the three games is on screen.
 - The country-code field has its own arrow, so it is aligned.
+
+## Application: city and area (Oct 2026)
+- The first question is the city (loaded from the database; only Delhi NCR is live). Other cities and "Other" get a short "We're not there yet" form that records their email and city, and they do not join the queue.
+- Delhi NCR applicants must also pick the part of NCR they live or work in (Delhi, Gurgaon, Noida, Greater Noida, Faridabad, Ghaziabad). It is saved as `area` and shown in Admin > Applicants, and it is how we choose where to open first.
+- Same on the website and in the app.
