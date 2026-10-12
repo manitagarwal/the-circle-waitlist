@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#faf8f4">
 <title>The Semi Circle</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -13,19 +14,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0d0e0f;
-    --bg-2:#141516;
-    --panel:#17181a;
-    --panel-border:#2a2b2c;
-    --ink:#ece7dd;
-    --ink-dim:#9a9186;
-    --ink-dimmer:#6c655c;
-    --accent:#b6935e;
-    --accent-soft:rgba(182,147,94,0.14);
-    --accent2:#a8624a;
+    --bg:#faf8f4;
+    --bg-2:#f0ece4;
+    --panel:#ffffff;
+    --panel-border:#e8e3d9;
+    --ink:#1b1a18;
+    --ink-dim:#6b665e;
+    --ink-dimmer:#8f897d;
+    --accent:#1b1a18;
+    --accent-soft:rgba(27,26,24,0.06);
+    --accent2:#6b665e;
     --accent2-soft:rgba(168,98,74,0.14);
-    --good:#8fae7a;
-    --error:#c97b6a;
+    --good:#4f6b3f;
+    --error:#1b1a18;
     --serif:'Fraunces', serif;
     --sans:'Inter', -apple-system, sans-serif;
   }
@@ -50,8 +51,8 @@
     content:"";
     position:fixed; inset:0; pointer-events:none; z-index:0;
     background:
-      radial-gradient(ellipse 900px 500px at 50% 0%, rgba(182,147,94,0.07), transparent 60%),
-      radial-gradient(ellipse 700px 500px at 100% 100%, rgba(182,147,94,0.04), transparent 60%);
+      radial-gradient(ellipse 900px 500px at 50% 0%, rgba(27,26,24,0.07), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 100%, rgba(27,26,24,0.04), transparent 60%);
   }
 
   section{position:relative; z-index:1;}
@@ -115,7 +116,7 @@
   .hero::before{
     content:""; position:absolute; top:6%; left:50%;
     width:640px; height:640px; transform:translateX(-50%);
-    background:radial-gradient(circle, rgba(182,147,94,0.09), transparent 62%);
+    background:radial-gradient(circle, rgba(27,26,24,0.09), transparent 62%);
     pointer-events:none; z-index:0;
   }
 
@@ -201,7 +202,7 @@
   /* ---------- BODY COPY (exclusivity-framed, asymmetric notes) ---------- */
   .body-copy{
     padding:54px 24px 80px; border-top:1px solid var(--panel-border);
-    background:linear-gradient(180deg, rgba(182,147,94,0.03), transparent 40%);
+    background:linear-gradient(180deg, rgba(27,26,24,0.03), transparent 40%);
   }
   .body-copy-inner{max-width:480px; margin:0 auto;}
   .body-lede{
@@ -331,7 +332,7 @@
   .mc-org{font-size:0.68rem; letter-spacing:0.08em; color:var(--ink-dimmer);}
   .mc-status{
     font-size:0.68rem; letter-spacing:0.06em; color:var(--accent);
-    border:1px solid rgba(182,147,94,0.35); padding:3px 8px; border-radius:2px;
+    border:1px solid rgba(27,26,24,0.35); padding:3px 8px; border-radius:2px;
   }
   .mc-name{
     font-family:var(--serif); font-size:1.5rem; font-weight:400; color:var(--ink);
@@ -420,12 +421,12 @@
   .btn-ghost:hover{border-color:var(--accent); color:var(--accent);}
   .btn-text{
     background:none; border:none; color:var(--accent); font-size:0.85rem;
-    padding:6px 0; text-decoration:underline; text-decoration-color:rgba(182,147,94,0.4);
+    padding:6px 0; text-decoration:underline; text-decoration-color:rgba(27,26,24,0.4);
   }
   .btn-block{width:100%;}
 
   .otp-note{
-    background:var(--accent-soft); border:1px solid rgba(182,147,94,0.3);
+    background:var(--accent-soft); border:1px solid rgba(27,26,24,0.3);
     padding:12px 14px; font-size:0.82rem; color:var(--ink-dim);
     border-radius:2px; margin-top:10px; display:none;
   }
@@ -463,8 +464,8 @@
   /* ---------- CLOSING: email preview, cool-navy zone ---------- */
   .closing{
     padding:64px 24px 90px;
-    background:#0a1119;
-    border-top:1px solid #1d2a33;
+    background:#f0ece4;
+    border-top:1px solid #e8e3d9;
   }
   .closing-inner{max-width:440px; margin:0 auto;}
   .email-card{
@@ -531,7 +532,7 @@
     display:flex; justify-content:space-between; align-items:center;
     padding:10px 0; border-bottom:1px solid var(--panel-border); font-size:0.9rem;
   }
-  .share-row a{color:var(--good); font-size:0.85rem; text-decoration:none; border-bottom:1px solid rgba(143,174,122,0.4);}
+  .share-row a{color:var(--good); font-size:0.85rem; text-decoration:none; border-bottom:1px solid rgba(79,107,63,0.4);}
 
 
   /* ---------- APPLY FLOW (mirrors the app) ---------- */
@@ -548,8 +549,8 @@
   .field .ok-line{font-size:0.82rem; color:var(--good); margin-top:6px;}
   .pw-checks{font-size:0.82rem; color:var(--ink-dimmer); margin:6px 0 18px; line-height:1.7;}
   .pw-checks .on{color:var(--good);}
-  .notice{background:var(--accent-soft); border:1px solid rgba(182,147,94,0.3); padding:12px 14px; font-size:0.85rem; color:var(--ink-dim); border-radius:2px; margin:14px 0;}
-  .notice.error{border-color:rgba(201,123,106,0.5); color:var(--error); background:rgba(201,123,106,0.08);}
+  .notice{background:var(--accent-soft); border:1px solid rgba(27,26,24,0.3); padding:12px 14px; font-size:0.85rem; color:var(--ink-dim); border-radius:2px; margin:14px 0;}
+  .notice.error{border-color:rgba(27,26,24,0.5); color:var(--error); background:rgba(27,26,24,0.05);}
   .notice strong{color:var(--accent); font-weight:500;}
   .code-input{font-family:var(--serif); font-size:1.4rem; letter-spacing:0.4em; text-align:center;}
   .vouch-item{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 14px; background:var(--bg-2); border:1px solid var(--panel-border); border-radius:2px; margin-bottom:8px;}
@@ -561,7 +562,7 @@
   .ref-box .code{font-family:var(--serif); font-size:1.7rem; letter-spacing:0.18em; color:var(--accent); margin:6px 0 12px; word-break:break-all;}
   .ref-box .acts{display:flex; gap:10px;}
   .ref-box .acts button{flex:1;}
-  .linklike{background:none; border:none; color:var(--accent); font-size:0.85rem; padding:6px 0; text-decoration:underline; text-decoration-color:rgba(182,147,94,0.4);}
+  .linklike{background:none; border:none; color:var(--accent); font-size:0.85rem; padding:6px 0; text-decoration:underline; text-decoration-color:rgba(27,26,24,0.4);}
 
   .step-panel{display:none;}
   .step-panel.active{display:block;}
@@ -578,67 +579,6 @@
     html{scroll-behavior:auto;}
   }
 </style>
-</head>
-<body>
-
-<!-- ================= NAVBAR =================
-<nav>
-  <div class="nav-brand">
-    <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M4,20 A16,16 0 0 1 36,20 L4,20 Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-    The Semi <i>Circle</i>
-  </div>
-  <a class="status-btn" href="status.html">Check application status</a>
-</nav>
-
-================= INTRO ================= -->
-<section class="hero">
-  <div class="hero-stage">
-    <p class="eyebrow">Buiding Quietly</p>
-    <div class="mark-frame">
-      <svg class="mark-arc" viewBox="0 0 300 180" aria-hidden="true"><path d="M30,150 A120,120 0 0 1 270,150" pathLength="1" fill="none" stroke="var(--accent)" stroke-width="1.2"/></svg>
-      <h1 class="mark">The Semi <span>Circle</span></h1>
-    </div>
-    <div class="ledger-row">
-      <div class="ledger-stat">
-        <span class="ledger-num" id="regNum">
-          <span class="ledger-digit" data-pos="0">0</span><span class="ledger-digit" data-pos="1">0</span><span class="ledger-digit" data-pos="2">0</span><span class="ledger-digit" data-pos="3">0</span>
-        </span>
-        <span class="ledger-label">Registered</span>
-      </div>
-      <div class="ledger-divider"></div>
-      <div class="ledger-stat">
-        <span class="ledger-num" id="selNum">
-          <span class="ledger-digit" data-pos="0">0</span><span class="ledger-digit" data-pos="1">0</span><span class="ledger-digit" data-pos="2">0</span><span class="ledger-digit" data-pos="3">0</span>
-        </span>
-        <span class="ledger-label">Selected</span>
-      </div>
-    </div>
-    <p class="tagline">Half a circle. Full standards.</p>
-    <p class="subline">We're leaving it open on purpose - the other half is whoever gets in next.</p>
-    <div class="hero-cta">
-      <button type="button" class="btn" id="heroApplyBtn">Request an invitation</button>
-    </div>
-  </div>
-</section>
-
-<!-- ================= BODY ================= -->
-<section class="body-copy">
-  <div class="body-copy-inner wrap">
-    <p class="body-lede">Most people won't get in.<br>That's the point.</p>
-
-    <div class="notes">
-      <div class="note n1">Channels for whatever you're actually into - tennis, brunch, 1am bad decisions. Or start your own.</div>
-      <div class="note n2">Want badminton at 8? Tap the slot. Three more taps and we've booked the court.</div>
-      <div class="note n3">Post the photos, the videos, the aftermath. Still your feed. Just a smaller room.</div>
-      <div class="note n4">DM someone directly, or build a private channel just for your circle within The Circle.</div>
-    </div>
-
-    <p class="oneliner">Interested yet? Good. Not everyone gets to be.</p>
-  </div>
-</section>
-
-
-<!-- ================= APP PREVIEW (interactive, demo data) ================= -->
 <style>
   .sx{position:relative;z-index:1;padding:96px 0 72px;text-align:center}
   .sx-kicker{font:500 11px/1 var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin:0 0 18px}
@@ -726,6 +666,234 @@
   @media (max-width:760px){.sx-notes{display:none}.sx{padding:72px 0 56px}}
   @media (prefers-reduced-motion:reduce){.sx *{animation:none!important;transition:none!important}}
 </style>
+<style id="fun">
+/* ================= PHONE-FIRST, PLAYFUL LAYER ================= */
+html{-webkit-text-size-adjust:100%}
+body{background:#e9e4d9;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+body::before{display:none}
+#app{max-width:480px;margin:0 auto;background:var(--bg);min-height:100vh;position:relative;overflow:hidden;box-shadow:0 0 70px rgba(27,26,24,.1)}
+.wrap{max-width:480px;padding:0 20px}
+input,select,textarea{font-size:16px!important}
+button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn{background:var(--ink);color:var(--bg);border-radius:999px;padding:15px 26px;font-weight:600;font-size:15px;letter-spacing:.01em}
+.btn:hover{opacity:1}
+.btn-ghost{border-radius:999px;padding:14px 22px;border-color:#d9d2c3;color:var(--ink);background:transparent;font-weight:600;font-size:15px}
+.btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
+.btn-block{width:100%}
+
+/* top bar */
+.tb{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;height:54px;padding:0 18px;background:rgba(250,248,244,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s}
+.tb.scrolled{border-bottom-color:var(--panel-border)}
+.tb-brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font:400 17px var(--serif)}
+.tb-brand svg{width:30px;height:18px}
+.tb-brand i{font-style:italic}
+.tb-status{font:600 12.5px var(--sans);color:var(--ink);text-decoration:none;border:1px solid var(--panel-border);border-radius:999px;padding:8px 13px}
+
+/* the door */
+.dr{min-height:calc(100svh - 54px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 22px 34px;position:relative}
+.dr-mark{width:min(74vw,290px);background:none;border:0;padding:0;margin:0 0 6px;cursor:pointer;display:block}
+.dr-mark svg{width:100%;height:auto;display:block;overflow:visible}
+.dr-mark path{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.dr-mark .a1{animation:drDraw 1.5s .15s cubic-bezier(.3,.8,.3,1) forwards}
+.dr-mark .a2{animation:drDraw 1.3s .55s cubic-bezier(.3,.8,.3,1) forwards;stroke:#8f897d}
+.dr-mark .knob{fill:var(--ink);opacity:0;animation:drKnob .5s 1.7s forwards}
+@keyframes drDraw{to{stroke-dashoffset:0}}
+@keyframes drKnob{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+.dr-mark .knob{transform-box:fill-box;transform-origin:center}
+.dr-mark.tap{animation:drBounce .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes drBounce{0%{transform:scale(1)}35%{transform:scale(1.09) rotate(-2deg)}100%{transform:scale(1)}}
+.dr-eye{font:600 10.5px/1 var(--sans);letter-spacing:.26em;text-transform:uppercase;color:#76706a;margin:12px 0 14px}
+.dr-h1{font:400 clamp(40px,12.4vw,56px)/1.03 var(--serif);letter-spacing:-1.6px;margin:0}
+.dr-h1 span{display:inline-block;opacity:0;transform:translateY(22px);animation:drWord .7s var(--d,.5s) cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes drWord{to{opacity:1;transform:none}}
+.dr-sub{font:italic 400 22px var(--serif);color:var(--ink-dim);margin:10px 0 0;opacity:0;animation:drWord .8s 1.3s forwards}
+.dr .ledger-row{display:flex;justify-content:center;align-items:center;gap:30px;margin:26px 0 22px;opacity:0;animation:drWord .8s 1.5s forwards}
+.dr .ledger-stat{text-align:center}
+.dr .ledger-num{font:400 44px/1 var(--serif);color:var(--ink);display:inline-flex}
+.dr .ledger-label{display:block;font:600 10px var(--sans);letter-spacing:.22em;text-transform:uppercase;color:#76706a;margin-top:6px}
+.dr .ledger-divider{width:1px;height:46px;background:#d9d2c3}
+.hb{position:relative;width:100%;max-width:340px;height:60px;border-radius:30px;border:0;background:#ddd6c7;overflow:hidden;font:600 16px var(--sans);color:var(--ink);touch-action:none;user-select:none;-webkit-user-select:none;opacity:0;animation:drWord .8s 1.7s forwards;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.hb:active{transform:scale(.985)}
+.hb i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink)}
+.hb span{position:relative;transition:color .15s}
+.hb.fill span,.hb.done span{color:var(--bg)}
+.dr-note{font-size:13px;color:var(--ink-dimmer);margin:14px 0 0;max-width:280px}
+.dr-scroll{margin-top:26px;font:500 13px var(--sans);color:var(--ink-dim);text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:4px}
+.dr-scroll span{animation:drBob 1.4s ease-in-out infinite}
+@keyframes drBob{50%{transform:translateY(5px)}}
+
+/* generic fun section */
+.fx{padding:68px 20px 70px;text-align:center}
+.fx-sage{background:#e8f1e3}.fx-peach{background:#fbeadb}.fx-blue{background:#e6eef7}
+.kick{font:600 10.5px/1 var(--sans);letter-spacing:.26em;text-transform:uppercase;color:#76706a;margin:0 0 14px}
+.fx h2{font:400 clamp(30px,9vw,38px)/1.08 var(--serif);letter-spacing:-.8px;margin:0 0 12px}
+.fx-sub{color:var(--ink-dim);font-size:15px;max-width:330px;margin:0 auto 26px}
+.fx-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.rv{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+/* swipe rules */
+.rs-stack{position:relative;height:310px;max-width:320px;margin:0 auto}
+.rs-card{position:absolute;inset:0;border-radius:28px;background:#fff;box-shadow:0 22px 44px -22px rgba(27,26,24,.4);padding:26px 24px;display:flex;flex-direction:column;justify-content:center;text-align:left;user-select:none;-webkit-user-select:none;touch-action:pan-y;will-change:transform;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.rs-card.drag{transition:none}
+.rs-card small{font:600 10px var(--sans);letter-spacing:.22em;text-transform:uppercase;color:#76706a}
+.rs-card p{font:400 28px/1.14 var(--serif);margin:12px 0 0;letter-spacing:-.4px}
+.rs-card em{font:italic 400 16px var(--serif);color:var(--ink-dim);display:block;margin-top:14px}
+.rs-stamp{position:absolute;top:20px;font:700 12px var(--sans);letter-spacing:.16em;border:2px solid;border-radius:8px;padding:5px 9px;opacity:0;pointer-events:none}
+.rs-stamp.y{right:18px;transform:rotate(9deg);color:#3d6b30;border-color:#3d6b30}
+.rs-stamp.n{left:18px;transform:rotate(-9deg);color:#1b1a18;border-color:#1b1a18}
+.rs-btns{display:flex;gap:12px;justify-content:center;margin-top:22px}
+.rs-btns button{height:50px;padding:0 26px;border-radius:25px;font:600 15px var(--sans);border:1.5px solid var(--ink);background:transparent;color:var(--ink)}
+.rs-btns .rs-yes{background:var(--ink);color:var(--bg)}
+.rs-btns button:active{transform:scale(.96)}
+.rs-score{font:400 84px/1 var(--serif);letter-spacing:-3px}
+.rs-verdict{font:italic 400 21px/1.3 var(--serif);color:var(--ink-dim);margin:8px auto 0;max-width:290px}
+
+/* quiz */
+.qz{max-width:340px;margin:0 auto;text-align:left}
+.qz-start{display:block;margin:0 auto}
+.qz-bar{height:5px;border-radius:3px;background:rgba(27,26,24,.1);overflow:hidden;margin-bottom:20px}
+.qz-bar i{display:block;height:100%;background:var(--ink);border-radius:3px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.qz-q{font:400 25px/1.18 var(--serif);letter-spacing:-.4px;margin:0 0 16px;animation:qzIn .5s both}
+.qz-opt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid transparent;border-radius:18px;padding:15px 16px;margin-bottom:9px;font:500 15px/1.35 var(--sans);color:var(--ink);box-shadow:0 8px 20px -14px rgba(27,26,24,.4);animation:qzIn .5s both;transition:transform .25s cubic-bezier(.34,1.56,.64,1),border-color .2s}
+.qz-opt:nth-child(3){animation-delay:.05s}.qz-opt:nth-child(4){animation-delay:.1s}.qz-opt:nth-child(5){animation-delay:.15s}
+.qz-opt:active{transform:scale(.975)}
+.qz-opt.pick{border-color:var(--ink);background:#faf8f4}
+@keyframes qzIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.qz-res{text-align:center}
+.qz-score{font:400 112px/1 var(--serif);letter-spacing:-5px;margin:0}
+.qz-score small{font-size:30px;letter-spacing:0;color:var(--ink-dim)}
+.qz-title{font:400 30px/1.1 var(--serif);margin:6px 0 8px}
+.qz-line{color:var(--ink-dim);margin:0 auto;max-width:290px}
+.qz-ring{width:150px;height:150px;margin:0 auto 4px;display:block}
+
+/* excuses */
+.ex{max-width:340px;margin:0 auto}
+.ex-card{min-height:150px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:26px;padding:22px 22px;font:400 26px/1.2 var(--serif);letter-spacing:-.3px;box-shadow:0 22px 44px -26px rgba(27,26,24,.45)}
+.ex-card.flick span{animation:exFlick .35s}
+@keyframes exFlick{0%{opacity:0;transform:translateY(16px) rotateX(40deg)}100%{opacity:1;transform:none}}
+.ex-note{font:italic 400 16px var(--serif);color:var(--ink-dim);margin:16px 0 0;min-height:24px}
+
+[hidden]{display:none!important}
+section[id]{scroll-margin-top:54px}
+/* sticky apply pill */
+#stk{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translate(-50%,140%);z-index:60;transition:transform .5s cubic-bezier(.34,1.56,.64,1);width:auto;min-width:230px}
+#stk.show{transform:translate(-50%,0)}
+#stk button{width:100%;height:48px;padding:0 26px;border-radius:24px;border:0;background:var(--ink);color:var(--bg);font:600 15px var(--sans);box-shadow:0 14px 30px -10px rgba(27,26,24,.5)}
+
+/* toast + confetti */
+.toast{position:fixed;left:50%;top:70px;transform:translate(-50%,-30px);z-index:80;background:var(--ink);color:var(--bg);border-radius:20px;padding:12px 18px;font:500 14px/1.35 var(--sans);opacity:0;transition:all .5s cubic-bezier(.34,1.56,.64,1);max-width:86vw;text-align:center;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.cf{position:fixed;width:8px;height:12px;border-radius:2px;pointer-events:none;z-index:90;animation:cfb 1.1s cubic-bezier(.2,.7,.3,1) both}
+@keyframes cfb{0%{transform:translate(0,0) scale(.4);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
+
+/* demo section on the ivory page */
+.sx{padding:72px 0 64px;background:var(--bg)}
+.sx h2{font-size:clamp(30px,9vw,38px);letter-spacing:-.8px}
+.sx-kicker{color:#76706a}
+.sx-sub{color:var(--ink-dim);padding:0 20px}
+.sx-phone{box-shadow:0 36px 70px -24px rgba(27,26,24,.55)}
+.sx-fine{color:var(--ink-dimmer)}
+
+/* the form, on a phone */
+.id-block{padding:50px 20px 54px}
+.apply{padding:46px 14px 110px;background:var(--bg)}
+.apply-head h2{font-size:clamp(30px,9vw,38px);letter-spacing:-.8px}
+.card{border-radius:26px;padding:24px 18px;box-shadow:0 22px 50px -30px rgba(27,26,24,.4)}
+.progress{gap:6px;overflow-x:auto;margin-bottom:24px;padding-bottom:14px;scrollbar-width:none}
+.progress::-webkit-scrollbar{display:none}
+.progress-item{flex:0 0 auto}
+.progress-item:not(.active) .l{display:none}
+.progress-item.active .l{display:block}
+.field input,.field select,.field textarea{border-radius:14px!important;padding:14px 14px}
+.row2{grid-template-columns:1fr!important}
+.nav-row{gap:10px}
+.closing{padding:54px 20px 120px}
+.foot{padding:26px 20px 150px;text-align:center;font-size:12.5px;color:var(--ink-dimmer);background:#f0ece4}
+.foot a{color:var(--ink-dim);margin:0 8px}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.dr-h1 span,.dr-sub,.dr .ledger-row,.hb{opacity:1;transform:none;animation:none}.dr-mark path{stroke-dashoffset:0;animation:none}.dr-mark .knob{opacity:1;animation:none}.dr-scroll span{animation:none}}
+</style>
+</head>
+<body>
+
+<div id="app">
+<header class="tb">
+  <a class="tb-brand" href="#door" aria-label="The Semi Circle, back to top"><svg viewBox="0 0 40 24" aria-hidden="true"><path d="M4,20 A16,16 0 0 1 36,20 L4,20 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>The Semi <i>Circle</i></span></a>
+  <a class="tb-status" href="status.html">Check status</a>
+</header>
+
+<!-- ================= THE DOOR (hero) ================= -->
+<section class="dr" id="door">
+  <button type="button" class="dr-mark" id="doorMark" aria-label="The door. Tap it.">
+    <svg viewBox="0 0 300 170" aria-hidden="true">
+      <path class="a1" d="M24 156A126 126 0 0 1 276 156Z" pathLength="1"/>
+      <path class="a2" d="M70 156A80 80 0 0 1 230 156Z" pathLength="1"/>
+      <circle class="knob" cx="198" cy="132" r="5"/>
+    </svg>
+  </button>
+  <p class="dr-eye">By invitation &nbsp;·&nbsp; Delhi NCR</p>
+  <h1 class="dr-h1"><span style="--d:.5s">Most</span> <span style="--d:.62s">people</span> <span style="--d:.74s">won't</span> <span style="--d:.86s">get</span> <span style="--d:.98s">in.</span></h1>
+  <p class="dr-sub">That's the point.</p>
+  <div class="ledger-row">
+    <div class="ledger-stat">
+      <span class="ledger-num" id="regNum">
+        <span class="ledger-digit" data-pos="0">0</span><span class="ledger-digit" data-pos="1">0</span><span class="ledger-digit" data-pos="2">0</span><span class="ledger-digit" data-pos="3">0</span>
+      </span>
+      <span class="ledger-label">Waiting</span>
+    </div>
+    <div class="ledger-divider"></div>
+    <div class="ledger-stat">
+      <span class="ledger-num" id="selNum">
+        <span class="ledger-digit" data-pos="0">0</span><span class="ledger-digit" data-pos="1">0</span><span class="ledger-digit" data-pos="2">0</span><span class="ledger-digit" data-pos="3">0</span>
+      </span>
+      <span class="ledger-label">In</span>
+    </div>
+  </div>
+  <button type="button" class="hb" id="holdApply" aria-label="Hold to request an invitation. Press and hold for about a second."><i></i><span id="holdApplyText">Hold to request an invitation</span></button>
+  <p class="dr-note">No app yet. For now, this page is the door.</p>
+  <button type="button" class="btn" id="heroApplyBtn" hidden>Request an invitation</button>
+  <a class="dr-scroll" href="#rules" aria-label="Scroll down">Or scroll. We have jokes.<span aria-hidden="true">↓</span></a>
+</section>
+
+<!-- ================= RULES (swipe) ================= -->
+<section class="fx fx-sage" id="rules">
+  <p class="kick rv">House rules</p>
+  <h2 class="rv">Swipe on the rules.</h2>
+  <p class="fx-sub rv">Right if you can live with it. Left if you can't. There are no wrong answers, but one of them is wrong.</p>
+  <div class="rs-stack rv" id="rsStack" aria-live="polite"></div>
+  <div class="rs-btns rv" id="rsBtns">
+    <button type="button" class="rs-no" id="rsNo" aria-label="Hard pass">Hard pass</button>
+    <button type="button" class="rs-yes" id="rsYes" aria-label="Fair">Fair</button>
+  </div>
+  <div class="rs-end" id="rsEnd" hidden>
+    <div class="rs-score" id="rsScore"></div>
+    <p class="rs-verdict" id="rsVerdict"></p>
+    <div class="fx-actions"><button type="button" class="btn" data-apply>Request an invitation</button><button type="button" class="btn-ghost" id="rsAgain">Go again</button></div>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="fx fx-peach" id="quiz">
+  <p class="kick rv">Honest question</p>
+  <h2 class="rv">How reliable are you, really?</h2>
+  <p class="fx-sub rv">Six questions. We won't tell anyone. We might screenshot it.</p>
+  <div class="qz rv" id="qz">
+    <button type="button" class="btn qz-start" id="qzStart">Find out</button>
+  </div>
+</section>
+
+<!-- ================= EXCUSES ================= -->
+<section class="fx fx-blue" id="excuse">
+  <p class="kick rv">Public service</p>
+  <h2 class="rv">An excuse, curated.</h2>
+  <p class="fx-sub rv">For when you've already said yes and want out. Pressing the button is free. Using it is not.</p>
+  <div class="ex rv">
+    <div class="ex-card" id="exCard" aria-live="polite"><span id="exText">Tap below. We've heard them all.</span></div>
+    <div class="fx-actions"><button type="button" class="btn" id="exBtn">Give me one</button><button type="button" class="btn-ghost" id="exCopy" hidden>Copy</button></div>
+    <p class="ex-note" id="exNote"></p>
+  </div>
+</section>
+<!-- ================= APP PREVIEW (interactive, demo data) ================= -->
 <section class="sx" id="inside" aria-labelledby="sxTitle">
   <p class="sx-kicker">Inside</p>
   <h2 id="sxTitle">Take it for a spin.</h2>
@@ -777,11 +945,6 @@
 
         <div class="sx-nav" id="sxNav" role="navigation" aria-label="Preview navigation"><button class="on" data-tab="home">Home</button><button data-tab="prof">Profile</button></div>
       </div>
-    </div>
-    <div class="sx-notes">
-      <div><h4>Hold to join</h4><p>No accidental taps. You say yes, you mean it.</p></div>
-      <div><h4>Plans with faces</h4><p>Real photos, real spots left, who is already in.</p></div>
-      <div><h4>A score for showing up</h4><p>Reliability is private to you, and it is the reason people turn up.</p></div>
     </div>
   </div>
   <div class="sx-cta"><a class="btn" href="#apply">Request an invitation</a></div>
@@ -938,6 +1101,9 @@
   <div style="margin-top:14px"><a href="/privacy/" style="color:inherit">Privacy policy</a> &nbsp;·&nbsp; <a href="/terms/" style="color:inherit">Terms of use</a></div>
 </footer>
 
+<div id="stk"><button type="button" data-apply>Request an invitation</button></div>
+<footer class="foot">The Semi Circle &nbsp;·&nbsp; Delhi NCR &nbsp;·&nbsp; By invitation<br><a href="terms/">Terms</a><a href="privacy/">Privacy</a><a href="status.html">Status</a></footer>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
@@ -1566,5 +1732,154 @@
 })();
 </script>
 
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function buzz(n){try{navigator.vibrate&&navigator.vibrate(n)}catch(e){}}
+  function goApply(){var a=$('apply');if(a)a.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})}
+  document.querySelectorAll('[data-apply]').forEach(function(b){b.addEventListener('click',function(){buzz(12);goApply()})});
+
+  // top bar border on scroll
+  var tb=document.querySelector('.tb');
+  addEventListener('scroll',function(){tb.classList.toggle('scrolled',scrollY>8)},{passive:true});
+
+  // reveal on scroll
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
+    document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
+  } else document.querySelectorAll('.rv').forEach(function(el){el.classList.add('in')});
+
+  // toast + confetti
+  var toastEl=document.createElement('div');toastEl.className='toast';toastEl.setAttribute('role','status');document.body.appendChild(toastEl);var tt;
+  function toast(m,ms){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){toastEl.classList.remove('show')},ms||2800)}
+  function confetti(x,y,n){
+    if(reduce)return;var cols=['#1b1a18','#cfe4c8','#f6d3b3','#c5dcf0','#d9ccf2'];n=n||26;
+    for(var k=0;k<n;k++){var a=(k/n)*Math.PI*2,r=70+(k%3)*36,s=document.createElement('span');s.className='cf';
+      s.style.left=x+'px';s.style.top=y+'px';s.style.background=cols[k%5];
+      s.style.setProperty('--dx',Math.round(Math.cos(a)*r*1.4)+'px');s.style.setProperty('--dy',Math.round(Math.sin(a)*r-40)+'px');s.style.setProperty('--r',(k*47)+'deg');
+      document.body.appendChild(s);(function(el){setTimeout(function(){el.remove()},1200)})(s);}
+  }
+  function confettiOn(el){var r=el.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2)}
+
+  // the door: five taps
+  var door=$('doorMark'),taps=0,tapT;
+  door.addEventListener('click',function(){
+    buzz(10);door.classList.remove('tap');void door.offsetWidth;door.classList.add('tap');
+    taps++;clearTimeout(tapT);tapT=setTimeout(function(){taps=0},1600);
+    if(taps===3)toast('Keep going.',1400);
+    if(taps>=5){taps=0;buzz([20,40,20]);confettiOn(door);toast('You found the door. It was open the whole time. Apply anyway.',3600)}
+  });
+
+  // hold to request an invitation
+  var hb=$('holdApply'),hbBar=hb.querySelector('i'),hbT=null,MS=1000;
+  function hbStart(){if(hb.classList.contains('done')||hbT)return;hb.classList.add('fill');$('holdApplyText').textContent='Keep holding…';buzz(8);
+    hbBar.style.transition='width '+(reduce?1:MS)+'ms linear';hbBar.style.width='100%';
+    hbT=setTimeout(function(){hbT=null;hb.classList.add('done');$('holdApplyText').textContent='Come in.';buzz([20,40,20]);confettiOn(hb);
+      setTimeout(function(){$('heroApplyBtn').click();setTimeout(function(){hb.classList.remove('done','fill');hbBar.style.transition='none';hbBar.style.width='0';$('holdApplyText').textContent='Hold to request an invitation'},1400)},500)},reduce?1:MS)}
+  function hbStop(){if(!hbT)return;clearTimeout(hbT);hbT=null;hb.classList.remove('fill');hbBar.style.transition='width .25s ease';hbBar.style.width='0';$('holdApplyText').textContent='Hold to request an invitation'}
+  hb.addEventListener('pointerdown',function(e){try{hb.setPointerCapture(e.pointerId)}catch(_){}hbStart()});
+  ['pointerup','pointercancel','pointerleave'].forEach(function(ev){hb.addEventListener(ev,hbStop)});
+  hb.addEventListener('keydown',function(e){if((e.key===' '||e.key==='Enter')&&!e.repeat){e.preventDefault();hbStart()}});
+  hb.addEventListener('keyup',function(e){if(e.key===' '||e.key==='Enter')hbStop()});
+
+  // ---------- rules: swipe cards ----------
+  var RULES=[
+    {t:'Say yes only when you mean yes.',n:'"Maybe" is a no with manners.'},
+    {t:'Show up. Or tell us early.',n:'Ghosting comes with a score.'},
+    {t:'Be on time. Traffic is a reason, not a plan.',n:'Leave early. Blame Rajiv Chowk later.'},
+    {t:'Vouch only for people you could be stuck in a lift with.',n:'You are on the hook for them.'},
+    {t:'Phones away at the table. Photos are fine.',n:'The group chat will survive.'}
+  ];
+  var ri=0,ryes=0,rst=$('rsStack');
+  function rtop(){return rst.querySelector('[data-d="0"]')}
+  function rdraw(){
+    var h='';for(var k=Math.min(ri+2,RULES.length-1);k>=ri;k--){var r=RULES[k],d=k-ri;
+      h+='<div class="rs-card" data-d="'+d+'" style="transform:translateY('+(d*11)+'px) scale('+(1-d*.05)+');z-index:'+(10-d)+'"><span class="rs-stamp y">FAIR</span><span class="rs-stamp n">HARD PASS</span><small>Rule '+(k+1)+' of '+RULES.length+'</small><p>'+r.t+'</p><em>'+r.n+'</em></div>'}
+    rst.innerHTML=h;var t=rtop();if(t)rbind(t)}
+  function rbind(el){
+    var sx=0,dx=0,on=false;
+    el.addEventListener('pointerdown',function(e){on=true;sx=e.clientX;dx=0;el.classList.add('drag');try{el.setPointerCapture(e.pointerId)}catch(_){}});
+    el.addEventListener('pointermove',function(e){if(!on)return;dx=e.clientX-sx;el.style.transform='translateX('+dx+'px) rotate('+(dx/16)+'deg)';
+      el.querySelector('.rs-stamp.y').style.opacity=Math.max(0,Math.min(1,dx/90));el.querySelector('.rs-stamp.n').style.opacity=Math.max(0,Math.min(1,-dx/90))});
+    function end(){if(!on)return;on=false;el.classList.remove('drag');
+      if(Math.abs(dx)>80)rfly(dx>0?1:-1);else{el.style.transform='';el.querySelector('.rs-stamp.y').style.opacity=0;el.querySelector('.rs-stamp.n').style.opacity=0}}
+    el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end)}
+  function rfly(dir){var el=rtop();if(!el||el.dataset.gone)return;el.dataset.gone='1';
+    if(dir>0)ryes++;buzz(14);el.style.transition='transform .4s ease,opacity .4s ease';el.style.transform='translateX('+(dir*560)+'px) rotate('+(dir*26)+'deg)';el.style.opacity='0';
+    setTimeout(function(){ri++;if(ri>=RULES.length)rend();else rdraw()},300)}
+  function rend(){rst.hidden=true;$('rsBtns').hidden=true;var e=$('rsEnd');e.hidden=false;$('rsScore').textContent=ryes+' of '+RULES.length;
+    $('rsVerdict').textContent=ryes===RULES.length?"You'd fit in. Suspiciously well.":ryes>=3?'Almost one of us. We can work with that.':"You'd hate it here. Apply anyway, we like a challenge.";
+    if(ryes===RULES.length){confettiOn($('rsScore'))}}
+  $('rsYes').addEventListener('click',function(){rfly(1)});$('rsNo').addEventListener('click',function(){rfly(-1)});
+  $('rsAgain').addEventListener('click',function(){ri=0;ryes=0;$('rsEnd').hidden=true;rst.hidden=false;$('rsBtns').hidden=false;rdraw()});
+  rdraw();
+
+  // ---------- quiz ----------
+  var Q=[
+    {q:'A friend says "be there at 7". You arrive at',o:[['6:55. Early. Unwell, honestly.',3],['7:15. Delhi time.',2],['7:40, with a story.',1],['"Five minutes away." From bed.',0]]},
+    {q:'You said yes. Then it starts raining. You',o:[['Go. A yes is a yes.',3],['Message early and cancel honestly.',2],['Ask the chat "still happening?"',1],['Go quiet and hope.',0]]},
+    {q:'The group chat asks "who is in?" You',o:[['Reply straight away.',3],['Thumbs up. Nothing else.',1],['Reply three days later.',1],['Read it. Forget it. Panic at 5 pm.',0]]},
+    {q:'You promised to be the fourth player. The night before, you',o:[['Confirm and set an alarm.',3],['Check the weather, then confirm.',2],['Think about confirming.',1],['Get a better offer. Take it.',0]]},
+    {q:'Your last cancellation was',o:[['Never. I am annoying like that.',3],['Weeks ago, with a real reason.',2],['Last week, with a bad reason.',1],['This morning.',0]]},
+    {q:'Someone says "no pressure, come if you can". You',o:[['Decide yes or no right now.',3],['Ask what the plan is first.',2],['Say maybe and mean no.',1],['Say yes and mean maybe.',0]]}
+  ];
+  var qz=$('qz'),qi=0,qtot=0,lastScore=0,lastTitle='';
+  function qstep(){
+    var q=Q[qi],h='<div class="qz-bar"><i style="width:'+(qi/Q.length*100)+'%"></i></div><p class="qz-q">'+q.q+'</p>';
+    q.o.forEach(function(o,k){h+='<button type="button" class="qz-opt" data-k="'+k+'">'+o[0]+'</button>'});qz.innerHTML=h;
+    qz.querySelectorAll('.qz-opt').forEach(function(b){b.addEventListener('click',function(){
+      b.classList.add('pick');buzz(10);qtot+=q.o[+b.dataset.k][1];qz.querySelectorAll('.qz-opt').forEach(function(x){x.disabled=true});
+      setTimeout(function(){qi++;if(qi>=Q.length)qres();else qstep()},300)})})}
+  function qres(){
+    var sc=Math.round(qtot/(Q.length*3)*100)/10,t,l;
+    if(sc>=8.6){t='Annoyingly reliable.';l='You are the person who books the court. We would like to meet you.'}
+    else if(sc>=6.6){t='Mostly there.';l='A few late arrivals and one abandoned brunch. Very Delhi. Very fixable.'}
+    else if(sc>=4){t='Delhi standard.';l='You mean well. The group chat knows better.'}
+    else{t='Chronic "five minutes away".';l='We admire the honesty. Apply anyway. We believe in growth.'}
+    lastScore=sc;lastTitle=t;var C=2*Math.PI*60;
+    qz.innerHTML='<div class="qz-res"><svg class="qz-ring" viewBox="0 0 150 150"><circle cx="75" cy="75" r="60" fill="none" stroke="rgba(27,26,24,.12)" stroke-width="12"/><circle id="qzRing" cx="75" cy="75" r="60" fill="none" stroke="#1b1a18" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'" transform="rotate(-90 75 75)" style="transition:stroke-dashoffset 1.3s cubic-bezier(.3,.8,.3,1)"/><text x="75" y="88" text-anchor="middle" font-family="Fraunces,serif" font-size="40" fill="#1b1a18">'+sc.toFixed(1)+'</text></svg>'+
+      '<h3 class="qz-title">'+t+'</h3><p class="qz-line">'+l+'</p><div class="fx-actions"><button type="button" class="btn" id="qzShare">Share my score</button><button type="button" class="btn-ghost" id="qzAgain">Retake</button></div><div class="fx-actions" style="margin-top:10px"><button type="button" class="btn-ghost" data-apply>Request an invitation</button></div></div>';
+    setTimeout(function(){var r=$('qzRing');if(r)r.style.strokeDashoffset=String(C*(1-sc/10))},80);
+    if(sc>=8.6)setTimeout(function(){confettiOn($('qzRing'))},900);
+    $('qzAgain').addEventListener('click',function(){qi=0;qtot=0;qstep()});$('qzShare').addEventListener('click',shareScore);
+    qz.querySelector('[data-apply]').addEventListener('click',goApply)}
+  $('qzStart').addEventListener('click',function(){buzz(10);qi=0;qtot=0;qstep()});
+  function shareScore(){
+    var go=function(){var c=document.createElement('canvas');c.width=1080;c.height=1350;var x=c.getContext('2d');
+      var SER='Fraunces, Georgia, serif',SAN='Inter, Helvetica, Arial, sans-serif';
+      x.fillStyle='#faf8f4';x.fillRect(0,0,1080,1350);x.textAlign='center';
+      x.strokeStyle='#1b1a18';x.lineWidth=8;x.lineJoin='round';x.beginPath();x.arc(540,190,52,Math.PI,0);x.closePath();x.stroke();
+      x.fillStyle='#76706a';x.font='600 30px '+SAN;if('letterSpacing' in x)x.letterSpacing='8px';x.fillText('MY RELIABILITY SCORE',540,330);if('letterSpacing' in x)x.letterSpacing='0px';
+      x.fillStyle='#1b1a18';x.font='400 420px '+SER;x.fillText(lastScore.toFixed(1),540,760);
+      x.font='400 54px '+SER;x.fillText('out of 10',540,840);
+      x.font='400 88px '+SER;x.fillText(lastTitle.replace(/"/g,'“'),540,990);
+      x.fillStyle='#6b665e';x.font='500 36px '+SAN;x.fillText('How reliable are you?',540,1090);
+      x.fillStyle='#1b1a18';x.font='400 44px '+SER;x.fillText('The Semi Circle',540,1230);
+      x.fillStyle='#8f897d';x.font='500 28px '+SAN;x.fillText('thesemicircle.in',540,1280);
+      c.toBlob(function(b){var f=new File([b],'my-reliability-score.png',{type:'image/png'});
+        if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'The Semi Circle',text:'I scored '+lastScore.toFixed(1)+' out of 10. How reliable are you?'}).catch(function(){})}
+        else{var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='my-reliability-score.png';document.body.appendChild(a);a.click();a.remove();toast('Saved. Post it. We dare you.')}},'image/png')};
+    if(document.fonts&&document.fonts.load){Promise.all([document.fonts.load('400 100px Fraunces'),document.fonts.load('500 30px Inter')]).then(go,go)}else go()}
+
+  // ---------- excuses ----------
+  var EX=['Stuck at Rajiv Chowk. Both of them.','The AQI said no.','My cab is "arriving". It has been arriving since 6.','It is raining in Gurgaon. Only in Gurgaon.','I thought it was tomorrow.','The metro had a moment at Hauz Khas.','My building lift is on a sabbatical.','Mom called. It was a 40 minute call.','I am outside. In spirit.','Golf Course Road has opinions today.','My phone was on silent. And in another room.','I was ready. Then I sat down.','The auto guy wants three times the fare.','Traffic. I do not need to say more.','I fell asleep "for ten minutes".','Power cut. Phone at 2 percent.','The plan changed. I did not read the chat.','I am five minutes away.','My laptop did a Windows update. At 6 pm.','I had to wait for the delivery guy.','It was a long week. This is a long sentence.','I am in a lift. It is not moving.','The parking in Cyber Hub is a lifestyle.','My dog has plans. I was not consulted.'];
+  var exN=0,exBusy=false,exLast=-1;
+  $('exBtn').addEventListener('click',function(){
+    if(exBusy)return;exBusy=true;buzz(10);var card=$('exCard'),txt=$('exText'),k=0;
+    var iv=setInterval(function(){txt.textContent=EX[Math.floor(Math.random()*EX.length)];card.classList.remove('flick');void card.offsetWidth;card.classList.add('flick');k++;
+      if(k>=6||reduce){clearInterval(iv);var n;do{n=Math.floor(Math.random()*EX.length)}while(n===exLast);exLast=n;txt.textContent=EX[n];exN++;exBusy=false;$('exCopy').hidden=false;$('exBtn').textContent='Another one';
+        $('exNote').textContent=exN===3?'You are getting good at this. That is the problem.':exN===6?'At this point, join us. We have a score for exactly this.':exN===10?'We are legally obliged to say: just go.':''}},reduce?1:70)});
+  $('exCopy').addEventListener('click',function(){var t=$('exText').textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast('Copied. Use responsibly.')},function(){toast('Long press to copy.')})});
+
+  // sticky apply pill: show after the door, hide near the form
+  var stk=$('stk'),pastDoor=false,atForm=false;
+  function stkUpdate(){stk.classList.toggle('show',pastDoor&&!atForm)}
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){pastDoor=!es[0].isIntersecting&&es[0].boundingClientRect.top<0;stkUpdate()},{threshold:0}).observe($('holdApply'));
+    new IntersectionObserver(function(es){atForm=es[0].isIntersecting;stkUpdate()},{threshold:.05}).observe($('apply'));
+  }
+})();
+</script>
 </body>
 </html>
