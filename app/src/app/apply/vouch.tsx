@@ -5,7 +5,6 @@ import { Body, Button, Notice, Screen, StepHeader, TextField, Title } from '@/co
 import { colors, fonts, radius } from '@/theme';
 import { applicationCode, isApplicationCode, isEmail, normalizePhone } from '@/lib/validators';
 import { useApply } from './_layout';
-import { Info } from '@/components/Info';
 
 export default function Vouch() {
   const r = useRouter();
@@ -27,14 +26,15 @@ export default function Vouch() {
   return (
     <Screen footer={<View style={{ flexDirection: 'row', gap: 10 }}>
       <Button label="Back" variant="secondary" onPress={() => r.back()} style={{ flexBasis: 112 }} />
-      <Button label="Continue" onPress={() => r.push('/apply/review')} style={{ flex: 1 }} />
+      <Button label={s.vouches.length || s.referredByCode ? 'Continue' : "Skip, I'll go solo"} onPress={() => r.push('/apply/review')} style={{ flex: 1 }} />
     </View>}>
       <StepHeader step={4} of={5} />
-      <Title italic>Know someone who belongs?</Title>
-      <Info text={"Vouching fast-tracks your application. Vouching for someone who embarrasses us fast-tracks nothing. Entirely optional."} />
-      <TextField label="Were you referred? Enter their code" value={s.referredByCode} onChangeText={(v) => set({ referredByCode: applicationCode(v) })} autoCapitalize="characters" maxLength={8}
+      <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 12, letterSpacing: 1.6, textTransform: 'uppercase', color: colors.muted }}>Totally optional</Text>
+      <Title italic>Bring a friend who shows up?</Title>
+      <Body>Name one person you'd happily share a padel court with. We'll look at their application sooner. No one? Skip it, nobody checks.</Body>
+      <TextField label="Came with a code? Pop it in" value={s.referredByCode} onChangeText={(v) => set({ referredByCode: applicationCode(v) })} autoCapitalize="characters" maxLength={8}
         style={{ fontFamily: fonts.title, letterSpacing: 2 }} error={s.referredByCode && !isApplicationCode(s.referredByCode) ? 'Codes are 8 characters.' : null} />
-      <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted, marginTop: 24 }}>People you're vouching for</Text>
+      <Text style={{ fontFamily: fonts.bodyMedium, fontSize: 13, color: colors.muted, marginTop: 24 }}>Your plus-ones</Text>
       {s.vouches.map((v, i) => (
         <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, padding: 12, backgroundColor: colors.surface, borderRadius: radius.card }}>
           <View style={{ flex: 1 }}>
@@ -46,7 +46,7 @@ export default function Vouch() {
       ))}
       <TextField label="Their name" value={name} onChangeText={setName} />
       <TextField label="Their email or mobile" value={contact} onChangeText={setContact} autoCapitalize="none" error={err} />
-      <Button label="Add" variant="secondary" onPress={add} style={{ marginTop: 14 }} />
+      <Button label="Add them" variant="secondary" onPress={add} style={{ marginTop: 14 }} />
       <Notice tone="plain">Importing from your contacts is coming soon.</Notice>
     </Screen>
   );

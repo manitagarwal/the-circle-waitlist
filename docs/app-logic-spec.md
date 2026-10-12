@@ -323,7 +323,7 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Avatars are drawn in a per-avatar colour pair (light and dark variants) instead of one ink colour.
 
 ## Cities (Oct 2026)
-- A city (Delhi NCR, Mumbai, ...) is the unit of place. `cities.is_live` says if we are open there. Only Delhi NCR is live. Delhi, Gurugram, Noida, Greater Noida, Faridabad and Ghaziabad are all areas inside Delhi NCR.
+- A city (Delhi NCR, Mumbai, ...) is the unit of place. `cities.is_live` says if we are open there. Only Delhi NCR is live. Delhi, Gurugram, Noida, Faridabad and Ghaziabad are all areas inside Delhi NCR.
 - Each member has a **home city** (shown on profile as "Based in", changeable twice every 60 days) and a **current city** (the one they are viewing; anyone can switch whenever they like, from the city chip at the top of every tab).
 - City-scoped: bookings, public channels, lobbies, Find people. The database enforces it: other cities' bookings and channels are not returned, joining across cities raises `wrong_city`, posting in a city that is not live raises `city_not_live`.
 - People-scoped (stay visible in every city): direct messages, private groups, friends, and bookings or chats you have joined or host (they show in Mine and Chats).
@@ -383,5 +383,7 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 
 ## Application: city and area (Oct 2026)
 - The first question is the city (loaded from the database; only Delhi NCR is live). Other cities and "Other" get a short "We're not there yet" form that records their email and city, and they do not join the queue.
-- Delhi NCR applicants must also pick the part of NCR they live or work in (Delhi, Gurgaon, Noida, Greater Noida, Faridabad, Ghaziabad). It is saved as `area` and shown in Admin > Applicants, and it is how we choose where to open first.
+- Delhi NCR applicants must also pick the part of NCR they live or work in (Delhi, Gurgaon, Noida, Faridabad, Ghaziabad). It is saved as `area` and shown in Admin > Applicants, and it is how we choose where to open first.
 - Same on the website and in the app.
+
+- The vouch step is optional and says so: "Totally optional", a "Skip, I'll go solo" button, and the code and plus-one fields appear only when the person says they have someone. Greater Noida is not offered as an area.
