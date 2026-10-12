@@ -363,3 +363,6 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - Activity rows swipe to mark read. The event ticket tilts as you drag it.
 - Hosts can upload their own photo for a booking (when creating it, or later with "Change photo" until it ends). "Use ours" goes back to the automatic one. Admin can remove a photo from storage if needed.
 - "Report this photo" on someone else's booking that has an uploaded photo. It goes to the normal Reports queue. In Admin > Reports the photo is shown with a "Remove photo" button that puts the booking back on our photo and deletes the file.
+
+## Website: "Inside" app preview (Oct 2026)
+- A section on thesemicircle.in (between the intro and the card block) with a phone frame and a working demo on demo data: tap a plan, press and hold "Hold to join" (fills, early release resets, confetti and the spots count change on success), a live countdown on Up next, and a Profile tab with the animated reliability ring. Photos come from the public photo library bucket. No sign-up, no real data. Keyboard users can hold with Space or Enter.
