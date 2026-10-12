@@ -376,3 +376,7 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 - The app preview is labelled "Live demo · tap anything", with a "Tap me" cue and three tick-off steps (tap a plan, hold to join, open Profile) that end on "That is the app. Getting in is the hard part."
 - Wording: the button says "Apply to join" everywhere (and "Hold to apply" on the intro). "Request an invitation" stays as the form's title, the brand voice and the email. A clear "Apply" button sits in the top bar.
 - The form has a 5-segment step bar with a "Step N of 5" caption, larger fields, full-width buttons and a tidier review list.
+
+- The three playful sections each have their own interface: House rules is a dark section with a fanned deck, round yes/no buttons, a progress strip, a stamp slam at the end and a receipt of your answers. The reliability quiz is a group chat (friends send the questions, you reply by tapping, they react, and the result arrives as a message). The excuse is a scratch card you scratch with your finger (or "Just show me").
+- The sticky Apply button hides while any of the three games is on screen.
+- The country-code field has its own arrow, so it is aligned.
