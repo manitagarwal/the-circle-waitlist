@@ -72,3 +72,10 @@ Per week: reach, saves and shares per post (shares matter most), profile visits,
 3. Are you OK showing real queue numbers publicly (433 waiting)?
 4. Who posts (you from your phone)? I will give you the posts as ready images with captions.
 5. Launch gap: do we start before the first real event, or wait for photos from one?
+
+## Working rules (decided with the owner)
+- No Reels. Images and carousels only.
+- The last slide of every carousel is a call to action: apply at the link in bio, plus thesemicircle.in.
+- Copy is shown as text and approved before any image is built.
+- Written in English, with local Delhi references (places, food, metro, habits). No Hindi or Hinglish.
+- No dashes, no emoji, no exclamation marks.
