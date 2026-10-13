@@ -392,5 +392,5 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 ## Website: contact, SEO and visit counts
 - `/contact/`: a fun contact page with topic chips, name, email, message and the hello@thesemicircle.in address (no postal address or phone). Messages are saved and emailed to hello@. Admin > Messages lists them, with Mark done.
 - Search basics: meta description, canonical, Open Graph and Twitter tags with a share image (`og-image.png`), Organization schema, `robots.txt`, `sitemap.xml` and a custom `404.html`. The activity photos in the demo are lazy loaded and have alt text.
-- Visit counts: every page logs a simple visit (page, `?src=` tag, referrer host) through `log_visit`. Admin > Website visits shows the last 30 days by source and by day. Use `?src=insta` on the Instagram link.
-- Google Search Console is not connected yet: needs the verification tag from the owner's Google account.
+- Visit counts (own, cookie-free, for ?src= tags; Google Analytics G-Q2ENZXCRGK also runs and is disclosed in the privacy policy): every page logs a simple visit (page, `?src=` tag, referrer host) through `log_visit`. Admin > Website visits shows the last 30 days by source and by day. Use `?src=insta` on the Instagram link.
+- Google Search Console verification meta tag is on the home page.
