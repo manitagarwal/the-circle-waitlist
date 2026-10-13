@@ -155,7 +155,7 @@ async function gate() {
 }
 
 /* ---------- shell and routing ---------- */
-const PAGES = [['dashboard', 'Dashboard'], ['applicants', 'Applicants'], ['members', 'Members'], ['reports', 'Reports'], ['events', 'Events'], ['payments', 'Payments'], ['promos', 'Promo codes'], ['cities', 'Cities'], ['photos', 'Photos'], ['announce', 'Announcements'], ['bookings', 'Bookings'], ['settings', 'Settings'], ['log', 'Activity log']];
+const PAGES = [['dashboard', 'Dashboard'], ['applicants', 'Applicants'], ['members', 'Members'], ['reports', 'Reports'], ['messages', 'Messages'], ['visits', 'Website visits'], ['events', 'Events'], ['payments', 'Payments'], ['promos', 'Promo codes'], ['cities', 'Cities'], ['photos', 'Photos'], ['announce', 'Announcements'], ['bookings', 'Bookings'], ['settings', 'Settings'], ['log', 'Activity log']];
 let counts = {};
 
 async function startShell(user) {
@@ -291,6 +291,35 @@ renderers.reports = async (main, sub) => {
       h('div', { class: 'faint' }, r.prior_upheld + ' upheld before · score ' + (r.reported_score == null ? '-' : Number(r.reported_score).toFixed(1))), fmtDate(r.created_at),
       r.status === 'open' ? h('div', { class: 'row' }, h('button', { class: 'small', on: { click: () => resolve(r, 'dismissed', 'Dismiss') } }, 'Dismiss'), h('button', { class: 'small', on: { click: () => resolve(r, 'upheld_minor', 'Uphold (minor)') } }, 'Minor'), h('button', { class: 'small danger', on: { click: () => resolve(r, 'upheld_severe', 'Uphold (severe)') } }, 'Severe')) : badge(r.status.replace('_', ' ')),
     ]))) : h('p', { class: 'muted' }, 'Nothing here.'));
+};
+
+/* ---------- contact messages ---------- */
+const TOPIC_LABELS = { hello: 'Hello', apply: 'Application', plans: 'Plans or venues', partner: 'Partnerships', press: 'Press', bug: 'Broken', other: 'Other' };
+renderers.messages = async (main, sub) => {
+  const which = sub[0] || 'new';
+  const all = await rpc('admin_contact_messages');
+  const list = (all || []).filter((m) => (which === 'new' ? m.status === 'new' : m.status !== 'new'));
+  put(main, header('Messages', 'From the contact page. Replies go from your own inbox.'), tabs([['new', 'New'], ['done', 'Done']], which, (v) => { location.hash = '#/messages/' + v; }),
+    list.length ? table(['From', 'Topic', 'Message', 'When', ''], list.map((m) => tr([
+      h('div', null, m.name, h('div', { class: 'faint' }, h('a', { href: 'mailto:' + m.email }, m.email))),
+      TOPIC_LABELS[m.topic] || m.topic,
+      h('div', { style: 'max-width:420px;white-space:pre-wrap' }, m.message), fmtDate(m.created_at),
+      h('button', { class: 'small', on: { click: async () => { if (await act(() => rpc('admin_set_contact_status', { p_id: m.id, p_status: m.status === 'new' ? 'done' : 'new' }), m.status === 'new' ? 'Marked done' : 'Moved back to new')) refresh(); } } }, m.status === 'new' ? 'Mark done' : 'Reopen'),
+    ]))) : h('p', { class: 'muted' }, 'Nothing here.'));
+};
+
+/* ---------- website visits ---------- */
+renderers.visits = async (main) => {
+  const data = (await rpc('admin_visit_stats', { p_days: 30 })) || [];
+  const bySrc = {}; let total = 0;
+  data.forEach((r) => { bySrc[r.src] = (bySrc[r.src] || 0) + Number(r.visits); total += Number(r.visits); });
+  const byDay = {}; data.forEach((r) => { byDay[r.day] = (byDay[r.day] || 0) + Number(r.visits); });
+  put(main, header('Website visits', 'Last 30 days. Page views of thesemicircle.in, counted without cookies. The source is the ?src= tag on the link.'),
+    h('div', { class: 'cards' }, h('div', { class: 'card' }, h('div', { class: 'n' }, total), h('div', { class: 'l' }, 'Visits'))),
+    h('h2', null, 'By source'),
+    Object.keys(bySrc).length ? table(['Source', 'Visits'], Object.entries(bySrc).sort((a, b) => b[1] - a[1]).map(([k, v]) => tr([k, String(v)]))) : h('p', { class: 'muted' }, 'No visits yet.'),
+    h('h2', null, 'By day'),
+    Object.keys(byDay).length ? table(['Day', 'Visits'], Object.entries(byDay).map(([k, v]) => tr([k, String(v)]))) : null);
 };
 
 /* ---------- events ---------- */

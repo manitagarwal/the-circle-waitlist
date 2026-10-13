@@ -3,6 +3,8 @@
 <title>Privacy policy | The Semi Circle</title>
 <meta name="description" content="Privacy policy for The Semi Circle, a private community.">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:title" content="Privacy policy | The Semi Circle">
+<meta property="og:image" content="https://thesemicircle.in/og-image.png">
 <link rel="canonical" href="https://thesemicircle.in/privacy/">
 <style>
 :root{--bg:#0d0e0f;--panel:#17181a;--line:#2a2b2c;--ink:#ece7dd;--dim:#9a9186;--accent:#b6935e}
@@ -36,6 +38,7 @@ footer{padding-top:40px;padding-bottom:60px;color:var(--dim);font-size:.85rem;bo
 <tr><td>You request an invitation</td><td>Full name, mobile number, personal email, work email, LinkedIn link, city, the password you choose (stored only as a one-way hash), a referral code if you have one, and the names and contact details of people you vouch for.</td></tr>
 <tr><td>You set up your profile</td><td>Username, photo or avatar, bio, date of birth, gender, home address (used to work out your area; others see only the area), field of work, and your interests.</td></tr>
 <tr><td>You use the app</td><td>Messages and polls you post, channels and groups you join or create, bookings you host or join, events you reserve, attendance and no-show records, friends, blocks, reports you make, and your reliability score.</td></tr>
+<tr><td>You visit thesemicircle.in</td><td>A simple visit count: which page was opened, the <code>?src=</code> tag on the link (for example <code>insta</code>) and the website the visitor came from. No cookies, no IP address, no profile of you. If you use the contact page, your name, email and message.</td></tr>
 <tr><td>Your device</td><td>A push-notification token and device type if you allow notifications, and, if you allow it, your location when you pick an address. We do not track your location in the background.</td></tr>
 </table>
 <p>We do not collect payment details today. If we start selling event tickets, payments will be handled by a payment provider and we will update this policy first.</p>
@@ -93,5 +96,10 @@ footer{padding-top:40px;padding-bottom:60px;color:var(--dim);font-size:.85rem;bo
 <p>Grievance Officer: The Proprietor, The Semi Circle, <a href="mailto:hello@thesemicircle.in">hello@thesemicircle.in</a>, B-3, Kundan Apartment, Jyotinagar, Sevoke Road, Siliguri - 734001, West Bengal. We aim to acknowledge complaints within 24 hours and resolve them within 15 days. If you are not satisfied, you may complain to the Data Protection Board of India.</p>
 
 </main>
-<footer><a href="/privacy/">Privacy policy</a> &nbsp;·&nbsp; <a href="/terms/">Terms of use</a> &nbsp;·&nbsp; <a href="mailto:hello@thesemicircle.in">hello@thesemicircle.in</a></footer>
+<footer><a href="/privacy/">Privacy policy</a> &nbsp;·&nbsp; <a href="/terms/">Terms of use</a> &nbsp;·&nbsp; <a href="/contact/">Contact</a> &nbsp;·&nbsp; <a href="mailto:hello@thesemicircle.in">hello@thesemicircle.in</a></footer>
+<script>
+/* privacy-friendly visit counter: no cookies, no personal data. Page, ?src= tag and referrer host only. */
+(function(){try{if(navigator.webdriver)return;var q=new URLSearchParams(location.search).get('src');if(q)sessionStorage.setItem('src',q);var s=sessionStorage.getItem('src')||'';var r='';try{r=document.referrer?new URL(document.referrer).hostname:''}catch(e){}if(r===location.hostname)r='';
+fetch('https://qjtuahvhszxektzdmmdf.supabase.co/rest/v1/rpc/log_visit',{method:'POST',keepalive:true,headers:{apikey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqdHVhaHZoc3p4ZWt0emRtbWRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNzkzNDUsImV4cCI6MjEwNTc1NTM0NX0.Blt9FzDgZq_BgoraEraJVZwMcIEtZh7oXkrNWm-N-aQ',Authorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqdHVhaHZoc3p4ZWt0emRtbWRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNzkzNDUsImV4cCI6MjEwNTc1NTM0NX0.Blt9FzDgZq_BgoraEraJVZwMcIEtZh7oXkrNWm-N-aQ','Content-Type':'application/json'},body:JSON.stringify({p_path:location.pathname,p_src:s,p_referrer:r})}).catch(function(){})}catch(e){}})();
+</script>
 </body></html>
