@@ -1511,12 +1511,13 @@ section[id]{scroll-margin-top:54px}
   const progress = document.getElementById('progress');
   const authBar = document.getElementById('authBar');
 
+  let booted = false; // the first render on page load must not scroll the page down to the form
   function showStep(n){
     state.step = n;
     progress.style.display = '';
     progress.querySelectorAll('.progress-item').forEach(p => p.classList.toggle('active', Number(p.dataset.progress) <= n));
     steps[n]();
-    document.getElementById('apply').scrollIntoView({behavior:'smooth', block:'start'});
+    if(booted) document.getElementById('apply').scrollIntoView({behavior:'smooth', block:'start'});
   }
   // replaceChildren would print a null as the word "null", so everything goes through put()
   const put = (el, ...kids) => el.replaceChildren(...kids.flat(Infinity).filter(k => k != null && k !== false));
@@ -1952,7 +1953,7 @@ section[id]{scroll-margin-top:54px}
     });
   }catch(_){}
   updateCard();
-  route();
+  route().finally(() => { booted = true; });
 })();
 </script>
 
