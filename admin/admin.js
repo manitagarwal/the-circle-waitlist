@@ -253,9 +253,9 @@ renderers.members = async (main, sub) => {
   const paint = () => {
     const list = all.filter((m) => (state === 'all' || m.state === state) && (!q.v || [m.username, m.full_name, m.work_email].some((x) => (x || '').toLowerCase().includes(q.v))));
     clear(body).append(list.length ? table(['Member', 'Role', 'Area', 'State', 'Score', 'Joined', ''], list.map((m) => tr([
-      h('div', null, m.full_name || '—', h('div', { class: 'faint' }, '@' + (m.username || '?') + ' · ' + (m.work_email || ''))), m.role, m.area,
+      h('div', null, m.full_name || '-', h('div', { class: 'faint' }, '@' + (m.username || '?') + ' · ' + (m.work_email || ''))), m.role, m.area,
       h('div', null, badge(m.state, m.state === 'active' ? 'ok' : null), m.suspended_until ? h('div', { class: 'faint' }, 'until ' + fmtDate(m.suspended_until)) : null),
-      m.score == null ? '—' : Number(m.score).toFixed(1), fmtDate(m.created_at),
+      m.score == null ? '-' : Number(m.score).toFixed(1), fmtDate(m.created_at),
       h('div', { class: 'row' },
         h('button', { class: 'small', on: { click: () => moderate(m, 'warning') } }, 'Warn'),
         h('button', { class: 'small', on: { click: () => moderate(m, 'suspension') } }, 'Suspend'),
@@ -288,7 +288,7 @@ renderers.reports = async (main, sub) => {
       '@' + r.reporter_username, r.category, h('div', { style: 'max-width:280px;white-space:pre-wrap' }, r.reason || '',
         r.booking_photo ? h('div', { style: 'margin-top:8px' }, h('img', { src: SUPABASE_URL + '/storage/v1/object/public/booking-photos/' + r.booking_photo, alt: 'Reported photo', style: 'width:200px;border-radius:12px;display:block' }),
           h('button', { class: 'small danger', style: 'margin-top:6px', on: { click: () => removePhoto(r) } }, 'Remove photo')) : (r.booking_id ? h('div', { class: 'faint', style: 'margin-top:6px' }, 'About a booking photo (none on it now)') : null)),
-      h('div', { class: 'faint' }, r.prior_upheld + ' upheld before · score ' + (r.reported_score == null ? '—' : Number(r.reported_score).toFixed(1))), fmtDate(r.created_at),
+      h('div', { class: 'faint' }, r.prior_upheld + ' upheld before · score ' + (r.reported_score == null ? '-' : Number(r.reported_score).toFixed(1))), fmtDate(r.created_at),
       r.status === 'open' ? h('div', { class: 'row' }, h('button', { class: 'small', on: { click: () => resolve(r, 'dismissed', 'Dismiss') } }, 'Dismiss'), h('button', { class: 'small', on: { click: () => resolve(r, 'upheld_minor', 'Uphold (minor)') } }, 'Minor'), h('button', { class: 'small danger', on: { click: () => resolve(r, 'upheld_severe', 'Uphold (severe)') } }, 'Severe')) : badge(r.status.replace('_', ' ')),
     ]))) : h('p', { class: 'muted' }, 'Nothing here.'));
 };
@@ -429,7 +429,7 @@ async function eventDetail(main, id) {
   if (e.status === 'published') actions.push(h('button', { on: { click: () => status('completed', 'Mark as completed?', 'Closes check-in and ends the event.') } }, 'Mark completed'));
   if (e.status === 'draft' || e.status === 'published') actions.push(h('button', { class: 'danger', on: { click: () => status('cancelled', 'Cancel this event') } }, 'Cancel event'));
   if (e.status !== 'cancelled' && e.status !== 'completed') actions.push(h('a', { class: 'btn', href: '#/events/' + id + '/edit' }, 'Edit'));
-  const attRows = (list) => list.map((a) => tr([h('div', null, a.full_name || '—', h('div', { class: 'faint' }, '@' + a.username)), a.phone, a.ticket_code, a.ticket_name ? a.ticket_name + (a.paid_inr != null ? ' · ' + inr(a.paid_inr) : '') : '', badge(a.status.replace('_', ' '), a.status === 'attended' ? 'ok' : null), a.checked_in_at ? fmtDate(a.checked_in_at) : '',
+  const attRows = (list) => list.map((a) => tr([h('div', null, a.full_name || '-', h('div', { class: 'faint' }, '@' + a.username)), a.phone, a.ticket_code, a.ticket_name ? a.ticket_name + (a.paid_inr != null ? ' · ' + inr(a.paid_inr) : '') : '', badge(a.status.replace('_', ' '), a.status === 'attended' ? 'ok' : null), a.checked_in_at ? fmtDate(a.checked_in_at) : '',
     h('div', { class: 'row' }, a.status !== 'attended' ? h('button', { class: 'small', on: { click: mark(a, 'attended') } }, 'Attended') : null, a.status !== 'no_show' ? h('button', { class: 'small', on: { click: mark(a, 'no_show') } }, 'No-show') : null)]));
   put(main, h('p', null, h('a', { href: '#/events' }, '← All events')), header(e.title, fmtDate(e.starts_at) + ' to ' + fmtDate(e.ends_at) + ' · ' + e.status),
     h('p', { class: 'muted', style: 'white-space:pre-wrap' }, e.description || ''), h('div', { class: 'row' }, actions),
@@ -469,7 +469,7 @@ renderers.payments = async (main, sub) => {
   put(main, header('Payments', title), h('div', { class: 'row' }, pick),
     h('div', { class: 'panel' }, h('p', null, taken.length + ' paid tickets · ' + inr(gross) + ' taken · ' + inr(disc) + ' given as discounts · ' + inr(back) + ' refunded · ' + inr(gross - back) + ' kept')),
     all.length ? table(['When', 'Member', 'Event', 'Ticket', 'Promo', 'Paid', 'Status', 'Razorpay id', ''], all.map((x) => tr([
-      fmtDate(x.paid_at || x.created_at), h('div', null, x.full_name || '—', h('div', { class: 'faint' }, '@' + x.username)), x.event_title, x.ticket_name, x.promo_code || '',
+      fmtDate(x.paid_at || x.created_at), h('div', null, x.full_name || '-', h('div', { class: 'faint' }, '@' + x.username)), x.event_title, x.ticket_name, x.promo_code || '',
       inr(x.amount_inr) + (Number(x.discount_inr) ? ' (−' + inr(x.discount_inr) + ')' : ''), badge(x.status.replace('_', ' '), tone[x.status]) , x.razorpay_payment_id || '',
       ['paid', 'refund_pending', 'partially_refunded'].includes(x.status) ? h('button', { class: 'small', on: { click: refund(x) } }, x.status === 'refund_pending' ? 'Retry refund' : 'Refund') : null,
     ]))) : h('p', { class: 'muted' }, 'No payments yet.'),
