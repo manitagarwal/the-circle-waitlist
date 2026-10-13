@@ -6,18 +6,29 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'content-type': 'application/json' } });
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
 
-const page = (name: string) => `<!doctype html><html><body style="margin:0;background:#f3ecdf;font-family:Inter,Arial,sans-serif;color:#211c16">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3ecdf;padding:32px 16px"><tr><td align="center">
-<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;background:#ffffff;border:1px solid #ddd2ba;border-radius:16px">
-<tr><td style="padding:32px 32px 8px;text-align:center"><img src="https://thesemicircle.in/email-logo.png" alt="The Semi Circle" width="120" style="max-width:120px;height:auto"></td></tr>
-<tr><td style="padding:8px 32px 32px">
-<h1 style="font-family:Georgia,serif;font-weight:500;font-size:26px;margin:16px 0 12px;text-align:center">You're in, ${esc(name)}.</h1>
-<p style="font-size:16px;line-height:1.6;margin:0 0 16px">Your application to The Semi Circle has been accepted. Welcome.</p>
-<p style="font-size:16px;line-height:1.6;margin:0 0 16px">Open the app and sign in with this email address. You'll set up your profile, pick what you're into, and then you can join channels, book plans and come to our events.</p>
-<p style="font-size:14px;line-height:1.6;margin:24px 0 0;color:#6b6152">If you didn't apply to The Semi Circle, you can ignore this email.</p>
-</td></tr></table>
-<p style="font-size:12px;color:#8a7f6d;margin:16px 0 0">The Semi Circle, private community</p>
-</td></tr></table></body></html>`;
+const serif = "'Fraunces','Iowan Old Style',Palatino,Georgia,serif";
+const page = (name: string, email: string) => `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+</head><body style="margin:0;background:#f6f1e7;font-family:'DM Sans','Helvetica Neue',Arial,sans-serif;color:#1b1a18">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0">Most people don't. You did.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f1e7;padding:28px 16px"><tr><td align="center">
+<table role="presentation" width="440" cellpadding="0" cellspacing="0" style="max-width:440px;width:100%">
+<tr><td style="padding:0 4px 18px"><img src="https://thesemicircle.in/email-logo.png" alt="The Semi Circle" width="96" style="max-width:96px;height:auto;display:block"></td></tr>
+<tr><td style="background:#1b1a18;border-radius:22px 22px 0 0;padding:34px 28px 28px">
+<div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#b9ad96;margin:0 0 10px">Application accepted</div>
+<h1 style="font-family:${serif};font-weight:600;font-size:34px;line-height:1.15;margin:0;color:#f6f1e7">You're in, ${esc(name)}.</h1>
+</td></tr>
+<tr><td style="background:#fffdf8;border-radius:0 0 22px 22px;padding:28px 28px 30px">
+<p style="font-size:16px;line-height:1.6;margin:0 0 18px;color:#3d3a34">Most people don't get in. That was the whole idea. You did, so somebody read your application and thought: yes, this one shows up.</p>
+<p style="font-family:${serif};font-size:18px;font-weight:600;margin:0 0 8px;color:#1b1a18">Three steps. Less time than a Delhi traffic light.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 20px"><tr><td style="font-family:${serif};font-size:20px;font-weight:600;color:#76582a;padding:6px 14px 6px 0;vertical-align:top">1</td><td style="font-size:15px;line-height:1.55;color:#3d3a34;padding:6px 0">Open The Semi Circle app.</td></tr>
+<tr><td style="font-family:${serif};font-size:20px;font-weight:600;color:#76582a;padding:6px 14px 6px 0;vertical-align:top">2</td><td style="font-size:15px;line-height:1.55;color:#3d3a34;padding:6px 0">Sign in with <b style="font-weight:500;color:#1b1a18">${esc(email)}</b>.</td></tr>
+<tr><td style="font-family:${serif};font-size:20px;font-weight:600;color:#76582a;padding:6px 14px 6px 0;vertical-align:top">3</td><td style="font-size:15px;line-height:1.55;color:#3d3a34;padding:6px 0">Pick a username and what you're into. Then join a plan, a channel or an event.</td></tr></table>
+<p style="font-size:16px;line-height:1.6;margin:0 0 18px;color:#3d3a34">One small house rule: say yes, then show up. Your reliability score will remember.</p>
+<p style="font-size:14px;line-height:1.6;margin:0;color:#7a7365">Didn't apply to The Semi Circle? Ignore this email and nothing happens.</p>
+</td></tr>
+<tr><td style="padding:16px 4px 0;font-size:12px;line-height:1.6;color:#948b79">See you at the next plan.<br>The Semi Circle. Most people won't get in. That's the point.</td></tr>
+</table></td></tr></table></body></html>`;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -41,7 +52,7 @@ Deno.serve(async (req) => {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ from: Deno.env.get('MAIL_FROM') ?? 'The Semi Circle <hello@thesemicircle.in>', to: [a.personal_email], subject: "You're in. Welcome to The Semi Circle", html: page(first) }),
+      body: JSON.stringify({ from: Deno.env.get('MAIL_FROM') ?? 'The Semi Circle <hello@thesemicircle.in>', to: [a.personal_email], subject: "You're in. Yes, really.", html: page(first, a.personal_email) }),
     });
     if (!r.ok) return json({ error: 'email_failed', detail: (await r.text()).slice(0, 300) }, 502);
     await db.from('applicants').update({ acceptance_emailed_at: new Date().toISOString() }).eq('id', a.id);
