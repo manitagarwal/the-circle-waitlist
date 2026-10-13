@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /pay/
+Disallow: /status.html
+
+Sitemap: https://thesemicircle.in/sitemap.xml

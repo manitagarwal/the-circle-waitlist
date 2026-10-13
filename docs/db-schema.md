@@ -155,3 +155,8 @@ Security definer. Caller must be in the public channel; invitee must be an activ
 ## Applicant area (Oct 2026)
 - `applicants.area`: the part of NCR the applicant lives or works in (Delhi, Gurugram, Noida, Faridabad, Ghaziabad), asked at application. `city` is always the city (currently only "Delhi NCR" can apply; other cities register interest through `register_city_interest` instead). `admin_applicants_queue` exposes `area`.
 - Required for new Delhi NCR applications (enforced by a trigger once the website and app that send it are live).
+
+## Contact form and website visits
+- `contact_messages` (id, name, email, topic, message, status new/done, created_at). RLS on, no policies: only the `contact` edge function (service role) writes, only admins read through `admin_contact_messages()` and `admin_set_contact_status(id, status)`.
+- `site_visits` (id, path, src, referrer, created_at). RLS on. The website calls `log_visit(p_path, p_src, p_referrer)` (anon allowed, security definer). Admins read `admin_visit_stats(p_days)` (day, src, visits). No cookies and no IP stored.
+- Edge function `contact` (public, no JWT): honeypot field `website`, validation, at most 3 messages per email and 40 in total per hour, saves the message and emails it to hello@thesemicircle.in through Resend (reply-to is the sender). Needs RESEND_API_KEY.

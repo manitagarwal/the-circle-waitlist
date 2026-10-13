@@ -388,3 +388,9 @@ Tabs: Home, Events, Bookings, Chats, Profile. Home shows, top to bottom: a time-
 
 - The vouch step is optional and says so: "Totally optional", a "Skip, I'll go solo" button, and the code and plus-one fields appear only when the person says they have someone. Greater Noida is not offered as an area.
 - Website: once someone has applied (or is already a member) and is logged in, the Apply pill, the hold-to-apply button, the sticky pill and the Apply buttons in the games all become "See my status" and take them to their status. Logged out, they go back to "Apply".
+
+## Website: contact, SEO and visit counts
+- `/contact/`: a fun contact page with topic chips, name, email, message and the hello@thesemicircle.in address (no postal address or phone). Messages are saved and emailed to hello@. Admin > Messages lists them, with Mark done.
+- Search basics: meta description, canonical, Open Graph and Twitter tags with a share image (`og-image.png`), Organization schema, `robots.txt`, `sitemap.xml` and a custom `404.html`. The activity photos in the demo are lazy loaded and have alt text.
+- Visit counts: every page logs a simple visit (page, `?src=` tag, referrer host) through `log_visit`. Admin > Website visits shows the last 30 days by source and by day. Use `?src=insta` on the Instagram link.
+- Google Search Console is not connected yet: needs the verification tag from the owner's Google account.
