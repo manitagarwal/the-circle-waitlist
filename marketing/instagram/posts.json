@@ -1,0 +1,20 @@
+[
+{"id":"01-door","slides":[{"theme":"dark","kicker":"Delhi NCR","h":"Most people won’t get in. <i>That’s the point.</i>","p":"A private community for plans that actually happen. Apply, and we pick."}]},
+{"id":"02-how","slides":[
+ {"theme":"dark","kicker":"How it works","h":"How to get into <i>The Semi Circle</i>","p":"Four steps. One of them is turning up."},
+ {"theme":"light","kicker":"Step 1","h":"Apply.","p":"It takes about two minutes. Tell us who you are and where in NCR you live."},
+ {"theme":"light","kicker":"Step 2","h":"A person reads it.","p":"Not an algorithm. Not a form that auto approves. Someone actually reads it."},
+ {"theme":"light","kicker":"Step 3","h":"Get picked.","p":"If it’s a fit, you get an email and the app opens up. If not, we say so kindly."},
+ {"theme":"gold","kicker":"Step 4","h":"Say yes. <i>Then show up.</i>","p":"Join a plan. Padel, cafes, quiz nights, treks. That’s the whole idea."}]},
+{"id":"03-five-minutes","slides":[{"theme":"light","kicker":"Delhi, translated","h":"“I’m 5 minutes away.”","p":"Said from the bed. Said with full confidence."}]},
+{"id":"04-groupchat","slides":[{"theme":"dark","kicker":"The group chat","h":"11 pm: <i>“We should do something this weekend.”</i>","p":"Saturday: seen by everyone. Replied to by no one."}]},
+{"id":"05-rule","slides":[
+ {"theme":"dark","kicker":"The only rule","h":"Say yes. <i>Show up.</i>","p":"That’s it. That’s the rule. Everything else is built around it."},
+ {"theme":"light","kicker":"Why","h":"A plan is only as good as the people who come.","p":"A cafe table for six with three people turns into an awkward lunch."},
+ {"theme":"light","kicker":"How we help","h":"We quietly keep a reliability score.","p":"Nobody sees yours. Some plans are open only to people who tend to show up."},
+ {"theme":"gold","kicker":"So","h":"Plans here <i>actually happen.</i>","p":"Apply at the link in bio."}]},
+{"id":"06-translated","slides":[{"theme":"light","kicker":"Delhi plans, translated","h":"What people say, and what it means","list":[["“Let’s catch up soon”","never"],["“I’ll let you know”","no"],["“Almost there”","still at home"],["“Let’s play padel”","needs 4 people who come"]],"size":"s"}]},
+{"id":"07-what","slides":[{"theme":"dark","kicker":"What happens inside","h":"Real plans, real people.","list":[["Padel","at sunrise"],["Cafe hopping","Hauz Khas"],["Quiz nights","pop culture"],["Treks","Sunday mornings"],["Open mics","and karaoke"]],"size":"s"}]},
+{"id":"08-traffic","slides":[{"theme":"gold","kicker":"Delhi excuses","h":"Traffic is a valid excuse. <i>Once.</i>","p":"We counted."}]},
+{"id":"09-apply","slides":[{"theme":"dark","kicker":"Applications are open","h":"Apply. <i>We read every one.</i>","p":"Link in bio. Delhi, Gurgaon, Noida, Faridabad and Ghaziabad."}]}
+]
