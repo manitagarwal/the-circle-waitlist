@@ -26,6 +26,5 @@ Starter sets
 - Door and rules posts: #delhincr #delhi #gurgaon #noida #weekendplans #makefriends #communitybuilding
 - Humour posts: #delhimemes #relatable #groupchat #delhi #gurgaon #noida #friendsgoals
 - Plans and activities: #padel #delhicafe #delhifoodie #weekend #outdoors #delhi #delhincr
-- Reels: 4 to 5 only, e.g. #delhi #delhincr #relatable #weekendplans #gurgaon
 
 Post 1 (your set is good): #delhi #delhincr #gurgaon #noida #faridabad #ghaziabad #weekend #outdoors. Optional swap: replace #outdoors with #makefriends, which is closer to what we offer.

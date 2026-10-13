@@ -26,9 +26,9 @@ Choosing the restaurant is a leadership role nobody applies for. Send this to yo
 Friday night you and Saturday 6:55 am you have never met.
 #weekend #relatable #delhimemes #padel #weekendplans #delhi
 
-16-types-chat-1 to 6 (carousel)
-Types of people in every Delhi group chat. Which one are you? Tag the one who always shows up.
-#groupchat #delhimemes #relatable #delhi #gurgaon #noida #friendsgoals
+16-types-chat-1 to 7 (carousel, Dilli edition)
+Types of people in every Delhi group chat. Kaun sa hai tumhare group mein? Tag karo us bande ko jo pehle se pahunch jaata hai.
+#delhimemes #delhi #delhincr #groupchat #relatable #gurgaon #noida
 
 17-types-brunch-1 to 6 (carousel)
 Types of people at every brunch. Tag the one who takes 20 minutes to photograph the toast.
@@ -41,11 +41,3 @@ Delhi excuses, ranked. Disagree in the comments. Where would you put "traffic"?
 19-plans-tier.png
 Weekend plans, ranked. S tier is not up for debate. Everything else is.
 #weekendplans #delhi #gurgaon #noida #delhicafe #padel #weekend
-
-20-reel-pov-padel.mp4 (12.6 seconds, no sound)
-POV: you said yes to padel on Tuesday.
-Add a trending or soft instrumental sound in the Instagram app. Keep its volume low. #delhi #delhincr #padel #relatable #weekendplans
-
-21-reel-pov-chat.mp4 (12.6 seconds, no sound)
-Be one of the four.
-Add a trending or soft instrumental sound in the Instagram app. Keep its volume low. #groupchat #delhincr #relatable #delhi #friendsgoals

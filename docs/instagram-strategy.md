@@ -22,16 +22,15 @@ Running character: the Door. The account speaks as the person who runs the door 
 |---|---|---|---|
 | The Queue | Live numbers, "who got in this week" (no names), waitlist maths | 20% | Single image, Story |
 | The Rules | How reliability works, hold to join, why invite only | 20% | Carousel |
-| Delhi humour | One-liners about plans in NCR: "5 minutes away", the group chat that dies, traffic | 30% | Single image, Reel text-on-video |
-| The Plans | Real photos and clips from meetups, once running; until then, the activity photo library | 20% | Photo, Reel |
+| Delhi humour | One-liners about plans in NCR: "5 minutes away", the group chat that dies, traffic | 30% | Single image, carousel |
+| The Plans | Real photos and clips from meetups, once running; until then, the activity photo library | 20% | Photo, carousel |
 | Members | First name, area, why they joined, with permission | 10% | Carousel |
 
 Before real events exist, lean on Delhi humour and the Queue and Rules. Do not fake members or fake meetups.
 
 ## 5. Formats and cadence
-- 4 feed posts a week: 2 carousels, 1 single image, 1 Reel.
+- 4 feed posts a week: 2 carousels and 2 single images. No Reels for now (decision: images and carousels only).
 - Stories daily, 2 minutes: queue number, a poll ("Delhi or Gurgaon for padel"), a quiz screenshot from the site.
-- Reels: text on a calm background or on the app screen recording (hold-to-join, the swipe, the queue). Keep to 7 to 12 seconds, loopable.
 - Best times to test first: 8 to 9 pm weekdays, Sunday midday.
 
 ## 6. Anonymity rules
@@ -55,7 +54,7 @@ Not doing: paid ads, giveaways with follow gates, buying followers, engagement p
 ## 8. First 4 weeks
 - Week 0: set up the account, create the first 12 posts, pick 3 recurring formats.
 - Week 1: 9 posts live, Stories daily, 10 comments a day on NCR pages. Tell nobody in your personal circle yet except 5 people who will actually share.
-- Week 2: start the queue series, first Reel. Check which pillar gets the most saves and shares.
+- Week 2: start the queue series, Check which pillar gets the most saves and shares.
 - Week 3: first collab ask to small pages; add the quiz score card as a Story.
 - Week 4: review. Keep the top two pillars, drop the bottom one.
 
@@ -65,7 +64,6 @@ Per week: reach, saves and shares per post (shares matter most), profile visits,
 ## 10. Production
 - Carousels and single images: built as HTML to PNG at 1080x1350 in our ivory and charcoal style (I can generate these directly).
 - Captions: written by me in the dry voice, you approve in batches of 10.
-- Reels: screen recordings of the real app and site, text overlays, no talking head. The long AI ad is parked until a video tool is chosen.
 - Photos: the existing activity photo library for atmosphere; no fake members.
 
 ## 11. Open questions for you
