@@ -1,0 +1,223 @@
+[
+ {
+  "id": "10-twelve",
+  "slides": [
+   {
+    "theme": "light",
+    "kicker": "Delhi plans, by the numbers",
+    "h": "12 said yes. <i>3 showed up.</i> 1 was already there.",
+    "p": "Same group chat. Every weekend."
+   }
+  ]
+ },
+ {
+  "id": "11-padel-tuesday",
+  "slides": [
+   {
+    "theme": "dark",
+    "kicker": "Said by you",
+    "h": "Tuesday: <i>“Padel on Saturday at 6? Count me in.”</i>",
+    "p": "Saturday, 5:45 am: “Who made this plan?”"
+   }
+  ]
+ },
+ {
+  "id": "12-parking",
+  "slides": [
+   {
+    "theme": "gold",
+    "kicker": "Every area, honestly",
+    "h": "Ten minutes to get there. <i>Forty to park.</i>",
+    "p": "Plan accordingly."
+   }
+  ]
+ },
+ {
+  "id": "13-metro",
+  "slides": [
+   {
+    "theme": "light",
+    "kicker": "Delhi excuses",
+    "h": "The plan was at 7. <i>The metro had other plans.</i>",
+    "p": "Valid. Once."
+   }
+  ]
+ },
+ {
+  "id": "14-restaurant",
+  "slides": [
+   {
+    "theme": "dark",
+    "kicker": "Group plans",
+    "h": "Nobody wants to pick the restaurant. <i>Everybody has opinions about it.</i>"
+   }
+  ]
+ },
+ {
+  "id": "15-alarm",
+  "slides": [
+   {
+    "theme": "light",
+    "kicker": "Weekend, 7 am",
+    "h": "Friday night: <i>motivated.</i>",
+    "p": "Saturday, 6:55 am: negotiating with the alarm."
+   }
+  ]
+ },
+ {
+  "id": "16-types-chat",
+  "slides": [
+   {
+    "theme": "dark",
+    "kicker": "Dilli edition. Swipe",
+    "h": "Types of people in every <i>Delhi group chat</i>",
+    "p": "Pehchaan lo, kaun kaun hai tumhare group mein."
+   },
+   {
+    "theme": "light",
+    "kicker": "Type 1",
+    "h": "“Bas 5 minute.”",
+    "p": "Pahunch raha hoon, bhai. Abhi bhi ghar par hai, shirt dhundh raha hai."
+   },
+   {
+    "theme": "light",
+    "kicker": "Type 2",
+    "h": "“Kal pakka.”",
+    "p": "Phir kal bhi pakka. Phir parso. Plan ka pata nahi, par pakka hai."
+   },
+   {
+    "theme": "light",
+    "kicker": "Type 3",
+    "h": "“Metro mein hoon.”",
+    "p": "Rajiv Chowk par. Network nahi aa raha. Network kabhi nahi aata."
+   },
+   {
+    "theme": "light",
+    "kicker": "Type 4",
+    "h": "The Guide.",
+    "p": "“Bhai, ek jagah hai Hauz Khas mein, ekdum hidden.” Hidden nahi hai. Sab jaante hain."
+   },
+   {
+    "theme": "light",
+    "kicker": "Type 5",
+    "h": "The Planner.",
+    "p": "“Date fix karo yaar, court book karna hai.” Poll banata hai. Thanks nahi milta."
+   },
+   {
+    "theme": "gold",
+    "kicker": "Type 6",
+    "h": "The one who <i>pehle se pahunch gaya.</i>",
+    "p": "Time se pehle. Chai ke saath. Yehi log chahiye. Tag karo unhe."
+   }
+  ]
+ },
+ {
+  "id": "17-types-brunch",
+  "slides": [
+   {
+    "theme": "dark",
+    "kicker": "Swipe",
+    "h": "Types of people at <i>every brunch</i>",
+    "p": "Dedicated to your next one."
+   },
+   {
+    "theme": "light",
+    "kicker": "Type 1",
+    "h": "The one who orders for the table.",
+    "p": "Confident. Usually right."
+   },
+   {
+    "theme": "light",
+    "kicker": "Type 2",
+    "h": "The one who photographs everything.",
+    "p": "Nobody may eat until the light is right."
+   },
+   {
+    "theme": "light",
+    "kicker": "Type 3",
+    "h": "The one who is here for the coffee only.",
+    "p": "Has said “just a coffee” three times. Is eating your fries."
+   },
+   {
+    "theme": "light",
+    "kicker": "Type 4",
+    "h": "The one who suggests splitting the bill equally.",
+    "p": "Ordered the least. Said nothing."
+   },
+   {
+    "theme": "gold",
+    "kicker": "Type 5",
+    "h": "You, <i>arriving 25 minutes late.</i>",
+    "p": "With a very good reason."
+   }
+  ]
+ },
+ {
+  "id": "18-excuses-tier",
+  "slides": [
+   {
+    "theme": "dark",
+    "kicker": "Tier list",
+    "h": "Delhi excuses, ranked",
+    "tier": true,
+    "list": [
+     [
+      "S",
+      "a genuine emergency"
+     ],
+     [
+      "A",
+      "real rain"
+     ],
+     [
+      "B",
+      "traffic. once."
+     ],
+     [
+      "C",
+      "“slept through it”"
+     ],
+     [
+      "F",
+      "“I forgot”"
+     ]
+    ],
+    "size": "s"
+   }
+  ]
+ },
+ {
+  "id": "19-plans-tier",
+  "slides": [
+   {
+    "theme": "light",
+    "kicker": "Tier list",
+    "h": "Weekend plans, ranked",
+    "tier": true,
+    "list": [
+     [
+      "S",
+      "sunrise padel"
+     ],
+     [
+      "A",
+      "cafe hopping"
+     ],
+     [
+      "B",
+      "a long brunch"
+     ],
+     [
+      "C",
+      "the mall, again"
+     ],
+     [
+      "F",
+      "a plan nobody confirms"
+     ]
+    ],
+    "size": "s"
+   }
+  ]
+ }
+]
