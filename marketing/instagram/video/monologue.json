@@ -1,0 +1,24 @@
+{"lead":1.6,"end":52.6,"title":"You’re allowed to <i>have fun.</i>",
+"palette":{
+ "a":{"bg":"#f4efe4","fg":"#1b1a18","ac":"#8a6a38"},
+ "b":{"bg":"#cfc8b8","fg":"#25211b","ac":"#6b4f22"},
+ "c":{"bg":"#2b2824","fg":"#f4efe4","ac":"#b6935e"},
+ "d":{"bg":"#e9d3a3","fg":"#25211b","ac":"#8a6a38"},
+ "e":{"bg":"#d9a441","fg":"#1b1a18","ac":"#1b1a18"},
+ "f":{"bg":"#211c16","fg":"#f4efe4","ac":"#b6935e"}},
+"scenes":[
+ {"s":0,"p":"a","items":[[0.1,"Somewhere in your twenties, the group chat goes <i>quiet.</i>"]]},
+ {"s":4.3,"p":"a","items":[[4.39,"Nobody stopped caring."]]},
+ {"s":6.05,"p":"a","items":[[6.12,"Everyone just got <i>busy.</i>"]]},
+ {"s":7.8,"p":"b","items":[[7.87,"Someone moved to Gurgaon."],[10.23,"Someone got promoted."],[11.78,"Someone got married."],[13.36,"Someone is just tired."]]},
+ {"s":15.3,"p":"b","items":[[15.37,"And you’re left with a phone full of people,"],[17.76,"and a Saturday with <i>nothing</i> in it."]]},
+ {"s":20.35,"p":"c","items":[[20.44,"Here’s what nobody says out loud."]]},
+ {"s":22.7,"p":"c","items":[[22.79,"Some friends do stay behind."],[24.99,"That’s not a failure."],[26.51,"That’s life <i>moving.</i>"]]},
+ {"s":28.1,"p":"d","items":[[28.2,"But you’re still <i>here.</i>"]]},
+ {"s":29.7,"p":"d","items":[[29.8,"You still like padel, and chai, and bad quiz nights,"],[33.45,"and walking through Lodhi Garden at seven in the morning."]]},
+ {"s":36.3,"p":"e","items":[[36.4,"You’re allowed to want that."]]},
+ {"s":38.0,"p":"e","items":[[38.09,"You’re allowed to go out,"],[39.58,"meet new people,"],[40.69,"make a plan,"],[41.76,"and actually <i>show up.</i>"]]},
+ {"s":43.1,"p":"f","items":[[43.2,"Nobody is going to send you an invitation to your own life."]]},
+ {"s":46.65,"p":"f","big":true,"items":[[46.74,"So send <i>one.</i>"]]},
+ {"s":49.0,"p":"end","items":[]}
+]}

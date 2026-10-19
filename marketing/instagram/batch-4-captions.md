@@ -13,3 +13,9 @@ Red flags in a group plan. How many does your group have? Tell us the number.
 32-which-type-1 to 7 (carousel, 7 slides)
 Which Delhi weekend person are you? Sunrise Person, Cafe Regular, Food Walker or Couch Strategist. Tag your friend whose type is obvious.
 #delhi #delhimemes #delhidiaries #relatable #weekend #delhincr #delhifoodie
+
+Video: video/youre-allowed-to-have-fun.mp4 (54 seconds, voice by the owner via ElevenLabs, text synced to the voice, soft pad under it)
+Caption:
+Somewhere in your twenties, the group chat goes quiet. Nobody stopped caring. Everyone just got busy.
+You're allowed to want more than a phone full of people. Send this to someone you miss.
+#friendship #delhi #delhincr #adulting #twenties #makefriends #weekendplans
