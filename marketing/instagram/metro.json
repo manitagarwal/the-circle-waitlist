@@ -1,0 +1,10 @@
+{"id":"40-metro-people","slides":[
+ {"type":"cover"},
+ {"station":"Rajiv Chowk","lines":["blue","yellow"],"title":"The Connector.","body":"Knows everyone and is always in the middle of something. Every plan passes through them sooner or later.","prev":"New Delhi","next":"Patel Chowk"},
+ {"station":"Chandni Chowk","lines":["yellow"],"title":"The Foodie.","body":"Loud, loved and always hungry. Has never left on time, because there was one more plate.","prev":"Jama Masjid","next":"Chawri Bazar"},
+ {"station":"Kashmere Gate","lines":["red","yellow","violet"],"title":"The Organiser.","body":"Connects three groups of friends who would never have met. Has a group for every occasion and a poll for every group.","prev":"Civil Lines","next":"Red Fort"},
+ {"station":"Hauz Khas","lines":["magenta","yellow"],"title":"The Aesthetic One.","body":"Has a plant, a favourite cafe and a very good camera roll. Everything looks better after they photograph it.","prev":"Green Park","next":"Malviya Nagar"},
+ {"station":"Central Secretariat","lines":["violet","yellow"],"title":"The Serious One.","body":"Always in formal clothes, always between meetings, replies with “noted”. Surprisingly good fun once it is Friday.","prev":"Patel Chowk","next":"Udyog Bhawan"},
+ {"station":"Huda City Centre","lines":["yellow"],"title":"The Last Stop.","body":"Lives the furthest away and says “I’ll try to make it” every time. Turns up eventually, and stays the longest.","prev":"IFFCO Chowk","next":"End of the line"},
+ {"type":"cta"}
+]}
