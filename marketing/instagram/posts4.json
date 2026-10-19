@@ -1,0 +1,31 @@
+[
+{"id":"30-weekend-plans","slides":[
+ {"theme":"terra","kicker":"Save this for Saturday","h":"8 weekend plans in Delhi NCR <i>under 500 rupees</i>","p":"Swipe. Pick one. Send it to the group chat.","size":"m"},
+ {"theme":"light","num":"01","h":"Lodhi Garden at sunrise","p":"Walk, chai, repeat. Go early and the paths are almost yours.","chip":"Free","meta":"2 to 4 friends  /  Morning"},
+ {"theme":"sage","num":"02","h":"Sunder Nursery","p":"Gardens, old tombs and picnic lawns. A small entry ticket and a very long afternoon.","chip":"Small ticket","meta":"Any size group  /  Afternoon"},
+ {"theme":"mus","num":"03","h":"Chandni Chowk food walk","p":"Parathas, jalebi, chaat, lassi. Go hungry and go early.","chip":"Under 500","meta":"3 to 5 friends  /  Morning"},
+ {"theme":"light","num":"04","h":"Agrasen ki Baoli","p":"A stepwell hidden between Connaught Place buildings. Photos first, chai after.","chip":"Free","meta":"2 to 4 friends  /  Afternoon"},
+ {"theme":"terra","num":"05","h":"Hauz Khas Deer Park and Fort","p":"Walk first. Cafe after. Nobody has ever regretted the order.","chip":"Almost free","meta":"2 to 6 friends  /  Late afternoon"},
+ {"theme":"sage","num":"06","h":"Dilli Haat","p":"Food from every state, craft stalls and a small ticket. Eat, shop, repeat.","chip":"Under 300","meta":"4 to 6 friends  /  Evening"},
+ {"theme":"light","num":"07","h":"India Gate at dusk","p":"Ice cream, a blanket and no plan. The plan is the point.","chip":"Free","meta":"Any size group  /  Evening"},
+ {"theme":"mus","num":"08","h":"Sultanpur bird sanctuary","p":"Gurgaon side. A quiet morning with birds and no traffic horns.","chip":"Small ticket","meta":"2 to 4 friends  /  Early morning"},
+ {"theme":"dark","kicker":"The Semi Circle","h":"Plans like these are better with people who <i>show up.</i>","p":"Padel, cafes, quiz nights, treks. Delhi NCR.","pill":"Apply at the link in bio","url":"thesemicircle.in","size":"m"}]},
+{"id":"31-red-flags","slides":[
+ {"theme":"dark","flag":true,"kicker":"Swipe","h":"Red flags in a <i>group plan</i>","p":"Count how many your group has."},
+ {"theme":"light","kicker":"Red flag 1","h":"“Let’s decide tomorrow.”","p":"Tomorrow is when the plan is supposed to happen."},
+ {"theme":"terra","kicker":"Red flag 2","h":"14 members. 2 replies.","p":"The other twelve have read it. They are thinking."},
+ {"theme":"light","kicker":"Red flag 3","h":"The venue is “somewhere central.”","p":"Central to whom? Nobody has asked."},
+ {"theme":"mus","kicker":"Red flag 4","h":"The only confirmed person always cancels.","p":"It is a gift. They are consistent."},
+ {"theme":"light","kicker":"Red flag 5","h":"“Wait for me, I’m almost there.”","p":"They have not left home. This is public knowledge."},
+ {"theme":"sage","kicker":"Red flag 6","h":"Nobody has booked the court.","p":"Everyone assumed someone had. That someone is you."},
+ {"theme":"light","kicker":"Verdict","h":"3 or more? Cancel it already. <i>0? You may be lying.</i>","size":"m"},
+ {"theme":"gold","kicker":"The Semi Circle","h":"A plan with no red flags <i>exists.</i>","p":"Padel, cafes, quiz nights, treks. Delhi NCR.","pill":"Apply at the link in bio","url":"thesemicircle.in","size":"m"}]},
+{"id":"32-which-type","slides":[
+ {"theme":"sage","kicker":"Quiz. Swipe","h":"Which Delhi weekend person are you?","p":"There are four types. You are one of them.","size":"m"},
+ {"theme":"light","kicker":"Type 1","h":"The Sunrise Person.","p":"Up at 6 am. In Lodhi Garden by 6:30. Quietly judging everyone who sleeps."},
+ {"theme":"terra","kicker":"Type 2","h":"The Cafe Regular.","p":"Hauz Khas, same table, same order, a laptop that never opens."},
+ {"theme":"mus","kicker":"Type 3","h":"The Food Walker.","p":"Judges a weekend by the number of plates. Chandni Chowk, 9 am, no breakfast first."},
+ {"theme":"light","kicker":"Type 4","h":"The Couch Strategist.","p":"Plans to go out. Stays in. Orders biryani. Has no regrets."},
+ {"theme":"dark","kicker":"Now","h":"Tag the friend whose type is <i>obvious.</i>","p":"Mixed? Tag the whole group."},
+ {"theme":"gold","kicker":"The Semi Circle","h":"Every type needs friends who <i>show up.</i>","p":"Plans with people who show up. Delhi NCR.","pill":"Apply at the link in bio","url":"thesemicircle.in","size":"m"}]}
+]

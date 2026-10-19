@@ -13,6 +13,9 @@ ${font('In', 'inter/600SemiBold/Inter_600SemiBold.ttf', 600, 'normal')}
 body{width:1080px;height:1350px;position:relative;overflow:hidden;font-family:'In',sans-serif}
 .dark{background:#211c16;color:#f4efe4;--gold:#b6935e;--dim:#9c9384}
 .light{background:#f4efe4;color:#211c16;--gold:#8a6a38;--dim:#6b665e}
+.terra{background:#c4623f;color:#fff;--gold:#ffd9c7;--dim:#ffe9dd}
+.sage{background:#8fa58a;color:#12210f;--gold:#12210f;--dim:#25402a}
+.mus{background:#d9a441;color:#1b1a18;--gold:#1b1a18;--dim:#4a3b22}
 .gold{background:#b6935e;color:#211c16;--gold:#211c16;--dim:#4a3b22}
 .wrap{position:absolute;inset:0;padding:110px 96px 150px;display:flex;flex-direction:column;justify-content:center}
 .kick{font:600 26px 'In';letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:44px}
@@ -40,11 +43,16 @@ body.reel{width:1080px;height:1920px}
 .pill{display:inline-block;margin-top:56px;background:var(--gold);color:#211c16;font:600 40px 'In';padding:30px 56px;border-radius:999px}
 .url{font:500 36px 'Fr';font-style:italic;color:var(--dim);margin-top:34px}
 .gold .pill{background:#211c16;color:#f4efe4}
+.num{font:500 250px/1 'Fr';color:var(--gold);letter-spacing:-.05em;margin-bottom:6px}
+.chip{display:inline-block;background:var(--gold);color:#211c16;font:600 30px 'In';padding:14px 30px;border-radius:999px;margin-top:40px}
+.light .chip{color:#f4efe4}.terra .chip{color:#8f3f25}.sage .chip{color:#e6efe3}.mus .chip{color:#f4efe4}
+.meta{font:600 28px 'In';letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:34px}
+.flag{width:150px;height:150px;margin-bottom:30px;color:#d4452d}
 .sw{font:600 24px 'In';letter-spacing:.14em;text-transform:uppercase}
 `;
 const mark = '<svg viewBox="0 0 40 24"><path d="M4,20 A16,16 0 0 1 36,20 L4,20 Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/></svg>';
 const html = (s, i, n) => `<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body class="${s.theme || 'dark'}">
-<div class="wrap">${s.kicker ? `<div class="kick">${s.kicker}</div>` : ''}${s.big ? `<div class="big">${s.big}</div>` : ''}${s.h ? `<h1 class="${s.size || ''}">${s.h}</h1>` : ''}${s.list ? `<ul class="l${s.tier ? ' tier' : ''}">${s.list.map(([a, b]) => s.tier ? `<li><b>${a}</b><span>${b}</span></li>` : `<li>${a}${b ? `<span>${b}</span>` : ''}</li>`).join('')}</ul>` : ''}${s.p ? `<p class="b">${s.p}</p>` : ''}${s.pill ? `<div><span class="pill">${s.pill}</span></div>` : ''}${s.url ? `<div class="url">${s.url}</div>` : ''}</div>
+<div class="wrap">${s.kicker ? `<div class="kick">${s.kicker}</div>` : ''}${s.flag ? '<svg class="flag" viewBox="0 0 40 40"><path d="M10 4v32" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M10 6h22l-5 8 5 8H10z" fill="currentColor"/></svg>' : ''}${s.num ? `<div class="num">${s.num}</div>` : ''}${s.big ? `<div class="big">${s.big}</div>` : ''}${s.h ? `<h1 class="${s.size || ''}">${s.h}</h1>` : ''}${s.list ? `<ul class="l${s.tier ? ' tier' : ''}">${s.list.map(([a, b]) => s.tier ? `<li><b>${a}</b><span>${b}</span></li>` : `<li>${a}${b ? `<span>${b}</span>` : ''}</li>`).join('')}</ul>` : ''}${s.p ? `<p class="b">${s.p}</p>` : ''}${s.chip ? `<div><span class="chip">${s.chip}</span></div>` : ''}${s.meta ? `<div class="meta">${s.meta}</div>` : ''}${s.pill ? `<div><span class="pill">${s.pill}</span></div>` : ''}${s.url ? `<div class="url">${s.url}</div>` : ''}</div>
 <div class="foot"><div class="br">${mark}<span>The Semi Circle</span></div><div class="sw">${n > 1 ? (i < n - 1 ? `${i + 1} / ${n}  Swipe` : `${i + 1} / ${n}`) : ''}</div></div></body></html>`;
 const reelHtml = (r, k) => `<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body class="reel ${r.theme || 'dark'}">
 <div class="wrap">${r.kicker ? `<div class="kick">${r.kicker}</div>` : ''}${r.lines.slice(0, k + 1).map((l, j) => `<div class="ln${j < k ? ' old' : ''}${r.end && j === r.lines.length - 1 ? ' end' : ''}">${l}</div>`).join('')}</div>
