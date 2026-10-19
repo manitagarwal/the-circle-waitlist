@@ -106,8 +106,58 @@ function loginScreen(msg) {
     await gate();
   } } },
     h('div', { class: 'brand' }, 'The Semi Circle'), h('p', { class: 'muted' }, 'Admin sign in'),
-    h('label', { class: 'f', for: 'em' }, 'Email'), email, h('label', { class: 'f', for: 'pw' }, 'Password'), pw, err, h('div', { style: 'margin-top:12px' }, go));
+    h('label', { class: 'f', for: 'em' }, 'Email'), email, h('label', { class: 'f', for: 'pw' }, 'Password'), pw, err,
+    h('div', { class: 'row', style: 'margin-top:12px;align-items:center' }, go, h('button', { type: 'button', class: 'small', on: { click: () => forgotScreen(email.value.trim()) } }, 'Forgot password?')));
   clear($app()).append(form); email.focus();
+}
+
+/* Forgot password: email a 6-digit code (same as the app), then choose a new password. Admin access is still checked after. */
+function forgotScreen(prefill) {
+  let step = 'email', email = prefill || '';
+  const draw = (msg, ok) => {
+    const err = h('p', { class: ok ? 'muted' : 'error', role: 'alert' }, msg || '');
+    const brand = h('div', { class: 'brand' }, 'The Semi Circle');
+    const back = h('button', { type: 'button', class: 'small', on: { click: () => loginScreen() } }, 'Back to sign in');
+    if (step === 'email') {
+      const em = h('input', { id: 'fe', type: 'email', autocomplete: 'username', value: email, required: true });
+      const go = h('button', { class: 'primary', type: 'submit' }, 'Send code');
+      clear($app()).append(h('form', { class: 'login', on: { submit: async (ev) => {
+        ev.preventDefault(); go.disabled = true; email = em.value.trim().toLowerCase();
+        const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+        if (error) { go.disabled = false; draw('Could not send a code. Check the email, or wait a minute and try again.'); return; }
+        step = 'code'; draw('We sent a 6-digit code to ' + email + '.', true);
+      } } }, brand, h('p', { class: 'muted' }, 'Reset your admin password. We email a 6-digit code to your admin email.'),
+        h('label', { class: 'f', for: 'fe' }, 'Admin email'), em, err, h('div', { class: 'row', style: 'margin-top:12px' }, go, back)));
+      em.focus();
+    } else if (step === 'code') {
+      const code = h('input', { id: 'fc', inputmode: 'numeric', autocomplete: 'one-time-code', maxlength: '6', placeholder: '6-digit code' });
+      const go = h('button', { class: 'primary', type: 'submit' }, 'Verify');
+      clear($app()).append(h('form', { class: 'login', on: { submit: async (ev) => {
+        ev.preventDefault(); go.disabled = true;
+        const { error } = await sb.auth.verifyOtp({ email, token: code.value.trim(), type: 'email' });
+        if (error) { go.disabled = false; err.textContent = 'That code is wrong or expired.'; err.className = 'error'; return; }
+        step = 'password'; draw();
+      } } }, brand, h('p', { class: 'muted' }, 'Enter the code from your email.'), h('label', { class: 'f', for: 'fc' }, 'Code'), code, err,
+        h('div', { class: 'row', style: 'margin-top:12px' }, go, h('button', { type: 'button', class: 'small', on: { click: () => { step = 'email'; draw(); } } }, 'Send a new code'), back)));
+      code.focus();
+    } else {
+      const p1 = h('input', { id: 'np1', type: 'password', autocomplete: 'new-password', required: true });
+      const p2 = h('input', { id: 'np2', type: 'password', autocomplete: 'new-password', required: true });
+      const go = h('button', { class: 'primary', type: 'submit' }, 'Save password');
+      clear($app()).append(h('form', { class: 'login', on: { submit: async (ev) => {
+        ev.preventDefault();
+        if (p1.value.length < 10) { err.textContent = 'Use at least 10 characters.'; err.className = 'error'; return; }
+        if (p1.value !== p2.value) { err.textContent = 'Those two do not match.'; err.className = 'error'; return; }
+        go.disabled = true;
+        const { error } = await sb.auth.updateUser({ password: p1.value });
+        if (error) { go.disabled = false; err.textContent = 'Could not save: ' + error.message; err.className = 'error'; return; }
+        await gate(); // signs out again if this account is not an admin
+      } } }, brand, h('p', { class: 'muted' }, 'Choose a new password.'), h('label', { class: 'f', for: 'np1' }, 'New password (10+ characters)'), p1,
+        h('label', { class: 'f', for: 'np2' }, 'Confirm password'), p2, err, h('div', { style: 'margin-top:12px' }, go)));
+      p1.focus();
+    }
+  };
+  draw();
 }
 
 async function mfaScreen() {
