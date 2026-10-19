@@ -1,0 +1,15 @@
+{"cards":[
+ {"d":1.1,"bg":"#211c16","fg":"#f4efe4","acc":"#b6935e","kick":"Delhi excuses","h":"Speed run.","sub":"Ready. Go."},
+ {"d":0.95,"bg":"#c4623f","fg":"#fff","acc":"#ffd9c7","kick":"Excuse 1","h":"Traffic.","sub":""},
+ {"d":0.95,"bg":"#d9a441","fg":"#1b1a18","acc":"#1b1a18","kick":"Excuse 2","h":"The metro was packed.","sub":""},
+ {"d":0.95,"bg":"#f4efe4","fg":"#1b1a18","acc":"#8a6a38","kick":"Excuse 3","h":"It was raining.","sub":"(it was not)"},
+ {"d":0.95,"bg":"#8fa58a","fg":"#12210f","acc":"#12210f","kick":"Excuse 4","h":"Battery at 4 percent.","sub":""},
+ {"d":0.95,"bg":"#f6e27a","fg":"#2a2418","acc":"#2a2418","kick":"Excuse 5","h":"Phone was on silent.","sub":"(for 6 hours)"},
+ {"d":0.7,"bg":"#c4623f","fg":"#fff","acc":"#ffd9c7","kick":"Excuse 6","h":"Parking.","sub":""},
+ {"d":0.7,"bg":"#211c16","fg":"#f4efe4","acc":"#b6935e","kick":"Excuse 7","h":"Cousin’s sangeet.","sub":"(a different cousin)"},
+ {"d":0.7,"bg":"#d9a441","fg":"#1b1a18","acc":"#1b1a18","kick":"Excuse 8","h":"Wrong gate.","sub":""},
+ {"d":0.7,"bg":"#f4efe4","fg":"#1b1a18","acc":"#8a6a38","kick":"Excuse 9","h":"Which day was it?","sub":""},
+ {"d":1.3,"bg":"#8fa58a","fg":"#12210f","acc":"#12210f","kick":"Or just say it","h":"I didn’t feel like it.","sub":""},
+ {"d":1.3,"bg":"#211c16","fg":"#f4efe4","acc":"#b6935e","kick":"Honest, at least","h":"Tag the friend who has used all nine.","sub":""},
+ {"d":2.4,"bg":"#b6935e","fg":"#211c16","acc":"#211c16","kick":"More Delhi, every week","h":"The Semi Circle","sub":"Plans with people who show up. Link in bio.","end":true}
+]}
